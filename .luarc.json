@@ -6,7 +6,6 @@
     "preloadFileSize": 20000,
     "ignoreSubmodules": true,
     "library": [
-      "/home/lucario387/.config/nvim",
       "/usr/local/share/nvim/runtime",
       "/home/lucario387/.local/share/nvim/site/pack/packer/start"
     ]
@@ -14,8 +13,6 @@
   "runtime": {
     "version": "LuaJIT",
     "path": [
-      "?.lua",
-      "?/init.lua",
       "lua/?.lua",
       "lua/?/init.lua"
     ]
@@ -54,18 +51,14 @@
     },
     "enable": true
   },
-  "completion": {
-    "callSnippet": "Both"
-  },
   "hint": {
-    "enable": true,
-    "setType": true
+    "enable": true
   },
   "hover": {
     "enable": true,
-    "expandAlias": true,
+    "expandAlias": false,
     "enumsLimit": 5,
-    "previewFields": 100
+    "previewFields": 5
   },
   "telemetry": {
     "enable": false

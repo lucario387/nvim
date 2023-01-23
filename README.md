@@ -1,4 +1,4 @@
-Config for NvChad (dev branch)
+My neovim config
 
 Just do 
 ```bash
