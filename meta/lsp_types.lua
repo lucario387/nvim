@@ -134,7 +134,6 @@
 
 ---@class DiagnosticClientCapabilities
 
-
 ---@class TextDocumentClientCapabilities
 ---@field synchronization? TextDocumentSyncClientCapabilities
 ---@field completion? CompletionClientCapabilities
@@ -166,10 +165,9 @@
 ---@field inlayHint? InlayHintClientCapabilities
 ---@field diagnostic? DiagnosticClientCapabilities
 
-
 ---@class NotebookDocumentClientCapabilities
 
----@class WindowClientCapabilities 
+---@class WindowClientCapabilities
 ---@field workDoneProgress? boolean
 ---@field showMessage? ShowMessageRequestClientCapabilities
 ---@field showDocument? ShowDocumentClientCapabilities

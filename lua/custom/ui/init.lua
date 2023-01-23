@@ -13,7 +13,7 @@ local disabled_filetypes = {
   "terminal",
   "lspinfo",
   "TelescopePrompt",
-  "TelescopeResults"
+  "TelescopeResults",
 }
 
 local disabled_buftypes = {
@@ -28,14 +28,17 @@ vim.opt.tabline = "%{%v:lua.require('custom.ui.tabline').draw()%}"
 vim.opt.statusline = "%{%v:lua.require('custom.ui.statusline').draw()%}"
 vim.api.nvim_create_autocmd({ "FileType" }, {
   callback = function(args)
-    if vim.tbl_contains(disabled_filetypes, vim.bo[args.buf].filetype)
-      or vim.tbl_contains(disabled_buftypes, vim.bo[args.buf].buftype) then
+    if
+      vim.tbl_contains(disabled_filetypes, vim.bo[args.buf].filetype)
+      or vim.tbl_contains(disabled_buftypes, vim.bo[args.buf].buftype)
+    then
       return
     end
     vim.wo.winbar = "%{%v:lua.require('custom.ui.winbar').draw()%}"
     vim.wo.statuscolumn = "%{%v:lua.require('custom.ui.statuscolumn').draw()%}"
-  end
+  end,
 })
 -- end
 --
 -- return M
+require("core.utils").load_mappings("tabline")

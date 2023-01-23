@@ -14,9 +14,9 @@ M.setup = function()
   local repl = require("dap.repl")
   require("core.utils").load_mappings("dap")
   -- nvim-dap settings
-  vim.fn.sign_define("DapBreakpoint", { text = "🔴", texthl = "", linehl = "", numhl = "", })
-  vim.fn.sign_define("DapBreakpointRejected", { text = "", texthl = "Error", linehl = "", numhl = "", })
-  vim.fn.sign_define("DapStopped", { text = "⭐️", texthl = "", })
+  vim.fn.sign_define("DapBreakpoint", { text = "🔴", texthl = "", linehl = "", numhl = "" })
+  vim.fn.sign_define("DapBreakpointRejected", { text = "", texthl = "Error", linehl = "", numhl = "" })
+  vim.fn.sign_define("DapStopped", { text = "⭐️", texthl = "" })
 
   -- dap-repl settings
   repl.commands = vim.tbl_deep_extend("force", repl.commands, {
@@ -31,12 +31,12 @@ M.setup = function()
   vim.api.nvim_create_autocmd("DirChanged", {
     callback = function()
       M.load_vscode_config()
-    end
+    end,
   })
   vim.api.nvim_create_autocmd("TermOpen", {
     -- group = vim.api.nvim_create_augroup("DapUIConsoleInsert", { clear = true }),
     pattern = "",
-    command = "startinsert"
+    command = "startinsert",
   })
   vim.api.nvim_create_autocmd("TermLeave", {
     pattern = "",

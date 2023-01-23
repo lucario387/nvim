@@ -19,7 +19,7 @@ end
 
 local has_words_before = function()
   local line, col = unpack(vim.api.nvim_win_get_cursor(0))
-  return col ~= 0 and vim.api.nvim_buf_get_lines(0, line - 1, line, true)[1]:sub(col, col):match "%s" == nil
+  return col ~= 0 and vim.api.nvim_buf_get_lines(0, line - 1, line, true)[1]:sub(col, col):match("%s") == nil
 end
 
 local disabled_buftypes = {
@@ -29,12 +29,12 @@ local disabled_buftypes = {
 }
 local menu = {
   nvim_lsp = "(LSP)",
-  buffer   = "(Buf)",
-  dap      = "(Dap)",
-  cmdline  = "(Cmd)",
-  path     = "(Path)",
-  luasnip  = "(Snip)",
-  neorg    = "(Norg)",
+  buffer = "(Buf)",
+  dap = "(Dap)",
+  cmdline = "(Cmd)",
+  path = "(Path)",
+  luasnip = "(Snip)",
+  neorg = "(Norg)",
 }
 
 local is_dap_buffer = function(bufnr)
@@ -46,21 +46,26 @@ local is_dap_buffer = function(bufnr)
 end
 
 cmp.setup({
+  completion = {
+    keyword_length = 2,
+    -- autocomplete = false,
+  },
   enabled = function()
     local disabled = false
-    disabled       = disabled or is_dap_buffer(0)
-    disabled       = disabled or (vim.tbl_contains(disabled_buftypes, vim.api.nvim_buf_get_option(0, "buftype")))
-    disabled       = disabled or (vim.fn.reg_recording() ~= "")
-    disabled       = disabled or (vim.fn.reg_executing() ~= "")
-    if disabled then return not disabled end
+    disabled = disabled or is_dap_buffer(0)
+    disabled = disabled or (vim.tbl_contains(disabled_buftypes, vim.api.nvim_buf_get_option(0, "buftype")))
+    disabled = disabled or (vim.fn.reg_recording() ~= "")
+    disabled = disabled or (vim.fn.reg_executing() ~= "")
+    if disabled then
+      return not disabled
+    end
 
     local context = require("cmp.config.context")
     -- keep command mode completion enabled when cursor is in a comment
     if vim.api.nvim_get_mode().mode == "c" then
       return true
     else
-      return not context.in_treesitter_capture("comment")
-        and not context.in_syntax_group("Comment")
+      return not context.in_treesitter_capture("comment") and not context.in_syntax_group("Comment")
     end
   end,
   window = {
@@ -86,10 +91,10 @@ cmp.setup({
     ["<C-f>"] = cmp.mapping.scroll_docs(4),
     ["<C-Space>"] = cmp.mapping.complete(),
     ["<C-e>"] = cmp.mapping.abort(),
-    ["<CR>"] = cmp.mapping.confirm {
+    ["<CR>"] = cmp.mapping.confirm({
       behavior = cmp.ConfirmBehavior.Replace,
       select = false,
-    },
+    }),
     ["<Tab>"] = cmp.mapping(function(fallback)
       if  cmp.visible() then
         cmp.select_next_item()
@@ -100,7 +105,7 @@ cmp.setup({
       else
         fallback()
       end
-    end, { "i", "s", }),
+    end, { "i", "s" }),
     ["<S-Tab>"] = cmp.mapping(function(fallback)
       if  cmp.visible() then
         cmp.select_prev_item()
@@ -109,7 +114,7 @@ cmp.setup({
       else
         fallback()
       end
-    end, { "i", "s", }),
+    end, { "i", "s" }),
   },
   formatting = {
     -- fields = { "abbr", "menu", "kind" },

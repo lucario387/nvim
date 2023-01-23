@@ -12,10 +12,10 @@ function vim.fs.basename(file) end
 function vim.fs.dir(path, opts) end
 
 ---@param file string
----@return string #Parent directory of `file`
+---@return string path #Parent directory of `file`
 function vim.fs.dirname(file) end
 
----@param names string|string[]|fun(name: string): boolean
+---@param names string|string[]|fun(name: string): boolean Name(s) of the files and directories to find. Must be base names
 ---@param opts {path: string, upward: boolean|false, stop: string, type:"file"|"directory", limit: integer}
 ---@return string[]
 function vim.fs.find(names, opts) end
@@ -27,3 +27,4 @@ function vim.fs.normalize(path) end
 ---@param start string Initial file or directory
 ---@return function # iterator
 function vim.fs.parents(start) end
+

@@ -34,17 +34,14 @@ M.cpp = {
         ignoreFailures = false,
       },
     },
-  }
+  },
   -- {
   -- 	name = "Attach to gdbserver"
   -- }
-
 }
 
 M.c = M.cpp
 
-M.java = {
-
-}
+M.java = {}
 
 return M

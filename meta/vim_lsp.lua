@@ -1,4 +1,4 @@
----@meta 
+---@meta
 ---@diagnostic disable: codestyle-check
 
 -- vim.lsp = require("vim.lsp")
@@ -24,17 +24,15 @@
 ---@field is_stopped fun(): boolean
 ---@field on_attach fun(client: Client, bufnr: integer)
 
-
 ---@class VimLSPFormat : Object
 ---@field formatting_options FormattingOptions
 ---@field timeout_ms integer|1000
----@field bufnr integer|nil 
+---@field bufnr integer|nil
 ---@field filter fun(client: Client): boolean
 ---@field async boolean?
 ---@field id integer?
 ---@field name string?
 ---@field range TSRange?
-
 
 ---@param options VimLSPFormat
 function vim.lsp.buf.format(options) end

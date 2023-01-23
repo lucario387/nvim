@@ -23,7 +23,7 @@ local auto_true_filetypes = {
 
 local padding = {
   left = "",
-  right = " "
+  right = " ",
 }
 
 ---Create a new hlgroup
@@ -53,13 +53,15 @@ local get_ft_win_width = function(ft)
 end
 
 local generate_buf_str = function(v, bufnr)
-  if not buf_is_valid(v) then return { str = "", len = 0 } end
+  if not buf_is_valid(v) then
+    return { str = "", len = 0 }
+  end
   local bufname = vim.api.nvim_buf_get_name(v)
   bufname = #bufname > 0 and bufname or "No Name"
   local filename = vim.fn.fnamemodify(bufname, ":t")
   -- local extension = vim.fn.fnamemodify(bufname, ":e")
-  local hlgroup = (vim.fn.getbufinfo(v)[1].hidden == 1 or not vim.tbl_contains(vim.t.bufs, v)) and "TabLineBufHidden" or
-    "TabLineBufActive"
+  local hlgroup = (vim.fn.getbufinfo(v)[1].hidden == 1 or not vim.tbl_contains(vim.t.bufs, v)) and "TabLineBufHidden"
+    or "TabLineBufActive"
   hlgroup = (v == bufnr) and "TabLineCurrentBuf" or hlgroup
 
   local border_str_left = hl_str(hlgroup .. "Sep", padding.left)
@@ -68,7 +70,9 @@ local generate_buf_str = function(v, bufnr)
   -- local icon, icon_hl = dev_icons.get_icon(filename, extension, { default = true })
   -- local icon_str = hl_str(new_hl(icon_hl, hlgroup), icon .. " ")
 
-  if #filename % 2 == 1 then filename = filename .. "" end
+  if #filename % 2 == 1 then
+    filename = filename .. ""
+  end
   if #filename > FILENAME_LENGTH then
     filename = string.sub(filename, 1, FILENAME_LENGTH - 2) .. ".."
   end
@@ -84,7 +88,7 @@ local generate_buf_str = function(v, bufnr)
 
   return {
     str = border_str_left .. padding_str .. filename_str .. modified_str .. padding_str .. border_str_right,
-    len = 2 + padding_len + ICON_SIZE + modified_len + #filename
+    len = 2 + padding_len + ICON_SIZE + modified_len + #filename,
   }
   -- return {
   --   str = border_str_left .. padding_str .. icon_str .. filename_str .. modified_str .. padding_str .. border_str_right,
@@ -100,7 +104,9 @@ end
 
 local padding_ft = function(ft)
   local width = get_ft_win_width(ft)
-  if width <= 0 then return "" end
+  if width <= 0 then
+    return ""
+  end
   return hl_str("TabLineFill", string.rep(" ", get_ft_win_width(ft)))
 end
 
@@ -125,7 +131,9 @@ local bufferlist = function()
 
   for _, v in ipairs(buflist) do
     if current_buflen + (FILENAME_LENGTH + PADDING_SIZE + ICON_SIZE + 2) > remaining_columns then
-      if has_current_bufnr then break end
+      if has_current_bufnr then
+        break
+      end
       current_buflen = current_buflen - rendered_buflist[1].len
       table.remove(rendered_buflist, 1)
     end
@@ -147,7 +155,9 @@ end
 local tablist = function()
   local tablist = vim.api.nvim_list_tabpages()
   local tabnr = vim.api.nvim_get_current_tabpage()
-  if #tablist < 2 then return "" end
+  if #tablist < 2 then
+    return ""
+  end
   local result = ""
 
   for i, v in ipairs(tablist) do
@@ -166,7 +176,7 @@ M.draw = function()
     bufferlist(),
     pad_str(1),
     "%=",
-    tablist()
+    tablist(),
     -- "TEST"
   })
 end

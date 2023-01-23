@@ -77,8 +77,7 @@ local function get_python_interpreters(a, l, p)
     vim.env.HOME .. "/venvs",
   }
   for _, find_path in ipairs(find_paths) do
-    local _paths = vim.fn.executable("fd")
-      and vim.fn.systemlist("fd -c never -g python " .. find_path)
+    local _paths = vim.fn.executable("fd") and vim.fn.systemlist("fd -c never -g python " .. find_path)
       or vim.fn.systemlist("find find_path -name python")
     if vim.v.shell_error == 0 and _paths then
       for _, path in ipairs(_paths) do
@@ -171,13 +170,15 @@ if not config.pylance then
           { desc = "Organize Imports" }
         )
         vim.api.nvim_buf_create_user_command(0, "PylanceExtractVariable", extract_variable, {
-          range = true, desc = "Extract variable"
+          range = true,
+          desc = "Extract variable",
         })
         vim.api.nvim_buf_create_user_command(0, "PylanceExtractMethod", extract_method, {
-          range = true, desc = "Extract method"
+          range = true,
+          desc = "Extract method",
         })
         require("custom.plugins.lsp").register({
-          require("null-ls").builtins.formatting.autopep8
+          require("null-ls").builtins.formatting.autopep8,
         })
         on_attach(client, bufnr)
       end,
@@ -199,11 +200,7 @@ if not config.pylance then
         },
       },
       docs = {
-        package_json = vim.fn.expand(
-          "$HOME/.vscode/extensions/ms-python.vscode-pylance-*/package.json",
-          false,
-          true
-        )[1],
+        package_json = vim.fn.expand("$HOME/.vscode/extensions/ms-python.vscode-pylance-*/package.json", false, true)[1],
         description = [[
           https://github.com/microsoft/pyright
           `pyright`, a static type checker and language server for python

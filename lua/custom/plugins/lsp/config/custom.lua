@@ -1,13 +1,19 @@
-return function(on_attach, capabilities)
-  local lspconfig = require("lspconfig")
+local M = {}
+
+local lspconfig = require("lspconfig")
+
+M.jsonls = function(on_attach, capabilities)
   lspconfig.jsonls.setup({
     on_attach = function(client, bufnr)
       client.server_capabilities.formattingProvider = false
       client.server_capabilities.rangeFormattingProvider = false
       on_attach(client, bufnr)
     end,
-    capabilities = capabilities
+    capabilities = capabilities,
   })
+end
+
+M.clangd = function(on_attach, capabilities)
   if not vim.g.loaded_clangd_ext then
     lspconfig.clangd.setup({
       cmd = {
@@ -65,10 +71,13 @@ return function(on_attach, capabilities)
         },
         symbol_info = {
           border = "rounded",
-        }
-      }
+        },
+      },
     })
   end
+end
+
+M.eslint = function(on_attach, capabilities)
   lspconfig.eslint.setup({
     on_attach = function(client, bufnr)
       client.server_capabilities.definitionProvider = false
@@ -79,15 +88,13 @@ return function(on_attach, capabilities)
       client.server_capabilities.typeDefinitionProvider = false
       client.server_capabilities.referencesProvider = false
       client.server_capabilities.inlayHintProvider = false
-      if vim.g.lsp_use_tsserver_formatting then
+      if vim.g.lsp.formatters and vim.g.lsp.formatters["tsserver"] then
         client.server_capabilities.documentFormattingProvider = false
         client.server_capabilities.documentRangeFormattingProvider = false
       else
-        if vim.g.lsp_use_prettier then
-          require("custom.plugins.lsp").register({
-            require("null-ls").builtins.formatting.prettierd
-          })
-        end
+        require("custom.plugins.lsp").register({
+          require("null-ls").builtins.formatting.prettierd,
+        })
       end
       on_attach(client, bufnr)
       -- vim.keymap.set("n", "<leader>fm", function()
@@ -99,13 +106,13 @@ return function(on_attach, capabilities)
       codeAction = {
         disableRuleComment = {
           enable = true,
-          location = "separateLine"
+          location = "separateLine",
         },
-        showDocumentation = { enable = true }
+        showDocumentation = { enable = true },
       },
       codeActionOnSave = {
         enable = true,
-        mode = "problems"
+        mode = "problems",
       },
       format = true,
       nodePath = "",
@@ -120,39 +127,69 @@ return function(on_attach, capabilities)
       useESLintClass = true,
       validate = "on",
       workingDirectory = {
-        mode = "location"
-      }
-    }
+        mode = "location",
+      },
+    },
   })
-  if vim.g.lsp_use_tsserver then
-    vim.cmd.packadd("typescript.nvim")
-    require("typescript").setup({
-      server = {
-        on_attach = function(client, bufnr)
-          if not vim.g.lsp_use_tsserver_formatting then
-            client.server_capabilities.documentFormattingProvider = false
-            client.server_capabilities.documentRangeFormattingProvider = false
-          end
-          on_attach(client, bufnr)
-        end,
-        capabilities = capabilities,
-        single_file_support = true,
-      }
-    })
-  else
-    lspconfig.volar.setup({
-      filetypes = { "typescript", "javascript", "javascriptreact", "typescriptreact", "vue", "json" },
+end
+
+M.tsserver = function(on_attach, capabilities)
+  vim.cmd.packadd("typescript.nvim")
+  require("typescript").setup({
+    server = {
       on_attach = function(client, bufnr)
-        client.server_capabilities.documentFormattingProvider = false
-        client.server_capabilities.documentRangeFormattingProvider = false
-        -- require("custom.plugins.lsp.utils").on_attach(client, bufnr)
-        -- vim.keymap.set("n", "<leader>fm", function()
-        --   vim.cmd("EslintFixAll")
-        -- end, { buffer = 0, silent = true })
+        if not vim.g.lsp_use_tsserver_formatting then
+          client.server_capabilities.documentFormattingProvider = false
+          client.server_capabilities.documentRangeFormattingProvider = false
+        end
+        on_attach(client, bufnr)
       end,
       capabilities = capabilities,
-    })
-  end
+      single_file_support = true,
+    },
+  })
+end
+
+M.volar = function(on_attach, capabilities)
+  lspconfig.volar.setup({
+    filetypes = { "typescript", "javascript", "javascriptreact", "typescriptreact", "vue", "json" },
+    on_attach = function(client, bufnr)
+      client.server_capabilities.documentFormattingProvider = false
+      client.server_capabilities.documentRangeFormattingProvider = false
+      -- require("custom.plugins.lsp.utils").on_attach(client, bufnr)
+      -- vim.keymap.set("n", "<leader>fm", function()
+      --   vim.cmd("EslintFixAll")
+      -- end, { buffer = 0, silent = true })
+    end,
+    capabilities = capabilities,
+  })
+end
+
+M.pyright = function(on_attach, capabilities)
+  lspconfig.pyright.setup({
+    on_attach = function(client, bufnr)
+      on_attach(client, bufnr)
+      require("custom.plugins.lsp").register({
+        require("null-ls").builtins.formatting.autopep8,
+      })
+    end,
+    capabilities = capabilities,
+    settings = {
+      python = {
+        analysis = {
+          typeCheckingMode = "basic",
+        },
+      },
+    },
+  })
+end
+
+M.pylance = function(on_attach, capabilities)
+  require("custom.plugins.lsp.servers.pylance")
+  lspconfig.pylance.setup({})
+end
+
+M.sumneko_lua = function(on_attach, capabilities)
   lspconfig.sumneko_lua.setup({
     on_attach = on_attach,
     capabilities = capabilities,
@@ -164,30 +201,12 @@ return function(on_attach, capabilities)
         workspace = {
           checkThirdParty = false,
         },
-      }
-    }
+      },
+    },
   })
-  if vim.g.lsp_use_pylance then
-    require("custom.plugins.lsp.servers.pylance")
-    lspconfig.pylance.setup({})
-  else
-    lspconfig.pyright.setup({
-      on_attach = function(client, bufnr)
-        on_attach(client, bufnr)
-        require("custom.plugins.lsp").register({
-          require("null-ls").builtins.formatting.autopep8
-        })
-      end,
-      capabilities = capabilities,
-      settings = {
-        python = {
-          analysis = {
-            typeCheckingMode = "basic",
-          }
-        }
-      }
-    })
-  end
+end
+
+M.bashls = function(on_attach, capabilities)
   require("lspconfig").bashls.setup({
     on_attach = function(client, bufnr)
       local null = require("null-ls")
@@ -202,3 +221,5 @@ return function(on_attach, capabilities)
     capabilities = capabilities,
   })
 end
+
+return M

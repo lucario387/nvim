@@ -6,9 +6,12 @@ M.disabled = {
   -- I dont need any of this
   n = {
     ["<leader>b"] = "",
-    ["<leader>n"] = "", ["<leader>rn"] = "",
+    ["<leader>n"] = "",
+    ["<leader>rn"] = "",
     ["<leader>e"] = "",
     ["K"] = "",
+    ["j"] = "",
+    ["k"] = "",
 
     -- Telescope
     ["<leader>fb"] = "",
@@ -16,68 +19,72 @@ M.disabled = {
     -- Lspconfig
     ["<leader>ra"] = "",
     ["gr"] = "",
-    ["<leader>f"] = "", ["<leader>fm"] = "",
-    ["<leader>wa"] = "", ["<leader>wr"] = "", ["<leader>wl"] = "",
+    ["<leader>f"] = "",
+    ["<leader>fm"] = "",
+    ["<leader>wa"] = "",
+    ["<leader>wr"] = "",
+    ["<leader>wl"] = "",
     ["<leader>ls"] = "",
     ["<leader>gb"] = "",
     -- ["<leader>ca"] = "",
-    ["d]"] = ""
+    ["d]"] = "",
   },
   -- Insert mode keys
 }
 
 M.general = {
   n = {
-    ["a"]         = {
+    ["a"] = {
       function()
         local line = #vim.trim(vim.fn.getline("."))
         vim.api.nvim_feedkeys(line >= 1 and "a" or "S", "n", false)
       end,
-      "auto indent when enter insert on empty line"
+      "auto indent when enter insert on empty line",
     },
-    ["i"]         = {
+    ["i"] = {
       function()
         local line = #vim.trim(vim.fn.getline("."))
         vim.api.nvim_feedkeys(line >= 1 and "i" or "S", "n", false)
       end,
-      "auto indent when enter insert on empty line"
+      "auto indent when enter insert on empty line",
     },
-    ["A"]         = {
+    ["A"] = {
       function()
         local line = #vim.trim(vim.fn.getline("."))
         vim.api.nvim_feedkeys(line >= 1 and "A" or "S", "n", false)
       end,
-      "auto indent when enter insert on empty line"
+      "auto indent when enter insert on empty line",
     },
-    ["I"]         = {
+    ["I"] = {
       function()
         local line = #vim.trim(vim.fn.getline("."))
         vim.api.nvim_feedkeys(line >= 1 and "I" or "S", "n", false)
       end,
-      "auto indent when enter insert on empty line"
+      "auto indent when enter insert on empty line",
     },
-    ["x"]         = { '"_x', "" },
-    ["dw"]        = { '"_dw', "" },
-    ["db"]        = { '"_db', "" },
-    ["cw"]        = { '"_cw', "" },
-    ["cb"]        = { '"_cb', "" },
+    ["x"] = { '"_x', "" },
+    ["dw"] = { '"_dw', "" },
+    ["db"] = { '"_db', "" },
+    ["cw"] = { '"_cw', "" },
+    ["cb"] = { '"_cb', "" },
     ["<leader>y"] = { '"+y', "" },
     ["<leader>Y"] = { '"+Y', "", opts = { noremap = false } },
-    ["<leader>p"] = { '"+p', "", },
-    ["<leader>P"] = { '"+P', "", opts = { noremap = false }, },
-    ["<C-d>"]     = { "<C-d>zz", "" },
-    ["<C-u>"]     = { "<C-u>zz", "" },
-    ["n"]         = { "nzz", "" },
-    ["N"]         = { "Nzz", "" },
-    ["<C-h>"]     = { "<cmd>KittyMoveLeft<CR>", "", opts = { silent = true }, },
-    ["<C-j>"]     = { "<cmd>KittyMoveDown<CR>", "", opts = { silent = true }, },
-    ["<C-k>"]     = { "<cmd>KittyMoveUp<CR>", "", opts = { silent = true }, },
-    ["<C-l>"]     = { "<cmd>KittyMoveRight<CR>", "", opts = { silent = true }, },
+    ["<leader>p"] = { '"+p', "" },
+    ["<leader>P"] = { '"+P', "", opts = { noremap = false } },
+    ["<C-d>"] = { "<C-d>zz", "" },
+    ["<C-u>"] = { "<C-u>zz", "" },
+    ["n"] = { "nzz", "" },
+    ["N"] = { "Nzz", "" },
+    ["<C-h>"] = { "<cmd>KittyMoveLeft<CR>", "", opts = { silent = true } },
+    ["<C-j>"] = { "<cmd>KittyMoveDown<CR>", "", opts = { silent = true } },
+    ["<C-k>"] = { "<cmd>KittyMoveUp<CR>", "", opts = { silent = true } },
+    ["<C-l>"] = { "<cmd>KittyMoveRight<CR>", "", opts = { silent = true } },
 
     ["<leader>tr"] = {
       function()
         require("base46").toggle_transparency()
-      end, opts = { silent = true },
+      end,
+      opts = { silent = true },
     },
     ["<C-c>"] = { "<cmd>%y+<CR>", "", opts = { silent = true } },
     ["<leader>q"] = { "<cmd>q<CR>", "" },
@@ -101,7 +108,7 @@ M.general = {
   v = {
     ["<leader>y"] = { '"+y', "" },
     ["<leader>Y"] = { '"+Y', "", opts = { noremap = false } },
-    ["<leader>p"] = { '"+p', "", },
+    ["<leader>p"] = { '"+p', "" },
     ["<leader>P"] = { '"+p', "", opts = { noremap = false } },
   },
   i = {
@@ -111,14 +118,14 @@ M.general = {
     ["<C-b>"] = { "<C-Left>", "" },
     ["<C-c>"] = { "<Esc>", "" },
     -- navigate within insert mode
-    ["<C-h>"] = { "<C-Left>", "move left" },
-    ["<C-l>"] = { "<C-Right>", "move right" },
+    ["<C-h>"] = { "<Left>", "move left" },
+    ["<C-l>"] = { "<Right>", "move right" },
     ["<C-j>"] = { "<Down>", "move down" },
     ["<C-k>"] = { "<Up>", "move up" },
 
     ["<A-j>"] = { "<Esc><cmd>m+1<CR>==a", "" },
     ["<A-k>"] = { "<Esc><cmd>m-2<CR>==a", "" },
-    ["<C-A-v>"] = { "<Esc><cmd>PasteImg<CR>", "" }
+    ["<C-A-v>"] = { "<Esc><cmd>PasteImg<CR>", "" },
   },
   x = {
     ["x"] = { '"_x', "" },
@@ -133,21 +140,27 @@ M.lspconfig = {
   n = {
     ["K"] = {
       function()
-        -- vim.lsp.buf.hover()
-        require("lspsaga.hover"):render_hover_doc()
-      end, "", opts = { buffer = 0 },
+        vim.lsp.buf.hover()
+        -- require("lspsaga.hover"):render_hover_doc()
+      end,
+      "",
+      opts = { buffer = 0 },
     },
     ["gd"] = {
       function()
         vim.lsp.buf.definition()
-        -- require("lspsaga.definition"):peek_definition()
-      end, "", opts = { buffer = 0 },
+        -- require("lspsaga.definition"):goto_definition()
+      end,
+      "",
+      opts = { buffer = 0 },
     },
     ["<leader>rn"] = {
       function()
         -- vim.lsp.buf.rename()
         require("lspsaga.rename"):lsp_rename()
-      end, "", opts = { buffer = 0 },
+      end,
+      "",
+      opts = { buffer = 0 },
     },
     ["<leader>fm"] = {
       function()
@@ -165,45 +178,52 @@ M.lspconfig = {
           --   return client.name ~= "null-ls"
           -- end,
         })
-      end, "", opts = { buffer = 0 },
+      end,
+      "",
+      opts = { buffer = 0 },
     },
     ["<leader>gr"] = {
       function()
         require("lspsaga.finder"):lsp_finder()
-      end, ""
+      end,
+      "",
     },
     ["gs"] = {
       function()
         vim.lsp.buf.signature_help()
-      end, "",
+      end,
+      "",
     },
     ["<leader>ds"] = {
       function()
-        vim.diagnostic.open_float()
-        -- require("lspsaga.diagnostic"):show_line_diagnostics()
-      end, "", opts = { buffer = 0 }
+        -- vim.diagnostic.open_float()
+        require("lspsaga.diagnostic"):show_diagnostics(arg, "line")
+      end,
+      "",
+      opts = { buffer = 0 },
     },
     ["<leader>ca"] = {
       function()
-        -- vim.lsp.buf.code_action()
-        require("lspsaga.codeaction"):code_action()
+        vim.lsp.buf.code_action()
+        -- require("lspsaga.codeaction"):code_action()
       end,
-      "", opts = { buffer = 0 },
+      "Code Action",
+      opts = { buffer = 0 },
     },
     ["[d"] = {
       function()
-        vim.diagnostic.goto_prev()
-        -- require("lspsaga.diagnostic"):goto_prev({wrap = true})
+        -- vim.diagnostic.goto_prev()
+        require("lspsaga.diagnostic"):goto_prev({ wrap = true })
       end,
       "goto prev diagnostic",
     },
     ["]d"] = {
       function()
-        vim.diagnostic.goto_next()
-        -- require("lspsaga.diagnostic"):goto_next()
+        -- vim.diagnostic.goto_next()
+        require("lspsaga.diagnostic"):goto_next()
       end,
-      "goto next diagnostic"
-    }
+      "goto next diagnostic",
+    },
   },
   x = {
     ["<leader>ca"] = {
@@ -213,7 +233,7 @@ M.lspconfig = {
       end,
       "",
     },
-  }
+  },
 }
 
 -- Specific for jdtls
@@ -223,12 +243,14 @@ M.jdtls = {
     ["<A-o>"] = {
       function()
         require("jdtls").organize_imports()
-      end, "Organize Imports"
+      end,
+      "Organize Imports",
     },
     ["<leader>jv"] = {
       function()
         require("jdtls").extract_variable()
-      end, "Extract Variable"
+      end,
+      "Extract Variable",
     },
     ["<S-F6>"] = { -- <Shift-F6> or <F18>
       function()
@@ -236,43 +258,46 @@ M.jdtls = {
         vim.schedule(function()
           vim.cmd("stopinsert")
         end)
-      end, "Java Test Class"
+      end,
+      "Java Test Class",
     },
     ["<leader>df"] = {
       function()
         require("jdtls").test_nearest_method()
       end,
-      "Java Test nearest method"
+      "Java Test nearest method",
     },
   },
   v = {
     ["<leader>jv"] = {
       function()
         require("jdtls").extract_variable(true)
-      end, "Extract variable"
+      end,
+      "Extract variable",
     },
     ["<leader>jc"] = {
       function()
         require("jdtls").extract_constant(true)
-      end, "Extract constant"
+      end,
+      "Extract constant",
     },
     ["<leader>jm"] = {
       function()
         require("jdtls").extract_method(true)
-      end, "Extract method"
-    }
-  }
-
+      end,
+      "Extract method",
+    },
+  },
 }
 
 M.telescope = {
   n = {
     ["<leader>fw"] = {
-      "<cmd>Telescope live_grep prompt_title=false<CR>"
+      "<cmd>Telescope live_grep prompt_title=false<CR>",
     },
     ["<leader>fa"] = {
       "<cmd> Telescope find_files follow=true no_ignore=true hidden=true prompt_title=false <CR>",
-      "find all"
+      "find all",
     },
     ["<leader>ff"] = {
       "<cmd>Telescope find_files prompt_title=false<CR>",
@@ -281,23 +306,32 @@ M.telescope = {
 
     ["<leader>tm"] = {
       '<cmd>Telescope man_pages prompt_title=false sections={"ALL"}<CR>',
-      "show man page"
+      "show man page",
     },
-  }
+  },
 }
 
 M.tabline = {
   plugin = true,
   n = {
     ["<leader>x"] = {
-      function() require("custom.ui.tabline.utils").close_buffer() end, "close buffer"
+      function()
+        require("custom.ui.tabline.utils").close_buffer()
+      end,
+      "close buffer",
     },
     ["<Tab>"] = {
-      function() require("custom.ui.tabline.utils").next_buffer() end, ""
+      function()
+        require("custom.ui.tabline.utils").next_buffer()
+      end,
+      "Next buffer",
     },
     ["<S-Tab>"] = {
-      function() require("custom.ui.tabline.utils").prev_buffer() end, ""
-    }
+      function()
+        require("custom.ui.tabline.utils").prev_buffer()
+      end,
+      "Prev buffer",
+    },
   },
 }
 
@@ -318,7 +352,9 @@ M.dap = {
       function()
         vim.notify("Debug Session Restarting")
         -- :h dap.terminate()
-        require("dap").terminate({}, { terminateDebuggee = true }, function() require("dap").run_last() end)
+        require("dap").terminate({}, { terminateDebuggee = true }, function()
+          require("dap").run_last()
+        end)
         -- require("dap").run_last()
       end,
       "Restart a debug session",
@@ -343,19 +379,19 @@ M.dap = {
       function()
         require("dap.repl").toggle()
       end,
-      "Toggle REPL"
+      "Toggle REPL",
     },
     ["<leader>du"] = {
       function()
         require("dapui"):toggle()
       end,
-      "Toggle dapui"
+      "Toggle dapui",
     },
     -- ["<leader>dl"] = {
     -- 	function() require("dap").run_last() end,
     -- 	opts = { desc = "Run " }
     -- }
-  }
+  },
 }
 
 M.nvimtree = {
@@ -376,16 +412,17 @@ M.persisted = {
     ["<leader>rs"] = {
       function()
         require("persisted").load()
-      end, ""
+      end,
+      "",
     },
     ["<leader>ss"] = {
       function()
         require("persisted").save()
-      end, ""
+      end,
+      "",
     },
-  }
+  },
 }
-
 
 M.gitsigns = {
   n = {
@@ -402,7 +439,7 @@ M.gitsigns = {
       "Jump to prev hunk",
       opts = { expr = true },
     },
-  }
+  },
 }
 
 M.diff = {
@@ -411,7 +448,7 @@ M.diff = {
     ["<leader>gdo"] = { "<cmd>DiffviewOpen<CR>", "Open Diff view" },
     ["<leader>gdc"] = { "<cmd>DiffviewClose<CR>", "Close Diff view" },
     ["<leader>gdr"] = { "<cmd>DiffviewRefresh<CR>", "Refresh Diff view" },
-  }
+  },
 }
 
 return M

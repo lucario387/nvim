@@ -1,6 +1,8 @@
 -- Unsure if this is nice or not, but why not
 -- local config = require("core.utils").load_config()
+
 vim.g.vim_version = vim.version().minor
+-- vim.g.lsp = {}
 -- vim.g.lsp_use_tsserver = true
 vim.g.nvchad_theme = "vscode_dark"
 vim.g.transparency = false
@@ -53,6 +55,7 @@ vim.o.relativenumber = true
 vim.o.conceallevel = 2
 vim.o.concealcursor = "nv"
 -- o.sessionoptions = "buffers,curdir,localoptions,folds,help,winpos,tabpages"
+
 vim.o.expandtab = true
 -- Wrap, linebreak settings
 -- o.scrolloff = 25
@@ -67,7 +70,6 @@ vim.o.foldexpr = "nvim_treesitter#foldexpr()"
 vim.o.foldenable = false
 -- o.spell = true
 
-
 -- Change default grep
 -- if rg exists
 if vim.fn.executable("rg") == 1 then
@@ -76,7 +78,7 @@ if vim.fn.executable("rg") == 1 then
 end
 
 -- disable nvim intro
-vim.opt.shortmess:append "sIcC"
+vim.opt.shortmess:append("sIcC")
 vim.opt.completeopt = { "menu", "menuone", "noselect" }
 vim.opt.diffopt = { "internal", "filler", "closeoff", "linematch:90" }
 -- others: !,'100,<50,s10,h)
@@ -91,11 +93,11 @@ vim.opt.fillchars = {
   vertleft = "┫",
   vertright = "┣",
   verthoriz = "╋",
-  eob = " "
+  eob = " ",
 }
 -- go to previous/next line with h,l,left arrow and right arrow
 -- when cursor reaches end/beginning of line
-vim.opt.whichwrap:append "<>[]hl"
+vim.opt.whichwrap:append("<>[]hl")
 
 -- Managing python files
 -- if fn.exists("$VIRTUAL_ENV") == 1 then
@@ -152,8 +154,6 @@ local disabled_plugins = {
 for _, plugin in pairs(disabled_plugins) do
   vim.g["loaded_" .. plugin] = 1
 end
-
-
 
 vim.filetype.add({
   extension = {

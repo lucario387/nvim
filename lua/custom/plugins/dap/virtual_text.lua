@@ -1,7 +1,7 @@
-require("nvim-dap-virtual-text").setup {
+require("nvim-dap-virtual-text").setup({
   -- enable this plugin (the default)
   enabled = true,
-  -- create commands DapVirtualTextEnable, DapVirtualTextDisable, DapVirtualTextToggle, (DapVirtualTextForceRefresh 
+  -- create commands DapVirtualTextEnable, DapVirtualTextDisable, DapVirtualTextToggle, (DapVirtualTextForceRefresh
   -- for refreshing when debug adapter did not notify its termination)
   enabled_commands = true,
   -- highlight changed values with NvimDapVirtualTextChanged, else always NvimDapVirtualText
@@ -16,7 +16,7 @@ require("nvim-dap-virtual-text").setup {
   only_first_definition = true,
   -- show virtual text on all all references of the variable (not only definitions)
   all_references = true,
-  -- filter references (not definitions) pattern when all_references is activated 
+  -- filter references (not definitions) pattern when all_references is activated
   -- (Lua gmatch pattern, default filters out Python modules)
   filter_references_pattern = "<module",
   -- experimental features:
@@ -29,4 +29,4 @@ require("nvim-dap-virtual-text").setup {
   -- position the virtual text at a fixed window column (starting from the first text column) ,
   -- e.g. 80 to position at column 80, see `:h nvim_buf_set_extmark()`
   virt_text_win_col = nil,
-}
+})

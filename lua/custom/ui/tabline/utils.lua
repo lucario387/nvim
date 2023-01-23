@@ -10,18 +10,20 @@ end
 local disabled_buftypes = {
   "terminal",
   "prompt",
+  -- "nofile",
 }
-
 
 local M = {}
 
-
 function M.buf_is_valid(bufnr)
-  if not bufnr or bufnr < 1 then return false end
+  if not bufnr or bufnr < 1 then
+    return false
+  end
 
   return (not vim.tbl_contains(disabled_buftypes, vim.api.nvim_buf_get_option(bufnr, "buftype")))
     and vim.api.nvim_buf_is_valid(bufnr)
     and vim.api.nvim_buf_get_option(bufnr, "buflisted")
+    and (not vim.tbl_contains({ "delete", "wipe" }, vim.api.nvim_buf_get_option(bufnr, "buflisted")))
 end
 
 ---Wrapper around `vim.api.nvim_list_bufs()`
@@ -86,7 +88,9 @@ end
 --- Usually this is triggered on **TabLeave**
 --- @param tabnr number
 function M.set_tab_bufs_unlisted(tabnr)
-  if not vim.t[tabnr].bufs then return end
+  if not vim.t[tabnr].bufs then
+    return
+  end
   for _, bufnr in pairs(vim.t[tabnr].bufs) do
     vim.api.nvim_buf_set_option(bufnr, "buflisted", false)
   end
@@ -95,7 +99,9 @@ end
 --- Usually trigger on **TabEnter**
 --- @param tabnr number
 function M.set_tab_bufs_listed(tabnr)
-  if not vim.t[tabnr].bufs then return end
+  if not vim.t[tabnr].bufs then
+    return
+  end
   for _, bufnr in pairs(vim.t[tabnr].bufs) do
     vim.api.nvim_buf_set_option(bufnr, "buflisted", true)
   end

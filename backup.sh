@@ -7,19 +7,16 @@ if [ "$USER" = "root" ]; then
 fi
 
 BACKUP_PATH=$(dirname $(readlink -f "$0"))
+NVIM_PATH="$HOME/.config/nvchad"
 
 backup() {
 	if [ -d "$HOME/.config/nvim" ]; then
-		# rsync --delete --inplace --no-whole-file --recursive --qtmUp "$HOME/.config/nvim" "$PWD/.config/nvim"
-		rsync --delete --inplace --exclude-from="./.gitignore" --no-whole-file --recursive -ptU "$HOME/.config/nvim/lua" "$BACKUP_PATH/"
-		rsync --delete --inplace --exclude-from="./.gitignore" --no-whole-file --recursive -ptU "$HOME/.config/nvim/ftplugin" "$BACKUP_PATH/"
-		rsync --delete --inplace --exclude-from="./.gitignore" --no-whole-file --recursive -ptU "$HOME/.config/nvim/.luarc.json" "$BACKUP_PATH/"
-		rsync --delete --inplace --exclude-from="./.gitignore" --no-whole-file --recursive -ptU "$HOME/.config/nvim/after" "$BACKUP_PATH/"
-		rsync --delete --inplace --exclude-from="./.gitignore" --no-whole-file --recursive -ptU "$HOME/.config/nvim/plugin" "$BACKUP_PATH/"
-		rsync --delete --inplace --exclude-from="./.gitignore" --no-whole-file --recursive -ptU "$HOME/.config/nvim/meta" "$BACKUP_PATH/"
-
-		# rm -rf "$cwd/.config/nvim/"
-		# cp -rf "$HOME/.config/nvim/" "$cwd/.config/"
+		rsync --delete --inplace --exclude-from="./.gitignore" --no-whole-file --recursive -ptU "$NVIM_PATH/lua" "$BACKUP_PATH/"
+		rsync --delete --inplace --exclude-from="./.gitignore" --no-whole-file --recursive -ptU "$NVIM_PATH/ftplugin" "$BACKUP_PATH/"
+		rsync --delete --inplace --exclude-from="./.gitignore" --no-whole-file --recursive -ptU "$NVIM_PATH/.luarc.json" "$BACKUP_PATH/"
+		rsync --delete --inplace --exclude-from="./.gitignore" --no-whole-file --recursive -ptU "$NVIM_PATH/after" "$BACKUP_PATH/"
+		rsync --delete --inplace --exclude-from="./.gitignore" --no-whole-file --recursive -ptU "$NVIM_PATH/plugin" "$BACKUP_PATH/"
+		rsync --delete --inplace --exclude-from="./.gitignore" --no-whole-file --recursive -ptU "$NVIM_PATH/meta" "$BACKUP_PATH/"
 	fi
 	return 0
 }

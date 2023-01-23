@@ -63,8 +63,8 @@ telescope.setup({
       override_generic_sorter = true,
       override_file_sorter = true,
       case_mode = "smart_case",
-    }
-  }
+    },
+  },
 })
 local extensions = { "fzf", "themes" }
 for _, ext in pairs(extensions) do

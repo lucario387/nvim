@@ -25,8 +25,7 @@ local neorg_icons = {
     },
 
     icon = " ",
-    level_2 = {
-    },
+    level_2 = {},
 
     level_3 = {
       icon = "  ",
@@ -70,7 +69,7 @@ local neorg_icons = {
     level_6 = {
       icon = "     ⤷",
     },
-  }
+  },
 }
 
 M.neorg = function()
@@ -89,19 +88,19 @@ M.neorg = function()
       ["core.norg.dirman"] = {
         config = {
           workspaces = {
-            work  = "~/Documents/notes/work",
+            work = "~/Documents/notes/work",
             study = "~/Documents/notes/study",
             linux = "~/Documents/notes/linux",
-          }
-        }
+          },
+        },
       },
 
       ["core.norg.concealer"] = {
         config = {
           icon_preset = "varied",
           icons = {
-            todo    = neorg_icons.todo,
-            list    = neorg_icons.list,
+            todo = neorg_icons.todo,
+            list = neorg_icons.list,
             heading = neorg_icons.heading,
           },
           dim_code_blocks = {
@@ -110,23 +109,23 @@ M.neorg = function()
             padding = {
               left = 10,
               right = 10,
-            }
-          }
+            },
+          },
         },
       },
 
       ["core.norg.completion"] = {
         config = {
           engine = "nvim-cmp",
-        }
+        },
       },
 
       ["core.norg.esupports.metagen"] = {
         config = {
           type = "auto",
-        }
-      }
-    }
+        },
+      },
+    },
   })
 end
 
@@ -148,24 +147,23 @@ M.truezen = function()
             vim.opt.laststatus = 3
             vim.opt.relativenumber = true
             vim.opt.number = true
-          end
-        }
-      }
-    }
+          end,
+        },
+      },
+    },
   })
 end
 
 M.mind = function()
   require("mind").setup({
     ui = {
-      width = 25;
-    }
+      width = 25,
+    },
   })
   vim.api.nvim_create_autocmd("FileType", {
-    group = vim.api.nvim_create_augroup("MindNoRelNum", {clear = true}),
+    group = vim.api.nvim_create_augroup("MindNoRelNum", { clear = true }),
     pattern = "mind",
-    callback = function()
-    end
+    callback = function() end,
   })
 end
 
@@ -175,7 +173,7 @@ M.femaco = function()
       vim.wo.signcolumn = "no"
       vim.wo.number = false
       vim.wo.relativenumber = false
-    end
+    end,
   })
 end
 return M

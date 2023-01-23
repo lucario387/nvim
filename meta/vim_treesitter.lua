@@ -3,7 +3,7 @@
 
 ---@class TSNode : Object
 ---@field __eq fun(): boolean
----@field __len fun(): integer 
+---@field __len fun(): integer
 ---@field id fun(): string Unique string
 ---@field range fun(): integer, integer, integer, integer
 ---@field start fun(): integer, integer, integer
@@ -95,7 +95,7 @@ function vim.treesitter.get_parser(bufnr, lang, opts) end
 ---@return LanguageTree
 function vim.treesitter.get_string_parser(str, lang, opts) end
 
----Determines whether a node is the ancestor of another 
+---Determines whether a node is the ancestor of another
 ---@param dest TSNode possible ancestor
 ---@param source TSNode possible descendant
 ---@return boolean boolean # whether `dest` is an ancestor of `source`
@@ -175,7 +175,6 @@ function vim.treesitter.query.list_predicates() end
 ---@return Query
 function vim.treesitter.query.parse_query(lang, query) end
 
-
 ---Sets the runtime query named `query_name` for `lang`
 ---@param lang string Language to use for the query
 ---@param query_name string Name of the query
@@ -187,5 +186,5 @@ function vim.treesitter.query.set_query(lang, query_name, text) end
 ---may contain child languages themselves, hence the name).
 ---@param source integer|string Buffer or a string of text to parse
 ---@param lang string Root language this tree represents
----@param opts {injections: table}|nil 
+---@param opts {injections: table}|nil
 function vim.treesitter.languagetree.new(source, lang, opts) end

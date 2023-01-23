@@ -41,7 +41,6 @@ local navigate = function(direction)
   vim.cmd("wincmd " .. direction)
 end
 
-
 ---@param direction string
 local kitty_navigate = function(direction)
   if not allowed_directions[direction] then
@@ -53,7 +52,7 @@ local kitty_navigate = function(direction)
   navigate(direction)
   -- end
 
-  if (winnr == vim.api.nvim_get_current_win()) then
+  if winnr == vim.api.nvim_get_current_win() then
     kitty_command("kitten neighboring_window.py " .. allowed_directions[direction])
     -- vim.g.last_kitty_pane = true
   else

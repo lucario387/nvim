@@ -27,7 +27,7 @@ autocmd("TermOpen", {
   group = augroup("UnlistTerminal", { clear = true }),
   callback = function(args)
     vim.api.nvim_buf_set_option(args.buf, "buflisted", false)
-  end
+  end,
 })
 
 autocmd({ "BufAdd", "BufEnter" }, {
@@ -38,12 +38,9 @@ autocmd({ "BufAdd", "BufEnter" }, {
       vim.t[tabnr].bufs = { args.buf }
       return
     end
-    if vim.tbl_contains(
-      disabled_buftypes,
-      vim.api.nvim_buf_get_option(args.buf, "buftype"))
-    or vim.tbl_contains(
-      disabled_filetypes,
-      vim.api.nvim_buf_get_option(args.buf, "filetype"))
+    if not utils.buf_is_valid(args.buf)
+    or vim.tbl_contains(disabled_buftypes, vim.api.nvim_buf_get_option(args.buf, "buftype"))
+    or vim.tbl_contains(disabled_filetypes, vim.api.nvim_buf_get_option(args.buf, "filetype"))
     then
       -- if not #vim.t[tabnr].bufs == 1 then
       utils.delete_buffer(args.buf)
@@ -54,19 +51,20 @@ autocmd({ "BufAdd", "BufEnter" }, {
     local buflist = vim.t[tabnr].bufs
 
     -- check for duplicates
-    if  not vim.tbl_contains(buflist, args.buf)
-    and utils.buf_is_valid(args.buf) then
+    if not vim.tbl_contains(buflist, args.buf) and utils.buf_is_valid(args.buf) then
       -- and (args.event == "BufAdd" or utils.buf_is_valid(args.buf)) then
       table.insert(buflist, args.buf)
       vim.t[tabnr].bufs = buflist
     end
-  end
+  end,
 })
 
 autocmd({ "BufDelete" }, {
   callback = function(args)
-    utils.delete_buffer(args.buf)
-  end
+    if vim.tbl_contains(vim.t.bufs, args.buf) then
+      utils.delete_buffer(args.buf)
+    end
+  end,
 })
 
 -- autocmd({ "BufNewFile", "BufRead", "TabEnter" }, {
@@ -80,7 +78,6 @@ autocmd({ "BufDelete" }, {
 --   end
 -- })
 
-
 -------------Buffer list and unlist on tab change
 
 autocmd({ "TabNewEntered" }, {
@@ -89,7 +86,7 @@ autocmd({ "TabNewEntered" }, {
     local bufnr = vim.api.nvim_get_current_buf()
     vim.api.nvim_buf_set_option(bufnr, "buflisted", true)
     utils.add_buffer(bufnr)
-  end
+  end,
 })
 autocmd("TabEnter", {
   group = augroup("TabLineBufferList", { clear = true }),
@@ -97,7 +94,7 @@ autocmd("TabEnter", {
     if packer_plugins["nvim-tree.lua"] and packer_plugins["nvim-tree.lua"].loaded then
       vim.api.nvim_command("silent! NvimTreeClose")
     end
-  end
+  end,
 })
 --
 autocmd("TabLeave", {
@@ -106,5 +103,5 @@ autocmd("TabLeave", {
     if packer_plugins["nvim-tree.lua"] and packer_plugins["nvim-tree.lua"].loaded then
       vim.api.nvim_command("silent! NvimTreeClose")
     end
-  end
+  end,
 })

@@ -8,32 +8,32 @@ local MINIMUM_SIZE = 95
 local FILENAME_SIZE = 18
 
 local modes = {
-  ["n"]   = { "NORMAL", "StNormalMode" },
+  ["n"] = { "NORMAL", "StNormalMode" },
   ["niI"] = { "NORMAL i", "StNormalMode" },
   ["niR"] = { "NORMAL r", "StNormalMode" },
   ["niV"] = { "NORMAL v", "StNormalMode" },
-  ["no"]  = { "N-PENDING", "StNormalMode" },
-  ["i"]   = { "INSERT", "StInsertMode" },
-  ["ic"]  = { "INSERT (completion)", "StInsertMode" },
-  ["ix"]  = { "INSERT completion", "StInsertMode" },
-  ["t"]   = { "TERMINAL", "StTerminalMode" },
-  ["nt"]  = { "NTERMINAL", "StNTerminalMode" },
-  ["v"]   = { "VISUAL", "StVisualMode" },
-  ["V"]   = { "V-LINE", "StVisualMode" },
-  ["Vs"]  = { "V-LINE (Ctrl O)", "StVisualMode" },
-  [""]   = { "V-BLOCK", "StVisualMode" },
-  ["R"]   = { "REPLACE", "StReplaceMode" },
-  ["Rv"]  = { "V-REPLACE", "StReplaceMode" },
-  ["s"]   = { "SELECT", "StSelectMode" },
-  ["S"]   = { "S-LINE", "StSelectMode" },
-  [""]   = { "S-BLOCK", "StSelectMode" },
-  ["c"]   = { "COMMAND", "StCommandMode" },
-  ["cv"]  = { "COMMAND", "StCommandMode" },
-  ["ce"]  = { "COMMAND", "StCommandMode" },
-  ["r"]   = { "PROMPT", "StConfirmMode" },
-  ["rm"]  = { "MORE", "StConfirmMode" },
-  ["r?"]  = { "CONFIRM", "StConfirmMode" },
-  ["!"]   = { "SHELL", "StTerminalMode" },
+  ["no"] = { "N-PENDING", "StNormalMode" },
+  ["i"] = { "INSERT", "StInsertMode" },
+  ["ic"] = { "INSERT (completion)", "StInsertMode" },
+  ["ix"] = { "INSERT completion", "StInsertMode" },
+  ["t"] = { "TERMINAL", "StTerminalMode" },
+  ["nt"] = { "NTERMINAL", "StNTerminalMode" },
+  ["v"] = { "VISUAL", "StVisualMode" },
+  ["V"] = { "V-LINE", "StVisualMode" },
+  ["Vs"] = { "V-LINE (Ctrl O)", "StVisualMode" },
+  [""] = { "V-BLOCK", "StVisualMode" },
+  ["R"] = { "REPLACE", "StReplaceMode" },
+  ["Rv"] = { "V-REPLACE", "StReplaceMode" },
+  ["s"] = { "SELECT", "StSelectMode" },
+  ["S"] = { "S-LINE", "StSelectMode" },
+  [""] = { "S-BLOCK", "StSelectMode" },
+  ["c"] = { "COMMAND", "StCommandMode" },
+  ["cv"] = { "COMMAND", "StCommandMode" },
+  ["ce"] = { "COMMAND", "StCommandMode" },
+  ["r"] = { "PROMPT", "StConfirmMode" },
+  ["rm"] = { "MORE", "StConfirmMode" },
+  ["r?"] = { "CONFIRM", "StConfirmMode" },
+  ["!"] = { "SHELL", "StTerminalMode" },
 }
 
 -- local hidden_filetypes = {
@@ -44,7 +44,9 @@ local modes = {
 
 local invi_sep = "%#StInviSep# "
 local padding_ft = function(ft)
-  if vim.o.columns < MINIMUM_SIZE then return "" end
+  if vim.o.columns < MINIMUM_SIZE then
+    return ""
+  end
   for _, win in pairs(api.nvim_tabpage_list_wins(0)) do
     if vim.bo[api.nvim_win_get_buf(win)].ft == ft then
       local size = math.min(30, api.nvim_win_get_width(win) + 1)
@@ -64,12 +66,9 @@ local mode = function()
   return left_sep .. current_mode .. right_sep
 end
 
-
 local cwd = function()
   local left_sep = "%#StCwdSep#"
-  local dir_name = (fn.getcwd() == HOME)
-    and "%#StCwd# $HOME"
-    or "%#StCwd# " .. fn.fnamemodify(fn.getcwd(), ":t")
+  local dir_name = (fn.getcwd() == HOME) and "%#StCwd# $HOME" or "%#StCwd# " .. fn.fnamemodify(fn.getcwd(), ":t")
   return (vim.o.columns > MINIMUM_SIZE) and left_sep .. dir_name or ""
 end
 
@@ -95,12 +94,11 @@ local git = function()
   ---@diagnostic disable-next-line: undefined-field
   local git_status = vim.b.gitsigns_status_dict
   local branch = "%#StGitBranch# " .. git_status.head
-  local added = (git_status.added and git_status.added ~= 0)
-    and ("%#StGitAdded#  " .. git_status.added) or ""
-  local changed = (git_status.changed and git_status.changed ~= 0)
-    and ("%#StGitChanged#  " .. git_status.changed) or ""
-  local removed = (git_status.removed and git_status.removed ~= 0)
-    and ("%#StGitRemoved#  " .. git_status.removed) or ""
+  local added = (git_status.added and git_status.added ~= 0) and ("%#StGitAdded#  " .. git_status.added) or ""
+  local changed = (git_status.changed and git_status.changed ~= 0) and ("%#StGitChanged#  " .. git_status.changed)
+    or ""
+  local removed = (git_status.removed and git_status.removed ~= 0) and ("%#StGitRemoved#  " .. git_status.removed)
+    or ""
   return "%#StGitSep#" .. branch .. added .. changed .. removed .. "%#StGitSep#"
 end
 
@@ -111,14 +109,20 @@ end
 -- end
 
 local lsp_diagnostics = function()
-  if #vim.lsp.get_active_clients({ bufnr = 0 }) == 0 then return "" end
+  if #vim.lsp.get_active_clients({ bufnr = 0 }) == 0 then
+    return ""
+  end
   local num_errors = #vim.diagnostic.get(0, { severity = vim.diagnostic.severity.ERROR })
   local num_warnings = #vim.diagnostic.get(0, { severity = vim.diagnostic.severity.WARN })
   local num_hints = #vim.diagnostic.get(0, { severity = vim.diagnostic.severity.HINT })
   local num_infos = #vim.diagnostic.get(0, { severity = vim.diagnostic.severity.INFO })
   return string.format(
     "%%#StLSPDiagSep#%%#StLSPErrors# %d%%#StLSPWarnings# %d%%#StLSPHints# %d%%#StLSPInfo# %d%%#StLSPDiagSep#",
-    num_errors, num_warnings, num_hints, num_infos)
+    num_errors,
+    num_warnings,
+    num_hints,
+    num_infos
+  )
 end
 
 local lsp_clients = function()
@@ -129,13 +133,10 @@ local lsp_clients = function()
     end
   end
   local name = table.concat(clients, ",")
-  return (vim.o.columns > MINIMUM_SIZE)
-    and "%#StLSPClient#" .. name .. " "
-    or "%#StLSPClient#  LSP "
+  return (vim.o.columns > MINIMUM_SIZE) and "%#StLSPClient#" .. name .. " " or "%#StLSPClient#  LSP "
 end
 
 local position = function()
-
   if not vim.api.nvim_buf_get_option(0, "modifiable") then
     return ""
   end

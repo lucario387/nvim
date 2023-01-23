@@ -52,9 +52,8 @@ dapui.setup({
   windows = { indent = 1 },
   render = {
     max_type_length = nil, -- Can be integer or nil.
-  }
+  },
 })
-
 
 dap.listeners.before.event_initialized["dapui_config"] = function()
   if packer_plugins["nvim-tree.lua"] and packer_plugins["nvim-tree.lua"].loaded then

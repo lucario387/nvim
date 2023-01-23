@@ -1,0 +1,23 @@
+-- if vim.g.loaded_base46_load then
+--   return
+-- end
+-- vim.g.loaded_base46_load = true
+--
+-- vim.g.base46_cache = vim.fn.stdpath "cache" .. "/nvchad/base46/"
+--
+-- local function load_integration(integration)
+--   local f = loadfile(vim.g.base46_cache .. integration)
+--   if not f then
+--     vim.cmd("CompileNvTheme")
+--     f = loadfile(vim.g.base46_cache .. integration)
+--   end
+--   f()
+-- end
+
+-- pcall(function()
+--   load_integration("bg")
+--   load_integration("default")
+--   load_integration("syntax")
+--   load_integration("treesitter")
+-- end)
+--

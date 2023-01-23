@@ -41,20 +41,20 @@ vim.api.nvim_create_autocmd("VimEnter", {
   -- once = true,
   callback = function()
     vim.cmd("clearjumps")
-  end
+  end,
 })
 vim.api.nvim_create_autocmd({ "BufEnter" }, {
   callback = function()
     vim.wo.number = false
     vim.wo.relativenumber = false
-    vim.cmd "startinsert"
+    vim.cmd("startinsert")
   end,
   pattern = "term://*",
 })
 
 vim.api.nvim_create_autocmd({ "BufLeave" }, {
   callback = function()
-    vim.cmd "stopinsert"
+    vim.cmd("stopinsert")
   end,
   pattern = "term://*",
 })

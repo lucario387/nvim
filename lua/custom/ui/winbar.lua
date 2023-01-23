@@ -3,7 +3,6 @@ local M = {}
 local fn = vim.fn
 local api = vim.api
 
-
 local file_name = function()
   local filename, extension = fn.expand("%:t"), fn.expand("%:e")
   local icon, icon_hl = require("nvim-web-devicons").get_icon(filename, extension, { default = true })

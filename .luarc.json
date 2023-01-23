@@ -65,7 +65,7 @@
     "enable": true,
     "expandAlias": true,
     "enumsLimit": 5,
-    "previewFields": 100
+    "previewFields": 20
   },
   "telemetry": {
     "enable": false
