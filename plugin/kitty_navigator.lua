@@ -1,6 +1,9 @@
 -- Port of https://github.com/knubie/vim-kitty-navigator/blob/master/plugin/kitty_navigator.vim
 -- Remove some functionalities from it
 -- Since I don't usually use it enough
+if vim.env.TERM ~= "xterm-kitty" then
+  return
+end
 if vim.g.loaded_kitty_navigator then
   return
 end
@@ -30,7 +33,7 @@ local run_command = function(command)
   handle:close()
 end
 
----@param args 
+---@param args string
 local kitty_command = function(args)
   local command = string.format("kitty @ " .. args)
   run_command(command)

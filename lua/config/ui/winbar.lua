@@ -4,9 +4,9 @@ local fn = vim.fn
 local api = vim.api
 
 local file_name = function()
-  local filename, extension = fn.expand("%:t"), fn.expand("%:e")
-  local icon, icon_hl = require("nvim-web-devicons").get_icon(filename, extension, { default = true })
-  return "%#" .. icon_hl .. "#" .. icon .. " %#WinBar#" .. fn.expand("%:.")
+	local filename, extension = fn.expand("%:t"), fn.expand("%:e")
+	local icon, icon_hl = require("nvim-web-devicons").get_icon(filename, extension, { default = true })
+	return "%#" .. icon_hl .. "#" .. icon .. " %#WinBar#" .. fn.expand("%:.")
 end
 
 -- local lsp_diagnostics = function()
@@ -21,20 +21,20 @@ end
 -- end
 
 local modified = function()
-  if api.nvim_buf_get_option(0, "modified") then
-    return "%#TabLineModified# "
-  end
-  return ""
+	if api.nvim_buf_get_option(0, "modified") then
+		return "%#TabLineModified# "
+	end
+	return ""
 end
 
 M.draw = function()
-  return table.concat({
-    modified(),
-    file_name(),
+	return table.concat({
+		modified(),
+		file_name(),
 
-    "%=",
-    -- lsp_diagnostics(),
-  })
+		"%=",
+		-- lsp_diagnostics(),
+	})
 end
 
 return M

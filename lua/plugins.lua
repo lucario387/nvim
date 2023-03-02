@@ -2,7 +2,10 @@
 local plugins = {
 
   -------------------------------------General---------------------------------
-  { "wbthomason/packer.nvim",
+  {
+    "wbthomason/packer.nvim",
+    branch = "master",
+    start = true,
     -- cmd = {
     --   "PackerSync",
     --   "PackerCompile",
@@ -13,12 +16,19 @@ local plugins = {
     --   require("plugins")
     -- end,
   },
-  { "nvim-lua/plenary.nvim", },
+  { 
+    "nvim-lua/plenary.nvim",
+    start = true,
+  },
 
-  { "lewis6991/impatient.nvim", },
+  {
+    "lewis6991/impatient.nvim",
+    run = ":LuaCacheClear",
+  },
 
   -- for managing lsp/formatter
-  { "williamboman/mason.nvim",
+  {
+    "williamboman/mason.nvim",
     cmd = "Mason",
     config = function()
       require("mason").setup({
@@ -38,24 +48,74 @@ local plugins = {
 
   -------------------------------------Theme-----------------------------------
   { "NvChad/base46",
-    module = "base46",
-    branch = "dev",
+    -- module = "base46",
+    branch = "v2.0",
   },
 
   -------------------------------------LSP-------------------------------------
-  { "neovim/nvim-lspconfig", },
-  { "glepnir/lspsaga.nvim",
+  {
+    "neovim/nvim-lspconfig",
+    opt = true,
+    setup = function()
+      if vim.g.loaded_custom_lsp then
+        return
+      end
+      vim.api.nvim_create_autocmd("UIEnter", {
+        once = true,
+        callback = function()
+          vim.schedule(function()
+            if vim.v.exiting ~= vim.NIL then
+              return
+            end
+            require("packer").loader("nvim-lspconfig")
+            -- load_plugin()
+            vim.g.loaded_custom_lsp = true
+            local utils = require("config.lsp")
+            utils.lsp_handlers()
+            if not vim.g.lsp or not vim.g.lsp.servers then
+              return
+            end
+            local on_attach = utils.on_attach
+            local capabilities = utils.set_capabilities()
+
+            if vim.g.lsp.servers.default then
+              for _, name in ipairs(vim.g.lsp.servers.default) do
+                require("lspconfig")[name].setup({
+                  on_attach = on_attach,
+                  capabilities = capabilities,
+                })
+              end
+            end
+
+            if vim.g.lsp.servers.custom then
+              for _, name in ipairs(vim.g.lsp.servers.custom) do
+                require("config.lsp.custom")[name](on_attach, capabilities)
+              end
+            end
+          end)
+        end,
+      })
+    end,
+  },
+  {
+    "glepnir/lspsaga.nvim",
     module = "lspsaga",
+    cmd = "Lspsaga",
     config = function()
       require("lspsaga").setup({
         ui = {
           border = "rounded",
         },
-        -- diagnostic = {
-        --   keys = {
-        --     exec_action = "<CR>",
-        --   },
-        -- },
+        diagnostic = {
+          on_insert = false,
+          on_insert_follow = false,
+          keys = {
+            exec_action = "<CR>",
+          },
+        },
+        code_action = {
+          extend_gitsigns = false,
+        },
         lightbulb = {
           enable = false,
         },
@@ -63,9 +123,11 @@ local plugins = {
           enable = false,
         },
       })
-    end
+    end,
   },
-  { "jose-elias-alvarez/null-ls.nvim",
+
+  {
+    "jose-elias-alvarez/null-ls.nvim",
     module = "null-ls",
     config = function()
       require("null-ls").setup({
@@ -79,22 +141,29 @@ local plugins = {
   },
   -- LSP for specific filetypes
   { "mfussenegger/nvim-jdtls",
-    opt = true,
+    opt = true, },
+  { "jose-elias-alvarez/typescript.nvim",
+    start = true,
   },
-  { "jose-elias-alvarez/typescript.nvim", },
+  { 
+    "folke/neodev.nvim",
+    start = true,
+  },
 
   -------------------------------------DAP-------------------------------------
-  { "mfussenegger/nvim-dap",
+  {
+    "mfussenegger/nvim-dap",
     module = "dap",
     ft = { "c", "cpp" },
     config = function()
       require("config.dap").setup()
     end,
-    -- setup = function()
+    -- config_pre = function()
     --   require("core.utils").load_mappings("dap")
     -- end
   },
-  { "rcarriga/cmp-dap",
+  {
+    "rcarriga/cmp-dap",
     after = "nvim-dap",
     config = function()
       require("cmp").setup.filetype({ "dap-repl", "dapui_watches", "dapui_hover" }, {
@@ -104,82 +173,153 @@ local plugins = {
       })
     end,
   },
-  { "theHamsta/nvim-dap-virtual-text",
+  {
+    "theHamsta/nvim-dap-virtual-text",
     after = "nvim-dap",
     config = function()
       require("nvim-dap-virtual-text").setup()
     end,
   },
-  { "rcarriga/nvim-dap-ui",
+  {
+    "rcarriga/nvim-dap-ui",
     after = "nvim-dap",
     config = function()
       require("config.dap.ui")
     end,
   },
   -------------------------------------Tree-sitter-----------------------------
-  { "/home/lucario387/.nvchad/config/nvim-treesitter",
+  {
+    "nvim-treesitter/nvim-treesitter",
+    opt = true,
     run = ":TSUpdate",
-  },
-  { "andymass/vim-matchup",
-    event = "BufRead",
-    config = function()
-      require("nvim-treesitter.configs").setup({
-        auto_install = true,
-        parser_install_dir = vim.fn.stdpath("data") .. "/site",
-        matchup = {
-          enable = true,
-          include_match_words = true,
-        },
+    setup = function()
+      vim.api.nvim_create_autocmd("UIEnter", {
+        once = true,
+        callback = function()
+          vim.schedule(function()
+            if vim.v.exiting ~= vim.NIL then
+              return
+            end
+            -- load_plugin()
+            require("packer").loader("nvim-treesitter")
+            vim.o.foldmethod = "expr"
+            vim.o.foldexpr = "nvim_treesitter#foldexpr()"
+            vim.o.foldenable = false
+            require("nvim-treesitter.configs").setup({
+              auto_install = true,
+              parser_install_dir = vim.fn.stdpath("data") .. "/site",
+              ensure_installed = { "vim", "lua", "c" },
+              ignore_install = {
+                "latex",
+              },
+              highlight = {
+                enable = true,
+                disable = function(lang, bufnr)
+                  if vim.tbl_contains({}, lang) then
+                    return true
+                  end
+                  local max_filesize = 100 * 1024 -- 100kb
+                  local ok, stats = pcall(vim.loop.fs_stat, vim.api.nvim_buf_get_name(bufnr))
+                  if ok and stats and stats.size > max_filesize then
+                    return true
+                  end
+                end,
+                additional_vim_regex_highlighting = false,
+              },
+              indent = {
+                enable = true,
+                disable = {
+                  -- "c", "cpp",
+                  "python",
+                },
+              },
+              incremental_selection = {
+                enable = true,
+                keymaps = {
+                  init_selection = "g<cr>",
+                  node_incremental = "<cr>",
+                  scope_incremental = "<S-CR>",
+                  node_decremental = "<bs>",
+                },
+              },
+              autotag = {
+                enable = true,
+              },
+              matchup = {
+                enable = true,
+                include_match_words = true,
+              },
+              context_commentstring = {
+                enable = true,
+                enable_autocmd = false,
+              },
+              playground = {
+                enable = true,
+                disable = {},
+                updatetime = 50,
+              },
+              query_linter = {
+                enable = true,
+                use_diagnostics = true,
+                lint_events = { "BufRead", "CursorHold" },
+              },
+              --- nvim-treesitter-textobjects
+              textobjects = {
+                select = {
+                  enable = true,
+                  lookahead = true,
+                  include_surrounding_whitespace = true,
+                  keymaps = {
+                    ["af"] = "@function.outer",
+                    ["if"] = "@function.inner",
+                    ["ac"] = "@class.outer",
+                    ["ic"] = "@class.inner",
+                  },
+                },
+                swap = {
+                  enable = false,
+                },
+                move = {
+                  enable = false,
+                },
+              },
+            })
+          end)
+        end,
       })
     end,
   },
-
-  { "windwp/nvim-ts-autotag",
+  -- Movement related
+  {
+    "nvim-treesitter/nvim-treesitter-textobjects",
+    event = "BufRead",
+  },
+  -- {
+  --   "kylechui/nvim-surround",
+  --   event = "BufRead",
+  --   config = function()
+  --     require("nvim-surround").setup()
+  --   end,
+  -- },
+  {
+    "andymass/vim-matchup",
+    event = "BufRead",
+  },
+  --ts misc
+  {
+    "windwp/nvim-ts-autotag",
     event = "InsertEnter",
-    -- disable = true,
-    config = function()
-      require("nvim-treesitter.configs").setup({
-        auto_install = true,
-        parser_install_dir = vim.fn.stdpath("data") .. "/site",
-        autotag = {
-          enable = true,
-        },
-      })
-    end,
   },
-  { "JoosepAlviste/nvim-ts-context-commentstring",
+  {
+    "JoosepAlviste/nvim-ts-context-commentstring",
     event = "BufRead",
-    config = function()
-      require("nvim-treesitter.configs").setup({
-        auto_install = true,
-        parser_install_dir = vim.fn.stdpath("data") .. "/site",
-        context_commentstring = {
-          enable = true,
-          enable_autocmd = false,
-        },
-      })
-    end,
   },
-  { "nvim-treesitter/playground",
+  {
+    "nvim-treesitter/playground",
     cmd = { "TSPlaygroundToggle", "TSCaptureUnderCursor" },
-    config = function()
-      require("nvim-treesitter.configs").setup({
-        auto_install = true,
-        parser_install_dir = vim.fn.stdpath("data") .. "/site",
-        playground = {
-          enable = true,
-          disable = {},
-          updatetime = 50,
-        },
-        query_linter = {
-          enable = true,
-          use_virtual_text = true,
-          lint_events = { "BufRead", "CursorHold" },
-        },
-      })
-    end,
   },
-  { "numToStr/Comment.nvim",
+  {
+    "numToStr/Comment.nvim",
     after = "nvim-ts-context-commentstring",
     config = function()
       require("mappings").comment()
@@ -194,16 +334,24 @@ local plugins = {
   },
 
   -------------------------------------Completion engine-----------------------
-  { "rafamadriz/friendly-snippets", },
-  { "hrsh7th/nvim-cmp",
+  { "rafamadriz/friendly-snippets",
+    start = true,
+  },
+  {
+    "hrsh7th/nvim-cmp",
     event = { "InsertEnter", "CmdlineEnter" },
     config = function()
       require("config.cmp")
-    end
+    end,
   },
 
-  { "L3MON4D3/LuaSnip",
-    rm_default_opts = true,
+  { "saadparwaiz1/cmp_luasnip", after = "nvim-cmp" },
+  { "hrsh7th/cmp-nvim-lsp", after = "nvim-cmp" },
+  { "hrsh7th/cmp-buffer", after = "nvim-cmp" },
+  { "hrsh7th/cmp-path", after = "nvim-cmp" },
+
+  {
+    "L3MON4D3/LuaSnip",
     -- disable = true,
     -- after = "nvim-cmp",
     event = { "InsertEnter", "CmdlineEnter" },
@@ -217,8 +365,9 @@ local plugins = {
 
       vim.api.nvim_create_autocmd("InsertLeave", {
         callback = function()
-          if  require("luasnip").session.current_nodes[vim.api.nvim_get_current_buf()]
-          and not require("luasnip").session.jump_active
+          if
+            require("luasnip").session.current_nodes[vim.api.nvim_get_current_buf()]
+            and not require("luasnip").session.jump_active
           then
             require("luasnip").unlink_current()
           end
@@ -227,13 +376,11 @@ local plugins = {
     end,
   },
 
-  { "saadparwaiz1/cmp_luasnip", after = "nvim-cmp" },
-  { "hrsh7th/cmp-nvim-lsp", after = "nvim-cmp" },
-  { "hrsh7th/cmp-buffer", after = "nvim-cmp" },
-  { "hrsh7th/cmp-path", after = "nvim-cmp" },
+  -- { "hrsh7th/cmp-cmdline",         requires = "nvim-cmp" },
+  -- { "f3fora/cmp-spell", requires = "nvim-cmp" },
 
-  { "windwp/nvim-autopairs",
-    disable = false,
+  {
+    "windwp/nvim-autopairs",
     after = "nvim-cmp",
     -- event = "InsertEnter",
     config = function()
@@ -253,7 +400,8 @@ local plugins = {
     end,
   },
   -------------------------------------Telescope-------------------------------
-  { "nvim-telescope/telescope.nvim",
+  {
+    "nvim-telescope/telescope.nvim",
     module = "telescope",
     cmd = "Telescope",
     config = function()
@@ -261,18 +409,16 @@ local plugins = {
     end,
     setup = function()
       require("mappings").telescope()
-    end
+    end,
   },
-  { "nvim-telescope/telescope-fzf-native.nvim",
-    run = "make",
-  },
+  { "nvim-telescope/telescope-fzf-native.nvim", run = "make" },
 
   -------------------------------------Git-------------------------------------
-  { "lewis6991/gitsigns.nvim",
-    rm_default_opts = true,
+  {
+    "lewis6991/gitsigns.nvim",
     opt = true,
     config = function()
-      loadfile(vim.g.base46_cache .. "git")()
+      dofile(vim.g.base46_cache .. "git")
       local null = require("null-ls")
 
       require("gitsigns").setup({
@@ -304,43 +450,49 @@ local plugins = {
           vim.fn.system({ "git", "-C", vim.fn.expand("%:p:h"), "rev-parse" })
           if vim.v.shell_error == 0 then
             vim.api.nvim_del_augroup_by_name("GitSignsLazyLoad")
-            -- vim.schedule(function()
-            require("packer").loader("gitsigns.nvim")
-            -- end)
+            vim.schedule(function()
+              require("packer").loader("gitsigns.nvim")
+              -- load_plugin()
+            end)
           end
         end,
       })
     end,
   },
-  { "sindrets/diffview.nvim",
-    after = "gitsigns.nvim",
-    config = function()
-      require("diffview").setup({
-        enhanced_diff_hl = true,
-        view = {
-          merge_tool = {
-            layout = "diff3_mixed",
-            disable_diagnostics = true,
-          },
-        },
-      })
-    end,
-  },
+  -- {
+  --   "sindrets/diffview.nvim",
+  --   requires = "gitsigns.nvim",
+  --   config = function()
+  --     require("diffview").setup({
+  --       enhanced_diff_hl = true,
+  --       view = {
+  --         merge_tool = {
+  --           layout = "diff3_mixed",
+  --           disable_diagnostics = true,
+  --         },
+  --       },
+  --     })
+  --   end,
+  -- },
 
   -------------------------------------Misc------------------------------------
-  { "nvim-tree/nvim-web-devicons", },
+  { "nvim-tree/nvim-web-devicons",
+    start = true,
+  },
   -- tree plugin
-  { "nvim-tree/nvim-tree.lua",
+  {
+    "nvim-tree/nvim-tree.lua",
     cmd = { "NvimTreeToggle", "NvimTreeClose" },
     config = function()
-      loadfile(vim.g.base46_cache .. "nvimtree", "b")()
+      dofile(vim.g.base46_cache .. "nvimtree")
       require("nvim-tree").setup({
+        hijack_cursor = true,
         filters = {
           dotfiles = true,
           custom = {
-            "node_modules",
-            "%.git",
-            "%.github",
+            "**/node_modules",
+            "**/%.git",
+            "**/%.github",
           },
           exclude = {
             ".gitignore",
@@ -354,7 +506,7 @@ local plugins = {
         },
         disable_netrw = true,
         -- hijack_netrw = true,
-        ignore_ft_on_setup = { "alpha", "dashboard", "aerial", "mind" },
+        -- ignore_ft_on_config_pre = { "alpha", "dashboard", "aerial", "mind" },
         sort_by = "extension",
         sync_root_with_cwd = true,
         update_focused_file = {
@@ -403,22 +555,26 @@ local plugins = {
               folder_arrow = false,
               git = true,
             },
-            padding = "",
           },
         },
       })
     end,
     setup = function()
       vim.keymap.set("n", "<C-n>", "<Cmd>NvimTreeToggle<CR>", { desc = "Toggle NvimTree" })
+      -- vim.keymap.set("n", "<C-n>", function()
+      --   vim.keymap.del("n", "<C-n>")
+      --   load_plugin()
+      --   vim.cmd("NvimTreeToggle")
+      -- end)
     end,
   },
 
-  { "lukas-reineke/indent-blankline.nvim",
-    rm_default_opts = true,
+  {
+    "lukas-reineke/indent-blankline.nvim",
     event = "BufRead",
     config = function()
       pcall(function()
-        loadfile(vim.g.base46_cache .. "blankline", "b")()
+        dofile(vim.g.base46_cache .. "blankline")
       end)
       require("indent_blankline").setup({
         filetype_exclude = {
@@ -443,72 +599,81 @@ local plugins = {
         show_first_indent_level = false,
       })
     end,
-    -- disable = true
   },
 
-  { "NvChad/nvim-colorizer.lua",
+  {
+    "NvChad/nvim-colorizer.lua",
     event = "BufReadPre",
     config = function()
       require("colorizer").setup({
-        filetypes = {
-          "lua",
-          "vim",
-          "vue",
-          "tsx",
-          "js",
-          "html",
-          "css",
-          "scss",
-          "xml",
-          "TelescopeResults",
-        }
+        filetypes = { "lua", "vim", "css", "scss", "html" },
       })
     end,
   },
 
-  { "MunifTanjim/nui.nvim", },
-  { "folke/noice.nvim",
-    config = function()
-      require("noice").setup({
-        cmdline   = { enabled = false },
-        messages  = { enabled = false },
-        popupmenu = { enabled = false },
-        notify    = { enabled = false },
-        lsp       = {
-          progress = { enabled = false },
-          override = {
-            ["vim.lsp.util.convert_input_to_markdown_lines"] = true,
-            ["vim.lsp.util.stylize_markdown"] = true,
-            ["vim.lsp.util.get_documentation"] = false,
-          }
-        },
-        health    = { checker = false, },
-        presets   = { lsp_doc_border = true, }
-      })
-    end,
-  },
+  -- { "MunifTanjim/nui.nvim" },
+  -- { "folke/noice.nvim",
+  --   config = function()
+  --     require("noice").setup({
+  --       cmdline   = { enabled = false },
+  --       messages  = { enabled = false },
+  --       popupmenu = { enabled = false },
+  --       notify    = { enabled = false },
+  --       lsp       = {
+  --         progress = { enabled = false },
+  --         override = {
+  --           ["vim.lsp.util.convert_input_to_markdown_lines"] = true,
+  --           ["vim.lsp.util.stylize_markdown"] = true,
+  --           ["vim.lsp.util.get_documentation"] = true,
+  --         },
+  --         signature = {
+  --           opts = {
+  --             focusable = false,
+  --           }
+  --         },
+  --         documentation = {
+  --           opts = {
+  --             border = {
+  --               padding = {0, 0}
+  --             },
+  --           }
+  --         }
+  --       },
+  --       -- markdown = {
+  --       --   hover = {
+  --       --     ["|(%S-)|"] = function(url)
+  --       --       vim.cmd("rightbelow | help " .. url)
+  --       --     end
+  --       --   }
+  --       -- },
+  --       health    = { checker = false },
+  --       presets   = { lsp_doc_border = true },
+  --     })
+  --   end,
+  -- },
 
   -- load luasnips + cmp related in insert mode only
-
 }
 
 local packer = require("packer")
 
 packer.init({
   auto_clean = true,
-  compile_on_sync = true,
-  git = { clone_timeout = 6000 },
+  git = { clone_timeout = 60 },
+  max_jobs = 30,
   display = {
     working_sym = "ﲊ",
     error_sym = "✗ ",
     done_sym = " ",
     removed_sym = " ",
     moved_sym = "",
+    -- prompt_border = "rounded",
     open_fn = function()
-      return require("packer.util").float { border = "rounded" }
+      return require("packer.util").float({ border = "rounded" })
     end,
   },
 })
+-- packer.add(plugins)
 packer.startup(function(use)
   for _, plugin in ipairs(plugins) do
     use(plugin)
