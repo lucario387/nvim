@@ -1,0 +1,41 @@
+{
+  "$schema": "https://raw.githubusercontent.com/LuaLS/vscode-lua/master/setting/schema.json",
+  "format": {
+    "enable": true
+  },
+  "semantic": {
+    "annotation": true,
+    "enable": true
+  },
+  "completion": {
+    "enable": true,
+    "callSnippet": "Both"
+  },
+  "diagnostics": {
+    "globals": [
+      "vim"
+    ],
+    "ignoredFiles": "Disable",
+    "libraryFiles": "Disable"
+  },
+  "runtime": {
+    "version": "LuaJIT",
+    "pathStrict": true,
+    "path": [
+      "?.lua",
+      "?/init.lua"
+    ]
+  },
+  "workspace": {
+    "checkThirdParty": false
+  },
+  "hover": {
+    "enable": true,
+    "expandAlias": false,
+    "enumsLimit": 5,
+    "previewFields": 5
+  },
+  "codeLens": {
+    "enable": true
+  }
+}
