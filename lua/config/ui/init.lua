@@ -30,8 +30,8 @@ vim.opt.statusline = "%{%v:lua.require('config.ui.statusline').draw()%}"
 vim.api.nvim_create_autocmd({ "FileType" }, {
 	callback = function(args)
 		if
-			vim.tbl_contains(disabled_filetypes, vim.bo[args.buf].filetype)
-			or vim.tbl_contains(disabled_buftypes, vim.bo[args.buf].buftype)
+			vim.list_contains(disabled_filetypes, vim.bo[args.buf].filetype)
+			or vim.list_contains(disabled_buftypes, vim.bo[args.buf].buftype)
 		then
 			return
 		end

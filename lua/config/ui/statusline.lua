@@ -3,7 +3,7 @@ local M = {}
 local fn = vim.fn
 local api = vim.api
 
-local HOME = os.getenv("HOME")
+local HOME = vim.env.HOME
 local MINIMUM_SIZE = 95
 local FILENAME_SIZE = 18
 

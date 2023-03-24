@@ -40,7 +40,10 @@ M.set_capabilities = function()
 			},
 		},
 	}
-  capabilities.workspace.didChangeWatchedFiles.dynamicRegistration = true
+  capabilities.workspace.didChangeWatchedFiles = {
+    dynamicRegistration = true,
+    relativePatternSupport = true,
+  }
 	return capabilities
 end
 
@@ -69,7 +72,7 @@ M.lsp_handlers = function()
 			scope = "line",
 		},
 	})
-	vim.lsp.handlers["textDocument/hover"] = vim.lsp.with(vim.lsp.handlers.hover, { border = "rounded" })
+	-- vim.lsp.handlers["textDocument/hover"] = vim.lsp.with(vim.lsp.handlers.hover, { border = "rounded" })
 end
 
 return M

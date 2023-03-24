@@ -1,0 +1,6 @@
+vim.keymap.set("n", "<leader>x", function()
+  local bufnr = vim.api.nvim_get_current_buf()
+  local tabnr = vim.api.nvim_get_current_tabpage()
+  require("config.ui.tabline.utils").remove_buf_from_other_tab(bufnr, tabnr)
+  require("config.ui.tabline.utils").close_buffer(bufnr, tabnr)
+end)

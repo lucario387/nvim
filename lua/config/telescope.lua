@@ -1,6 +1,10 @@
 local telescope = require("telescope")
+local actions = require("telescope.actions")
 -- vim.cmd("packadd extensions")
-vim.g.theme_switcher_loaded = true
+-- local function open_qflist(...)
+--   vim.cmd("TroubleToggle quickfix")
+-- end
+-- vim.g.theme_switcher_loaded = true
 dofile(vim.g.base46_cache .. "telescope")
 telescope.setup({
 	defaults = {
@@ -42,7 +46,7 @@ telescope.setup({
 			height = 0.80,
 			-- preview_cutoff = 120,
 		},
-		file_ignore_patterns = { "node_modules/", "packer_compiled", "LICENSE", "%.git", "package-lock.json" },
+		file_ignore_patterns = { "node_modules/", "packer_compiled", "LICENSE", "%.git", "package-lock.json", "book/" },
 		path_display = { "truncate" },
 		winblend = 0,
 		border = {},
@@ -51,10 +55,20 @@ telescope.setup({
 		set_env = { ["COLORTERM"] = "truecolor" }, -- default = nil,
 		mappings = {
 			n = {
-				["q"] = require("telescope.actions").close,
-				["<C-c>"] = require("telescope.actions").close,
+				["q"] = actions.close,
+				["<C-c>"] = actions.close,
+        ["<C-q>"] = function(...)
+          actions.send_to_qflist(...)
+          vim.cmd("Trouble quickfix")
+        end,
 			},
-			i = { ["<C-c>"] = { "<Esc>", type = "command" } },
+			i = { 
+        ["<C-c>"] = { "<Esc>", type = "command" },
+        ["<C-q>"] = function(...)
+          actions.send_to_qflist(...)
+          vim.cmd("Trouble quickfix")
+        end,
+      },
 		},
 	},
 	extensions = {

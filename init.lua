@@ -1,24 +1,20 @@
 -- _G.lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 -- vim.opt.rtp:append(vim.fn.stdpath("data") .. "/lazy/impatient.nvim")
-pcall(require, "impatient")
-require("impatient").enable_profile()
-vim.go.packpath = table.concat({
-  -- vim.fn.stdpath("config"),
-  vim.fn.stdpath("data") .. "/site",
-  -- vim.env.VIMRUNTIME,
-  -- vim.fn.stdpath("data") .. "/site/after",
-  -- vim.fn.stdpath("config") .. "/after",
-}, ",")
-vim.o.runtimepath = table.concat({
-  vim.fn.stdpath("config"),
-  vim.fn.stdpath("data") .. "/site",
-  vim.env.VIMRUNTIME,
-  -- vim.fn.stdpath("data") .. "/site/after",
-  vim.fn.stdpath("config") .. "/after",
-}, ",")
+vim.loader.enable()
 
-vim.g.base46_cache = vim.fn.stdpath("cache") .. "/nvchad/base46/"
--- vim.g.base46_custom_path = vim.fn.stdpath("data") .. "/site/pack/packer/start/base46/lua/base46/integrations"
+local data_path = vim.fn.stdpath("data")
+local config_path = vim.fn.stdpath("config")
+vim.o.packpath = data_path .. "/site"
+vim.opt.rtp = {
+  config_path,
+  data_path .. "/site",
+  vim.env.VIMRUNTIME,
+  -- data_path .. "/site/after",
+  config_path .. "/after",
+}
+
+
+vim.g.base46_cache = data_path .. "/nvchad/base46/"
 
 -- require("bootstrap")
 require("options")
@@ -26,12 +22,14 @@ require("user_commands")
 
 require("config.ui")
 require("mappings").general()
--- require("mappings").telescope()
-pcall(function()
-  -- dofile(vim.g.base46_cache .. "bg")
+require("mappings").telescope()
+
+-- pcall(function()
   dofile(vim.g.base46_cache .. "defaults")
   dofile(vim.g.base46_cache .. "syntax")
   dofile(vim.g.base46_cache .. "devicons")
-  -- dofile(vim.g.base46_cache .. "treesitter")
-end)
--- require("plugins")
+-- end)
+
+require("config.misc").mason()
+require("config.treesitter")
+require("config.misc").noice()

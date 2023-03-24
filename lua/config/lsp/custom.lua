@@ -31,7 +31,15 @@ M.neodev = function(on_attach, capabilities)
 		},
 	})
 	require("lspconfig").lua_ls.setup({
-		on_attach = on_attach,
+		on_attach = function(client, bufnr)
+      on_attach(client, bufnr)
+      vim.keymap.set("n", "gd", function()
+        vim.cmd.Lspsaga("goto_definition")
+      end, { buffer = bufnr })
+      vim.keymap.set("n", "<leader>gt", function()
+        vim.cmd.Lspsaga("goto_type_definition")
+      end, { buffer = bufnr })
+    end,
 		capabilities = capabilities,
 		settings = {
 			Lua = {
@@ -44,35 +52,19 @@ M.neodev = function(on_attach, capabilities)
         diagnostics = {
           globals = {
             "vim",
+            "describe",
+            "it"
           },
         },
         workspace = {
           checkThirdParty = false,
           library = {
-            "/home/lucario387/dev/extensions/nvchad_types",
             "/home/lucario387/.local/share/nvim/site/pack/packer/start/neodev.nvim/types/nightly",
             "/home/lucario387/.local/share/nvim/site/pack/packer/start/neodev.nvim/types/override",
-            "/usr/local/share/nvim/runtime/lua"
+            "/usr/local/share/nvim/runtime/lua",
+              "/home/lucario387/dev/extensions/nvchad_types",
           }
         },
-				-- format = {
-				-- 	defaultConfig = {
-				-- 		align_call_args = false,
-				-- 		align_function_define_params = true,
-				-- 		continuation_indent_size = 2,
-				-- 		continuous_assign_statement_align_to_equal_sign = true,
-				-- 		continuous_assign_table_field_align_to_equal_sign = true,
-				-- 		if_condition_align_with_each_other = true,
-				-- 		if_condition_no_continuation_indent = true,
-				-- 		indent_size = 2,
-				-- 		indent_style = "space",
-				-- 		insert_final_newline = true,
-				-- 		keep_one_space_between_namedef_and_attribute = true,
-				-- 		keep_one_space_between_table_and_braket = true,
-				-- 		label_no_indent = true,
-				-- 		quote_style = "double",
-				-- 	},
-				-- },
 				runtime = {
 					pathStrict = true,
 				},
@@ -106,7 +98,7 @@ M.clangd = function(on_attach, capabilities)
       "--clang-tidy",
       "--all-scopes-completion",
       "--pch-storage=memory",
-      "--suggest-missing-includes",
+      -- "--suggest-missing-includes",
     },
     on_attach = function(client, bufnr)
       -- client.server_capabilities.semanticTokensProvider = false
@@ -198,6 +190,14 @@ M.volar = function(on_attach, capabilities)
 			-- end, { buffer = 0, silent = true })
 		end,
 		capabilities = capabilities,
+    settings = {
+      volar = {
+        autoCompleteRefs = true,
+        vueserver = {
+          reverseConfigFilePriority = true,
+        }
+      }
+    },
 	})
 end
 
@@ -228,6 +228,7 @@ end
 M.bashls = function(on_attach, capabilities)
 	require("lspconfig").bashls.setup({
 		on_attach = function(client, bufnr)
+      client.server_capabilities.semanticTokensProvider = vim.NIL
 			local null = require("null-ls")
 			on_attach(client, bufnr)
 			require("config.lsp").register({

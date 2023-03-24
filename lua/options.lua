@@ -1,8 +1,8 @@
 -- Unsure if this is nice or not, but why not
 
--- vim.env.PATH = vim.env.PATH .. ":" .. vim.fn.stdpath("data") .. "/mason/bin"
--- vim.g.nvchad_theme = "catppuccin"
--- vim.g.transparency = true
+---@type ThemeName
+vim.g.nvchad_theme = "vscode_dark"
+vim.g.transparency = false
 -- vim.g.nvimtree_side = "left"
 
 vim.g.matchup_matchparen_offscreen = { method = nil, scrolloff = 1 }
@@ -133,8 +133,8 @@ local disabled_plugins = {
 	"tohtml",
 	"rrhelper",
 	"spellfile_plugin",
-	"vimball",
-	"vimballPlugin",
+	-- "vimball",
+	-- "vimballPlugin",
 	"zip",
 	"zipPlugin",
 	"tutor",
@@ -152,21 +152,3 @@ local disabled_plugins = {
 for _, plugin in pairs(disabled_plugins) do
 	vim.g["loaded_" .. plugin] = 1
 end
-
--- vim.filetype.add({
--- 	extension = {
--- 		rasi = "rasi",
--- 		astro = "astro",
--- 		json = "jsonc",
--- 		ebnf = "ebnf",
--- 		jsx = "jsx",
--- 	},
--- 	filename = {
--- 		-- [".clangd"] = "yaml",
--- 		-- [".ideavimrc"] = "vim",
--- 		["sxhkdrc"] = "sxhkdrc",
--- 	},
--- 	pattern = {
--- 		["${XDG_CONFIG_HOME:$HOME/.config}/fd/ignore"] = "gitignore",
--- 	},
--- })

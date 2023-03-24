@@ -5,91 +5,123 @@ local M = {}
 
 --- This is the base46-related configs
 --- Aka all the ui table
+
+M.get_hl = function(name)
+  local colors = require("base46.colors")
+  local bit = require("bit")
+  function _24bit2hex(color)
+    if not color then
+      return
+    end
+    local b = bit.band(color, 255)
+    local g = bit.band(bit.rshift(color, 8), 255)
+    local r = bit.band(bit.rshift(color, 16), 255)
+    -- print(r, g, b)
+    return colors.rgb2hex(r, g, b)
+  end
+
+  local hl = vim.api.nvim_get_hl(0, { name = name })
+  hl.fg = _24bit2hex(hl.fg)
+  hl.bg = _24bit2hex(hl.bg)
+  hl.sp = _24bit2hex(hl.sp)
+  return hl
+end
+
 M.load_config = function()
+  ---@type Base30Table
+  -- local base30 = require("base46").get_theme_tb("base_30")
+  -- local colors = require("base46.colors")
+
+  -- print(require("base46.colors").change_hex_lightness(variable_fg.foreground, -0.75))
   ---@type ChadrcConfig
   local spec = {
     ui = {
-      ---@type HLTable
       hl_override = {
-        Normal = { bg = vim.g.transparency and "NONE" or "one_bg" },
-        LineNr = { fg = "white" },
-        Folded = { fg = "blue" },
-        MatchWord = { bg = "black", fg = "orange", bold = true },
-        Visual = { bg = "grey"},
+        Normal                     = {
+          bg = vim.g.transparency and "NONE" or (vim.g.nvchad_theme:find("light") and "black" or "one_bg") },
+        LineNr                     = { fg = "white" },
+        Folded                     = { fg = "blue" },
+        MatchWord                  = { bg = "black", fg = "orange", bold = true },
+        Visual                     = { bg = "grey", sp = "white", underline = true },
+        CursorLine                 = {
+          -- bg = "grey",
+          sp = "white",
+          underline = true,
+        },
         IndentBlanklineContextChar = { fg = "nord_blue" },
-        TelescopeSelection = { bg = "grey_fg2" },
-        WinSeparator = { fg = "white" },
-        NvimTreeWinSeparator = { fg = "white" },
-        NvimTreeGitNew = { fg = "green" },
-        NvimTreeGitDirty = { fg = "yellow" },
-        NvimTreeGitDeleted = { fg = "red" },
+        TelescopeSelection         = { bg = "grey_fg2" },
+        WinSeparator               = { fg = "white" },
+        NvimTreeWinSeparator       = { fg = "white" },
+        NvimTreeGitNew             = { fg = "green" },
+        NvimTreeGitDirty           = { fg = "yellow" },
+        NvimTreeGitDeleted         = { fg = "red" },
         -- Gitsigns
-        DiffChange = { fg = "yellow" },
-        DiffAdd = { fg = "green" },
-        DiffText = { fg = "white", bg = "red", bold = true },
+        DiffChange                 = { fg = "yellow" },
+        DiffAdd                    = { fg = "green" },
+        DiffText                   = { fg = "white", bg = "red", bold = true },
         -- StorageClass = { fg = " green1" },
         -- ["@emphasis"]    = { fg = "white", },
 
         -- nvim-cmp
-        CmpBorder = { fg = "orange" },
-        CmpDocBorder = { fg = "sun" },
-        CmpItemKindFolder = { fg = "blue" },
+        CmpBorder                  = { fg = "orange" },
+        CmpDocBorder               = { fg = "sun" },
+        CmpItemKindFolder          = { fg = "blue" },
         -- Syntax
         -- Macro = { fg = "red", bold = true },
         -- PreProc = { fg = "pink", bold = true },
-        Comment = { fg = "yellow", italic = true },
-        String = { fg = "orange" },
-        Type = { fg = "vibrant_green" },
-        Character = { fg = "orange" },
+        Comment                    = { fg = "yellow", italic = true },
+        String                     = { fg = "orange" },
+        Type                       = { fg = "vibrant_green" },
+        Character                  = { fg = "orange" },
         -- Constant = { fg = "red" },
         -- Structure = { fg = "green1" },
         -- Identifier = { fg = "purple" },
 
         -- Treesitter
-        ["@text.emphasis"] = { italic = true, fg = "white" },
-        ["@text.strike"] = { strikethrough = true, fg = "white" },
-        ["@string"] = { fg = "orange" },
-        ["@punctuation.bracket"] = { fg = "nord_blue" },
-        ["@keyword.function"] = { fg = "purple" },
+        ["@text.emphasis"]         = { italic = true, fg = "white" },
+        ["@text.strike"]           = { strikethrough = true, fg = "white" },
+        ["@string"]                = { fg = "orange" },
+        ["@punctuation.bracket"]   = { fg = "nord_blue" },
+        ["@keyword.function"]      = { fg = "purple" },
         -- Semantics
-        -- ["@property"]              = { fg = "teal" },
         -- ["@constructor"] = { fg = "yellow" },
 
         -- Semantics token
-        ["@lsp.type.class"] = { fg = (vim.g.nvchad_theme == "vscode_dark") and "green1" or "vibrant_green" },
-        ["@lsp.type.interface"] = { fg = "vibrant_green" },
-        ["@lsp.type.annotation"] = { fg = "yellow" },
-        ["@lsp.type.module"] = { fg = "cyan" },
-        ["@lsp.type.parameter"] = { fg = "teal" },
-        ["@lsp.type.variable"] = { fg = "cyan" },
+        ["@lsp.type.class"]        = { fg = (vim.g.nvchad_theme == "vscode_dark") and "green1" or "vibrant_green", link = "" },
+        ["@lsp.type.enum"] = { link = "", fg = "yellow" },
+        -- ["@lsp.type.interface"]    = { fg = "vibrant_green" },
+        -- ["@lsp.type.module"]       = { fg = "cyan" },
+        -- ["@lsp.type.parameter"]    = { fg = "teal" },
+        -- ["@lsp.type.variable"]     = { fg = "cyan" },
+        ["@lsp.type.namespace"] = { fg = "cyan", link = "" },
       },
       hl_add = {
-        SpecialKey = { fg = "yellow" },
-        luaparenError = { link = "Normal" },
+        SpecialKey                   = { fg = "yellow" },
+        luaparenError                = { link = "Normal" },
         ------------------------LspSaga------------------------------------
-        SagaBorder = { fg = "blue" },
-        HoverNormal = { fg = "white" },
-        CodeActionText = { fg = "white" },
+        SagaBorder                   = { fg = "blue" },
+        HoverNormal                  = { fg = "white" },
+        CodeActionText               = { fg = "white" },
         ------------------------Custom Statusline coloring-----------------
-        StNormalMode = { fg = "black2", bg = "blue", bold = true },
-        StVisualMode = { fg = "black2", bg = "cyan", bold = true },
-        StInsertMode = { fg = "black2", bg = "dark_purple", bold = true },
-        StTerminalMode = { fg = "black2", bg = "green", bold = true },
-        StNTerminalMode = { fg = "black2", bg = "yellow", bold = true },
-        StReplaceMode = { fg = "black2", bg = "orange", bold = true },
-        StConfirmMode = { fg = "black2", bg = "teal", bold = true },
-        StCommandMode = { fg = "black2", bg = "green", bold = true },
-        StSelectMode = { fg = "black2", bg = "blue", bold = true },
-        StInviSep = { bg = "statusline_bg", fg = "statusline_bg" },
-        StNormalModeSep = { bg = "statusline_bg", fg = "blue" },
-        StVisualModeSep = { bg = "statusline_bg", fg = "cyan" },
-        StInsertModeSep = { bg = "statusline_bg", fg = "dark_purple" },
-        StTerminalModeSep = { bg = "statusline_bg", fg = "green" },
-        StNTerminalModeSep = { bg = "statusline_bg", fg = "yellow" },
-        StReplaceModeSep = { bg = "statusline_bg", fg = "orange" },
-        StConfirmModeSep = { bg = "statusline_bg", fg = "teal" },
-        StCommandModeSep = { bg = "statusline_bg", fg = "green" },
-        StSelectModeSep = { bg = "statusline_bg", fg = "blue" },
+        StNormalMode                 = { fg = "black2", bg = "blue", bold = true },
+        StVisualMode                 = { fg = "black2", bg = "cyan", bold = true },
+        StInsertMode                 = { fg = "black2", bg = "dark_purple", bold = true },
+        StTerminalMode               = { fg = "black2", bg = "green", bold = true },
+        StNTerminalMode              = { fg = "black2", bg = "yellow", bold = true },
+        StReplaceMode                = { fg = "black2", bg = "orange", bold = true },
+        StConfirmMode                = { fg = "black2", bg = "teal", bold = true },
+        StCommandMode                = { fg = "black2", bg = "green", bold = true },
+        StSelectMode                 = { fg = "black2", bg = "blue", bold = true },
+        StInviSep                    = { bg = "statusline_bg", fg = "statusline_bg" },
+        StNormalModeSep              = { bg = "statusline_bg", fg = "blue" },
+        StVisualModeSep              = { bg = "statusline_bg", fg = "cyan" },
+        StInsertModeSep              = { bg = "statusline_bg", fg = "dark_purple" },
+        StTerminalModeSep            = { bg = "statusline_bg", fg = "green" },
+        StNTerminalModeSep           = { bg = "statusline_bg", fg = "yellow" },
+        StReplaceModeSep             = { bg = "statusline_bg", fg = "orange" },
+        StConfirmModeSep             = { bg = "statusline_bg", fg = "teal" },
+        StCommandModeSep             = { bg = "statusline_bg", fg = "green" },
+        StSelectModeSep              = { bg = "statusline_bg", fg = "blue" },
         -- -- For my own statusline
         -- StNormalModeSep    = { bg = "statusline_bg", },
         -- StInsertModeSep    = { bg = "statusline_bg", },
@@ -102,46 +134,46 @@ M.load_config = function()
         -- StSelectModeSep    = { bg = "statusline_bg", },
 
         --CurFile
-        StCwd = { bg = "yellow", fg = "black" },
-        StFile = { bg = "orange", fg = "black", bold = true },
-        StCwdSep = { fg = "yellow", bg = "statusline_bg" },
-        StFileSep = { fg = "orange", bg = "statusline_bg" },
-        StDirFileSep = { fg = "yellow", bg = "orange" },
+        StCwd                        = { bg = "yellow", fg = "black" },
+        StFile                       = { bg = "orange", fg = "black", bold = true },
+        StCwdSep                     = { fg = "yellow", bg = "statusline_bg" },
+        StFileSep                    = { fg = "orange", bg = "statusline_bg" },
+        StDirFileSep                 = { fg = "yellow", bg = "orange" },
         -- Git stuffs
-        StGitBranch = { bg = "light_grey", fg = "purple" },
-        StGitAdded = { bg = "light_grey", fg = "green" },
-        StGitChanged = { bg = "light_grey", fg = "yellow" },
-        StGitRemoved = { bg = "light_grey", fg = "red" },
-        StGitSep = { bg = "statusline_bg", fg = "light_grey" },
+        StGitBranch                  = { bg = "grey_fg2", fg = "pink" },
+        StGitAdded                   = { bg = "grey_fg2", fg = "green" },
+        StGitChanged                 = { bg = "grey_fg2", fg = "yellow" },
+        StGitRemoved                 = { bg = "grey_fg2", fg = "red" },
+        StGitSep                     = { bg = "statusline_bg", fg = "grey_fg2" },
         -- LSP Stuffs
         -- StLSPProgress = { bg = "statusline_bg", fg = "" },
-        StLSPClient = { bg = "statusline_bg", fg = "blue", bold = true },
-        StLSPDiagSep = { bg = "statusline_bg", fg = "light_grey" },
-        StLSPErrors = { bg = "light_grey", fg = "red" },
-        StLSPWarnings = { bg = "light_grey", fg = "yellow" },
-        StLSPHints = { bg = "light_grey", fg = "purple" },
-        StLspInfo = { bg = "light_grey", fg = "cyan" },
+        StLSPClient                  = { bg = "statusline_bg", fg = "blue", bold = true },
+        StLSPDiagSep                 = { bg = "statusline_bg", fg = "light_grey" },
+        StLSPErrors                  = { bg = "light_grey", fg = "red" },
+        StLSPWarnings                = { bg = "light_grey", fg = "yellow" },
+        StLSPHints                   = { bg = "light_grey", fg = "purple" },
+        StLspInfo                    = { bg = "light_grey", fg = "cyan" },
         -- Lsp Diagnostics
-        DiagnosticHint = { fg = "purple" },
-        DiagnosticError = { fg = "red" },
-        DiagnosticWarn = { fg = "yellow" },
-        DiagnosticInformation = { fg = "green" },
+        DiagnosticHint               = { fg = "purple" },
+        DiagnosticError              = { fg = "red" },
+        DiagnosticWarn               = { fg = "yellow" },
+        DiagnosticInformation        = { fg = "green" },
         -- File Info stuffs
-        StPosition = { bg = "teal", fg = "black" },
-        StPositionSep = { bg = "statusline_bg", fg = "teal" },
+        StPosition                   = { bg = "teal", fg = "black" },
+        StPositionSep                = { bg = "statusline_bg", fg = "teal" },
         --------Custom Statusline coloring ends------------
 
         --------Custom Tabline coloring--------------------
-        TabLineFill = { underline = true, fg = "white", bg = "darker_black" },
-        TabLineBufHidden = { underline = true, fg = "white", bg = "light_grey" },
-        TabLineBufActive = { fg = "white", bg = "nord_blue", bold = true },
-        TabLineCurrentBuf = { fg = "white", bg = "red", bold = true },
-        TabLineModified = { fg = "green" },
-        TabLineCurrentTab = { underline = true, fg = "white", bg = "red", bold = true },
-        TabLineOtherTab = { underline = true, fg = "white", bg = "black2" },
-        TabLineBufActiveSep = { underline = true, fg = "white", bg = "black2" },
-        TabLineCurrentBufSep = { underline = true, fg = "white", bg = "black2" },
-        TabLineBufHiddenSep = { underline = true, fg = "white", bg = "black2" },
+        TabLineFill                  = { fg = "white", bg = "darker_black", sp = "White" },
+        TabLineBufHidden             = { fg = "white", bg = "light_grey", sp = "White" },
+        TabLineBufActive             = { fg = "white", bg = "nord_blue", bold = true, sp = "White" },
+        TabLineCurrentBuf            = { fg = "white", bg = "red", bold = true, sp = "White" },
+        TabLineModified              = { fg = "green", sp = "White" },
+        TabLineCurrentTab            = { fg = "white", bg = "red", bold = true, sp = "White" },
+        TabLineOtherTab              = { fg = "white", bg = "light_grey", sp = "White" },
+        TabLineBufActiveSep          = { fg = "nord_blue", bg = "black2", sp = "White" },
+        TabLineCurrentBufSep         = { fg = "red", bg = "black2", sp = "White" },
+        TabLineBufHiddenSep          = { fg = "light_grey", bg = "black2", sp = "White" },
         --- Good old colorful statusline
         -- TabLineBufHidden  = { fg = "black2", bg = "light_grey" },
         -- TabLineBufActive  = { fg = "black2", bg = "cyan", },
@@ -160,7 +192,7 @@ M.load_config = function()
         --------WinBar coloring ends-----------------------
 
         --------Statuscolumn coloring----------------------
-        CurrentLineNr = { fg = "yellow", bold = true },
+        CurrentLineNr                = { fg = "yellow", bold = true },
         --------Statuscolumn coloring ends-----------------
 
         --------Noice-------------------------------------
@@ -168,29 +200,35 @@ M.load_config = function()
         --------Noice ends--------------------------------
 
         -- Packer
-        PackerPackageName = { fg = "red" },
-        PackerSuccess = { fg = "green" },
-        PackerStatusSuccess = { fg = "green" },
-        PackerStatusCommit = { fg = "blue" },
-        PackeProgress = { fg = "blue" },
-        PackerOutput = { fg = "red" },
-        PackerStatus = { fg = "blue" },
-        PackerHash = { fg = "blue" },
+        PackerPackageName            = { fg = "red" },
+        PackerSuccess                = { fg = "green" },
+        PackerStatusSuccess          = { fg = "green" },
+        PackerStatusCommit           = { fg = "blue" },
+        PackeProgress                = { fg = "blue" },
+        PackerOutput                 = { fg = "red" },
+        PackerStatus                 = { fg = "blue" },
+        PackerHash                   = { fg = "blue" },
         -- Add strikethrough to hlgroups that signifies deprecated stuffs
-        cssDeprecated = { strikethrough = true },
-        javaScriptDeprecated = { strikethrough = true },
-        markdownError = { link = "Normal" },
-        Underlined = { underline = true },
-        NullLsInfoBorder = { link = "FloatBorder" },
+
+        cssDeprecated                = { strikethrough = true },
+        javaScriptDeprecated         = { strikethrough = true },
+        markdownError                = { link = "Normal" },
+        Underlined                   = { underline = true },
+        NullLsInfoBorder             = { link = "FloatBorder" },
         -- Treesitter
-        ["@boolean"] = { fg = "green" },
-        ["@text.danger"] = { fg = "red" },
-        ["@text.note"] = { fg = "blue" },
-        ["@text.header"] = { bold = true },
-        ["@text.diff.add"] = { fg = "green" },
-        ["@text.diff.delete"] = { fg = "red" },
-        ["@text.todo"] = { fg = "blue" },
-        ["@string.special"] = { fg = "blue" },
+
+        ["@boolean"]                 = { fg = "green" },
+        ["@text.danger"]             = { fg = "red" },
+        ["@text.note"]               = { fg = "blue" },
+        ["@text.header"]             = { bold = true },
+        ["@text.diff.add"]           = { fg = "green" },
+        ["@text.diff.delete"]        = { fg = "red" },
+        ["@text.todo"]               = { fg = "blue" },
+        ["@string.special"]          = { fg = "blue" },
+        ["@class.css"]               = { fg = "green" },
+        ["@class.scss"]              = { link = "@class.css" },
+        ["@property.css"]            = { fg = "teal" },
+        ["@property.scss"]           = { link = "@property.css" },
         -- ["@parameter"]        = { fg = "blue" },
         -- ["@variable"]         = { fg = "base08" },
         -- ["@constant.macro"]   = { fg = "pink" },
@@ -201,11 +239,16 @@ M.load_config = function()
         -- ["@text.underline"]   = { underline = true, fg = "green" },
 
         -- Semantic tokens
-        ["@lsp.type.type.lua"] = { fg = "green" },
-        ["@lsp.mod.builtin"] = { fg = "sun" },
-        ["@lsp.mod.readonly"] = { link = "Constant" },
-        ["@lsp.mod.documentation"] = { bold = true, fg = "purple" },
-        ["@lsp.type.keyword"] = { fg = vim.g.nvchad_theme == "vscode_dark" and "pink" or "purple" },
+        ["@lsp.type.type.lua"]       = { fg = "green" },
+        -- ["@lsp.type.parameter"]      = { fg = "teal" },
+        ["@lsp.type.annotation"]   = { fg = "yellow" },
+        ["@lsp.type.modifier.java"]  = { fg = "cyan" },
+        ["@lsp.mod.builtin"]         = { fg = "sun" },
+        ["@lsp.mod.readonly.python"] = { link = "Constant" },
+        -- ["@lsp.mod.constructor.java"] = { link = "@function" },
+        ["@lsp.mod.documentation"]   = { bold = true, fg = "purple" },
+        ["@lsp.type.keyword"]        = { fg = vim.g.nvchad_theme == "vscode_dark" and "pink" or "purple" },
+        DiagnosticUnnecessary        = { fg = "light_grey" },
         -- ["@lsp.mod.defaultLibrary"] = { fg = "green" },
         -- ["@lsp.type.variable"] = { fg = "light_blue" },
         -- ["@lsp.type.variable.python"] = { fg = "light_blue" },
@@ -218,9 +261,10 @@ M.load_config = function()
           },
         },
       },
-      theme_toggle = { "vscode_dark", "catppuccin" },
+      theme_toggle = { "vscode_dark", "one_light" },
       theme = "vscode_dark", -- default theme
-      transparency = true,
+      transparency = false,
+      lsp_semantic_tokens = true,
       -- cmp themeing
       cmp = {
         icons = true,

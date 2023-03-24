@@ -1,12 +1,4 @@
 ;; extends
-(comment) @ignore
-[
-  "{"
-  "["
-] @indent
-[
-  "]"
-  "}" 
-] @indent_end
+(comment) @indent.ignore
 
-(ERROR) @auto
+(ERROR) @indent.auto

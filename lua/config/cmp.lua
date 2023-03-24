@@ -64,7 +64,7 @@ cmp.setup({
   enabled = function()
     local disabled = false
     disabled = disabled or is_dap_buffer(0)
-    disabled = disabled or (vim.tbl_contains(disabled_buftypes, vim.api.nvim_buf_get_option(0, "buftype")))
+    disabled = disabled or (vim.list_contains(disabled_buftypes, vim.api.nvim_buf_get_option(0, "buftype")))
     disabled = disabled or (vim.fn.reg_recording() ~= "")
     disabled = disabled or (vim.fn.reg_executing() ~= "")
     if disabled then
@@ -111,16 +111,16 @@ cmp.setup({
     ["<S-Tab>"] = cmp.mapping(function(fallback)
       if cmp.visible() then
         cmp.select_prev_item()
-      elseif require("luasnip").jumpable( -1) then
-        require("luasnip").jump( -1)
+      elseif require("luasnip").jumpable(-1) then
+        require("luasnip").jump(-1)
       else
         fallback()
       end
     end, { "i", "s" }),
     ["<C-Space>"] = cmp.mapping.complete(),
-    ["<C-d>"] = cmp.mapping.scroll_docs( -4),
+    ["<C-d>"] = cmp.mapping.scroll_docs(-4),
     ["<C-f>"] = cmp.mapping.scroll_docs(4),
-    ["<CR>"] = cmp.mapping.confirm({ select = false, })
+    ["<CR>"] = cmp.mapping.confirm({ select = false }),
   }),
   formatting = {
     -- fields = { "abbr", "menu", "kind" },
@@ -138,13 +138,27 @@ cmp.setup({
   sources = cmp.config.sources({
     { name = "nvim_lsp" },
     { name = "luasnip", keyword_length = 4, max_item_count = 20 },
-    { name = "path" },
+    {
+      name = "path",
+      option = {
+        trailing_slash = true,
+      },
+      entry_filter = function()
+        return not vim.list_contains({
+          "javascript",
+          "typescript",
+          "javascriptreact",
+          "typescriptreact",
+          "vue",
+        }, vim.api.nvim_buf_get_option(0, "filetype"))
+      end,
+    },
     {
       name = "buffer",
       keyword_length = 5,
       entry_filter = function()
         return not require("cmp.config.context").in_treesitter_capture({ "spell", "comment" }) and
-          not vim.tbl_contains(disabled_filetypes, vim.api.nvim_buf_get_option(0, "filetype"))
+          not vim.list_contains(disabled_filetypes, vim.api.nvim_buf_get_option(0, "filetype"))
       end,
     },
     -- { name = "spell",

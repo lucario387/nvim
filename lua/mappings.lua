@@ -18,6 +18,9 @@ M.null_ls = function(bufnr)
 end
 
 M.general = function()
+  vim.keymap.set("n", "<leader>n", function()
+    vim.cmd.NvimTreeToggle()
+  end, { desc = "Toggle NvimTree" })
   --- Normal mode
   vim.keymap.set("n", "<ESC>", "<cmd>noh<CR>", { desc = "no highlight" })
 
@@ -28,7 +31,7 @@ M.general = function()
   vim.keymap.set("n", "<C-k>", "<C-w>k", { desc = "window up" })
 
   -- save
-  vim.keymap.set("n", "<C-s>", "<cmd> w <CR>", { desc = "save file" })
+  vim.keymap.set({ "n", "i" }, "<C-s>", function() vim.cmd.write() end, { desc = "save file" })
 
   -- Copy all
   vim.keymap.set("n", "<C-c>", "<cmd> %y+ <CR>", { desc = "copy whole file" })
@@ -37,15 +40,14 @@ M.general = function()
   vim.keymap.set("n", "db", '"_db', { desc = "" })
   vim.keymap.set("n", "cw", '"_cw', { desc = "" })
   vim.keymap.set("n", "cb", '"_cb', { desc = "" })
-  vim.keymap.set("n", "<C-d>", "<C-d>zz", { desc = "" })
-  vim.keymap.set("n", "<C-u>", "<C-u>zz", { desc = "" })
-  vim.keymap.set("n", "n", "nzz", { desc = "" })
-  vim.keymap.set("n", "N", "Nzz", { desc = "" })
+  vim.keymap.set({ "n", "x" }, "<C-d>", "<C-d>zz", { desc = "" })
+  vim.keymap.set({ "n", "x" }, "<C-u>", "<C-u>zz", { desc = "" })
+  vim.keymap.set({ "n", "x" }, "n", "nzz", { desc = "" })
+  vim.keymap.set({ "n", "x" }, "N", "Nzz", { desc = "" })
   vim.keymap.set("n", "<C-c>", "<cmd>%y+<CR>", { silent = true })
   vim.keymap.set("n", "<leader>q", "<cmd>q<CR>", { desc = "" })
   vim.keymap.set("n", "<A-j>", "<cmd>m+1<CR>==", { desc = "" })
   vim.keymap.set("n", "<A-k>", "<cmd>m-2<CR>==", { desc = "" })
-  vim.keymap.set("n", "<C-s>", "<cmd>update<CR>", { desc = "" })
 
   vim.keymap.set("n", "<C-->", "<C-w>2-", { desc = "" })
   vim.keymap.set("n", "<C-=>", "<C-w>2+", { desc = "" })
@@ -56,7 +58,8 @@ M.general = function()
     require("plenary.reload").reload_module("core.utils")
     require("plenary.reload").reload_module("base46")
     local config = require("core.utils").load_config()
-    vim.g.nvchad_theme = vim.g.nvchad_theme == config.ui.theme_toggle[1] and config.ui.theme_toggle[2] or config.ui.theme_toggle[1]
+    vim.g.nvchad_theme = vim.g.nvchad_theme == config.ui.theme_toggle[1] and config.ui.theme_toggle[2] or
+    config.ui.theme_toggle[1]
     require("base46").load_all_highlights()
     -- require("base46").load_all_highlights()
   end, { desc = "toggle theme" })
@@ -95,7 +98,7 @@ M.general = function()
   vim.keymap.set("i", "<C-e>", "<End>", { desc = "to eol" })
   vim.keymap.set("i", "<C-f>", "<C-Right>", { desc = "next word" })
   vim.keymap.set("i", "<C-b>", "<C-Left>", { desc = "last word" })
-  vim.keymap.set("i", "<C-c>", "<Esc>", { desc = "" })
+  vim.keymap.set("i", "<C-c>", "<Esc>", { desc = "better escape :')" })
   -- navigate within insert mode
   vim.keymap.set("i", "<C-h>", "<Left>", { desc = "move left" })
   vim.keymap.set("i", "<C-l>", "<Right>", { desc = "move right" })
@@ -104,7 +107,7 @@ M.general = function()
 
   vim.keymap.set("i", "<A-j>", "<Esc><cmd>m+1<CR>==a", { desc = "" })
   vim.keymap.set("i", "<A-k>", "<Esc><cmd>m-2<CR>==a", { desc = "" })
-  vim.keymap.set("i", "<C-A-v>", "<Esc><cmd>PasteImg<CR>", { desc = "" })
+  -- vim.keymap.set("i", "<C-A-v>", "<Esc><cmd>PasteImg<CR>", { desc = "" })
 
   --- Visual mode
 
@@ -137,9 +140,9 @@ M.lsp = function(bufnr)
     -- require("lspsaga.definition"):goto_definition(1)
   end, { desc = "Goto defintion", buffer = bufnr })
   vim.keymap.set("n", "<leader>gt", function()
+    -- vim.lsp.buf.type_definition()
     vim.cmd.Lspsaga("goto_type_definition")
     -- require("lspsaga.definition"):goto_definition(2)
-    -- vim.lsp.buf.type_definition()
   end, { desc = "Goto Type Definition", buffer = bufnr })
   vim.keymap.set("n", "<leader>rn", function()
     vim.cmd.Lspsaga("rename")
@@ -170,6 +173,16 @@ end
 
 ---@param bufnr integer buffer number to vim.keymap.set keymap
 M.jdtls = function(bufnr)
+  vim.keymap.set("n", "gd", function()
+    vim.lsp.buf.definition()
+    -- vim.cmd.Lspsaga("goto_definition")
+    -- require("lspsaga.definition"):goto_definition(1)
+  end, { desc = "Goto defintion", buffer = bufnr })
+  vim.keymap.set("n", "<leader>gt", function()
+    vim.lsp.buf.type_definition()
+    -- vim.cmd.Lspsaga("goto_type_definition")
+    -- require("lspsaga.definition"):goto_definition(2)
+  end, { desc = "Goto Type Definition", buffer = bufnr })
   bufnr = bufnr or 0
   vim.keymap.set("n", "<A-o>", function()
     require("jdtls").organize_imports()
