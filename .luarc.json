@@ -9,7 +9,7 @@
   },
   "completion": {
     "enable": true,
-    "callSnippet": "Both"
+    "callSnippet": "Disable"
   },
   "diagnostics": {
     "globals": [

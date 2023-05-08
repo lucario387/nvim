@@ -1,3 +1,5 @@
+local list_contains = vim.list_contains or vim.tbl_contains
+
 local add_clean_buf = function(tabnr)
 	local buflist = vim.t[tabnr].bufs
 	for i, bufnr in ipairs(buflist) do
@@ -20,10 +22,10 @@ function M.buf_is_valid(bufnr)
 		return false
 	end
 
-	return (not vim.list_contains(disabled_buftypes, vim.api.nvim_buf_get_option(bufnr, "buftype")))
+	return (not list_contains(disabled_buftypes, vim.api.nvim_buf_get_option(bufnr, "buftype")))
 		and vim.api.nvim_buf_is_valid(bufnr)
 		and vim.api.nvim_buf_get_option(bufnr, "buflisted")
-		and (not vim.list_contains({ "delete", "wipe" }, vim.api.nvim_buf_get_option(bufnr, "buflisted")))
+		and (not list_contains({ "delete", "wipe" }, vim.api.nvim_buf_get_option(bufnr, "buflisted")))
 end
 
 ---Wrapper around `vim.api.nvim_list_bufs()`
@@ -47,7 +49,7 @@ function M.add_buffer(bufnr)
 	local buflist = add_clean_buf(tabnr)
 
 	-- check for duplicates
-	if not vim.list_contains(buflist, bufnr) and M.buf_is_valid(bufnr) then
+	if not list_contains(buflist, bufnr) and M.buf_is_valid(bufnr) then
 		table.insert(buflist, bufnr)
 		vim.t[tabnr].bufs = buflist
 	end

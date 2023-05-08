@@ -59,7 +59,7 @@ M.gitsigns = function()
     signs = {
       add = { text = "┃" },
       change = { text = "┃" },
-      delete = { text = "" },
+      delete = { text = "󰍵" },
       topdelete = { text = "‾" },
       changedelete = { text = "~" },
       untracked = { text = "┆" },
@@ -68,6 +68,10 @@ M.gitsigns = function()
     max_file_length = 3000,
     preview_config = {
       border = "rounded",
+    },
+    current_line_blame = true,
+    current_line_blame_opts = {
+      delay = 500,
     },
     on_attach = function(bufnr)
       require("mappings").git(bufnr)
@@ -114,11 +118,6 @@ M["nvim-tree"] = function()
       width = 25,
       -- hide_root_folder = false,
       preserve_window_proportions = true,
-      mappings = {
-        list = {
-          { key = "d", action = "trash" },
-        },
-      },
     },
     git = {
       enable = true,
@@ -154,6 +153,16 @@ M["nvim-tree"] = function()
         },
       },
     },
+    experimental = {
+      git = {
+        async = false,
+      }
+    },
+    on_attach = function(bufnr)
+      local api = require("nvim-tree.api")
+      api.config.mappings.default_on_attach(bufnr)
+      vim.keymap.set("n", "d", api.fs.trash, { buffer = bufnr, nowait = true })
+    end
   })
 end
 
@@ -193,8 +202,8 @@ M.mason = function()
       border = "rounded",
       icons = {
         package_pending = " ",
-        package_installed = " ",
-        package_uninstalled = " ﮊ",
+        package_installed = "󰄴 ",
+        package_uninstalled = " 󰚌",
       },
     },
   })
@@ -236,6 +245,14 @@ M.noice = function()
     },
     health    = { checker = false },
     presets   = { lsp_doc_border = true },
+  })
+end
+
+M.neogit = function()
+  require("neogit").setup({
+    integrations = {
+      diffview = true,
+    }
   })
 end
 

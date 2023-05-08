@@ -1,6 +1,7 @@
 local autocmd = vim.api.nvim_create_autocmd
 local augroup = vim.api.nvim_create_augroup
 local utils = require("config.ui.tabline.utils")
+local list_contains = vim.list_contains or vim.tbl_contains
 
 local disabled_buftypes = {
 	"terminal",
@@ -40,8 +41,8 @@ autocmd({ "BufAdd", "BufEnter" }, {
 		end
 		if
 			not utils.buf_is_valid(args.buf)
-			or vim.list_contains(disabled_buftypes, vim.api.nvim_buf_get_option(args.buf, "buftype"))
-			or vim.list_contains(disabled_filetypes, vim.api.nvim_buf_get_option(args.buf, "filetype"))
+			or list_contains(disabled_buftypes, vim.api.nvim_buf_get_option(args.buf, "buftype"))
+			or list_contains(disabled_filetypes, vim.api.nvim_buf_get_option(args.buf, "filetype"))
 			or vim.api.nvim_buf_get_option(args.buf, "bufhidden") == "wipe"
 		then
 			-- if not #vim.t[tabnr].bufs == 1 then
@@ -53,7 +54,7 @@ autocmd({ "BufAdd", "BufEnter" }, {
 		local buflist = vim.t[tabnr].bufs
 
 		-- check for duplicates
-		if not vim.list_contains(buflist, args.buf) and utils.buf_is_valid(args.buf) then
+		if not list_contains(buflist, args.buf) and utils.buf_is_valid(args.buf) then
 			-- and (args.event == "BufAdd" or utils.buf_is_valid(args.buf)) then
 			table.insert(buflist, args.buf)
       utils.remove_buf_from_other_tab(args.buf, tabnr)
@@ -64,7 +65,7 @@ autocmd({ "BufAdd", "BufEnter" }, {
 
 autocmd({ "BufDelete" }, {
 	callback = function(args)
-		if vim.list_contains(vim.t.bufs, args.buf) then
+		if list_contains(vim.t.bufs, args.buf) then
 			utils.delete_buffer(args.buf)
       utils.remove_buf_from_other_tab(args.buf, vim.api.nvim_get_current_tabpage())
 		end

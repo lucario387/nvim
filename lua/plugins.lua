@@ -13,12 +13,25 @@ local plugins = {
   {
     "williamboman/mason.nvim",
     run = ":MasonUpdate",
+    config = function()
+      require("config.misc").mason()
+    end,
   },
 
   -------------------------------------Theme-----------------------------------
   {
     "NvChad/base46",
     branch = "v2.0",
+    run = function()
+      vim.fn.mkdir(vim.g.base46_cache, "p")
+      vim.cmd("CompileTheme")
+    end,
+    config = function()
+      dofile(vim.g.base46_cache .. "defaults")
+      dofile(vim.g.base46_cache .. "syntax")
+      dofile(vim.g.base46_cache .. "devicons")
+      require("config.ui")
+    end,
   },
 
   -------------------------------------LSP-------------------------------------
@@ -51,7 +64,7 @@ local plugins = {
     end,
   },
   {
-    "glepnir/lspsaga.nvim",
+    "nvimdev/lspsaga.nvim",
     module = "lspsaga",
     cmd = "Lspsaga",
     config = function()
@@ -101,6 +114,9 @@ local plugins = {
     -- opt = true,
     run = ":TSUpdate",
     -- event = "BufReadPre",
+    config = function()
+      require("config.treesitter")
+    end,
   },
   -- Movement related
   { "nvim-treesitter/nvim-treesitter-textobjects", event = "BufRead" },
@@ -159,14 +175,15 @@ local plugins = {
       require("luasnip.loaders.from_vscode").lazy_load()
       -- require("luasnip.loaders.from_vscode").lazy_load({ paths = { vim.g.luasnippets_path } })
 
-      vim.api.nvim_create_autocmd({ "InsertLeave" }, {
+      vim.api.nvim_create_autocmd({ "ModeChanged" }, {
+        pattern = { "s:n", "i:*" },
         callback = function()
-          -- if
-          --   require("luasnip").session.current_nodes[vim.api.nvim_get_current_buf()]
-          --   and not require("luasnip").session.jump_active
-          -- then
-          require("luasnip").unlink_current()
-          -- end
+          if
+            require("luasnip").session.current_nodes[vim.api.nvim_get_current_buf()]
+            and not require("luasnip").session.jump_active
+          then
+            require("luasnip").unlink_current()
+          end
         end,
       })
     end,
@@ -186,6 +203,7 @@ local plugins = {
     end,
   },
   { "nvim-telescope/telescope-fzf-native.nvim", run = "make" },
+  -- { "nvim-telescope/telescope-live-grep-args.nvim" },
 
   -------------------------------------Git-------------------------------------
   {
@@ -210,9 +228,19 @@ local plugins = {
       })
     end,
   },
+  -- {
+  --   "TimUntersberger/neogit",
+  --   cmd = "Neogit",
+  --   config = function()
+  --     require("config.misc").neogit()
+  --   end
+  -- },
 
   -------------------------------------Misc------------------------------------
-  { "nvim-tree/nvim-web-devicons" },
+  { 
+    "nvim-tree/nvim-web-devicons",
+    lock = true,
+  },
   -- tree plugin
   {
     "nvim-tree/nvim-tree.lua",
@@ -241,7 +269,13 @@ local plugins = {
   },
 
   { "MunifTanjim/nui.nvim" },
-  { "folke/noice.nvim" },
+  {
+    "folke/noice.nvim",
+    config = function()
+      require("config.misc").noice()
+    end,
+  },
+
 
   -- load luasnips + cmp related in insert mode only
 }
@@ -253,11 +287,11 @@ packer.init({
   git = { clone_timeout = 60 },
   max_jobs = 30,
   display = {
-    working_sym = "ﲊ",
+    working_sym = "󰞌",
     error_sym = "✗ ",
     done_sym = " ",
     removed_sym = " ",
-    moved_sym = "",
+    moved_sym = "󰁔",
     -- prompt_border = "rounded",
     open_fn = function()
       return require("packer.util").float({ border = "rounded" })

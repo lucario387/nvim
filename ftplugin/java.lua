@@ -80,10 +80,10 @@ config.settings = {
           name = "JavaSE-17",
           path = "/usr/lib/jvm/java-17-openjdk/",
         },
-        {
-          name = "JavaSE-19",
-          path = "/usr/lib/jvm/java-19-openjdk/",
-        },
+        -- {
+        --   name = "JavaSE-20",
+        --   path = "/usr/lib/jvm/java-20-openjdk/",
+        -- },
       },
     },
     project = {
@@ -143,4 +143,5 @@ end
 --   ["$/progress"] = function() end,
 --   ["window/showMessageRequest"] = function() end,
 -- }
+
 jdtls.start_or_attach(config)

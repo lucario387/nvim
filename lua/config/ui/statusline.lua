@@ -68,8 +68,8 @@ end
 
 local cwd = function()
 	local left_sep = "%#StCwdSep#"
-	local dir_name = (fn.getcwd() == HOME) and "%#StCwd# $HOME"
-		or "%#StCwd# " .. fn.fnamemodify(fn.getcwd(), ":t")
+	local dir_name = (fn.getcwd() == HOME) and "%#StCwd#󰉋  $HOME"
+		or "%#StCwd#󰉋  " .. fn.fnamemodify(fn.getcwd(), ":t")
 	return (vim.o.columns > MINIMUM_SIZE) and left_sep .. dir_name or ""
 end
 
@@ -80,7 +80,7 @@ local file_name = function()
 	end
 	local extension = fn.expand("%:e")
 	local icon = require("nvim-web-devicons").get_icon(filename, extension)
-	icon = (icon ~= nil) and icon or ""
+	icon = (icon ~= nil) and icon or "󰈙"
 	local left_sep = (vim.o.columns > MINIMUM_SIZE) and "%#StDirFileSep#" or "%#StFileSep#"
 	local right_sep = "%#StFileSep#"
 	local file_info = "%#StFile# " .. icon .. " " .. filename
@@ -105,8 +105,8 @@ end
 
 -- M.session_status = function()
 --   return vim.g.persisting == true
---     and "%#StSessionStatus#  "
---     or "%#StSessionStatus#  "
+--     and "%#StSessionStatus#󰅠  "
+--     or "%#StSessionStatus#󰅣  "
 -- end
 
 local lsp_diagnostics = function()

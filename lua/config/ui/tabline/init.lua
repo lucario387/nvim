@@ -1,6 +1,7 @@
 local fn = vim.fn
 local api = vim.api
 local buf_is_valid = require("config.ui.tabline.utils").buf_is_valid
+local list_contains = vim.list_contains or vim.tbl_contains
 -- local dev_icons = require("nvim-web-devicons")
 
 require("mappings").tabline()
@@ -61,7 +62,7 @@ local generate_buf_str = function(v, bufnr)
   bufname = #bufname > 0 and bufname or "No Name"
   local filename = vim.fn.fnamemodify(bufname, ":t")
   -- local extension = vim.fn.fnamemodify(bufname, ":e")
-  local hlgroup = (vim.fn.getbufinfo(v)[1].hidden == 1 or not vim.list_contains(vim.t.bufs, v)) and "TabLineBufHidden"
+  local hlgroup = (vim.fn.getbufinfo(v)[1].hidden == 1 or not list_contains(vim.t.bufs, v)) and "TabLineBufHidden"
     or "TabLineBufActive"
   hlgroup = (v == bufnr) and "TabLineCurrentBuf" or hlgroup
 
@@ -128,7 +129,7 @@ local bufferlist = function()
   -- if true then return "" end
   local rendered_buflist = {}
   local remaining_columns = vim.o.columns - get_ft_win_width("NvimTree") - #vim.api.nvim_list_tabpages() * TAB_SIZE
-  local has_current_bufnr = vim.list_contains(auto_true_filetypes, vim.api.nvim_buf_get_option(bufnr, "ft"))
+  local has_current_bufnr = list_contains(auto_true_filetypes, vim.api.nvim_buf_get_option(bufnr, "ft"))
   local current_buflen = 0
 
   for _, v in ipairs(buflist) do

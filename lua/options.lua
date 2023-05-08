@@ -5,6 +5,7 @@ vim.g.nvchad_theme = "vscode_dark"
 vim.g.transparency = false
 -- vim.g.nvimtree_side = "left"
 
+vim.g.query_lint_on = { "BufWrite" }
 vim.g.matchup_matchparen_offscreen = { method = nil, scrolloff = 1 }
 vim.g.mapleader = " "
 vim.g.maplocalleader = " "
@@ -56,7 +57,7 @@ vim.o.relativenumber = true
 -- vim.o.concealcursor = "nv"
 -- o.sessionoptions = "buffers,curdir,localoptions,folds,help,winpos,tabpages"
 
-vim.o.expandtab = true
+-- vim.o.smoothscroll = true
 -- Wrap, linebreak settings
 -- o.scrolloff = 25
 -- vim.o.wrap = true
@@ -93,6 +94,7 @@ vim.opt.fillchars = {
 	verthoriz = "╋",
 	eob = " ",
 }
+
 -- go to previous/next line with h,l,left arrow and right arrow
 -- when cursor reaches end/beginning of line
 vim.opt.whichwrap:append("<>[]hl")

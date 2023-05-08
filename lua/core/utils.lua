@@ -5,28 +5,6 @@ local M = {}
 
 --- This is the base46-related configs
 --- Aka all the ui table
-
-M.get_hl = function(name)
-  local colors = require("base46.colors")
-  local bit = require("bit")
-  function _24bit2hex(color)
-    if not color then
-      return
-    end
-    local b = bit.band(color, 255)
-    local g = bit.band(bit.rshift(color, 8), 255)
-    local r = bit.band(bit.rshift(color, 16), 255)
-    -- print(r, g, b)
-    return colors.rgb2hex(r, g, b)
-  end
-
-  local hl = vim.api.nvim_get_hl(0, { name = name })
-  hl.fg = _24bit2hex(hl.fg)
-  hl.bg = _24bit2hex(hl.bg)
-  hl.sp = _24bit2hex(hl.sp)
-  return hl
-end
-
 M.load_config = function()
   ---@type Base30Table
   -- local base30 = require("base46").get_theme_tb("base_30")
@@ -55,9 +33,10 @@ M.load_config = function()
         NvimTreeGitNew             = { fg = "green" },
         NvimTreeGitDirty           = { fg = "yellow" },
         NvimTreeGitDeleted         = { fg = "red" },
+        NvimTreeCursorLine         = { bg = "one_bg3" },
         -- Gitsigns
         DiffChange                 = { fg = "yellow" },
-        DiffAdd                    = { fg = "green" },
+        DiffAdd                    = { fg = "green1" },
         DiffText                   = { fg = "white", bg = "red", bold = true },
         -- StorageClass = { fg = " green1" },
         -- ["@emphasis"]    = { fg = "white", },
@@ -81,6 +60,7 @@ M.load_config = function()
         ["@text.emphasis"]         = { italic = true, fg = "white" },
         ["@text.strike"]           = { strikethrough = true, fg = "white" },
         ["@string"]                = { fg = "orange" },
+        ["@exception"]             = { fg = "purple" },
         ["@punctuation.bracket"]   = { fg = "nord_blue" },
         ["@keyword.function"]      = { fg = "purple" },
         -- Semantics
@@ -102,6 +82,7 @@ M.load_config = function()
         SagaBorder                   = { fg = "blue" },
         HoverNormal                  = { fg = "white" },
         CodeActionText               = { fg = "white" },
+        CodeActionNumber             = { link = "Number" },
         ------------------------Custom Statusline coloring-----------------
         StNormalMode                 = { fg = "black2", bg = "blue", bold = true },
         StVisualMode                 = { fg = "black2", bg = "cyan", bold = true },
@@ -112,16 +93,16 @@ M.load_config = function()
         StConfirmMode                = { fg = "black2", bg = "teal", bold = true },
         StCommandMode                = { fg = "black2", bg = "green", bold = true },
         StSelectMode                 = { fg = "black2", bg = "blue", bold = true },
-        StInviSep                    = { bg = "statusline_bg", fg = "statusline_bg" },
-        StNormalModeSep              = { bg = "statusline_bg", fg = "blue" },
-        StVisualModeSep              = { bg = "statusline_bg", fg = "cyan" },
-        StInsertModeSep              = { bg = "statusline_bg", fg = "dark_purple" },
-        StTerminalModeSep            = { bg = "statusline_bg", fg = "green" },
-        StNTerminalModeSep           = { bg = "statusline_bg", fg = "yellow" },
-        StReplaceModeSep             = { bg = "statusline_bg", fg = "orange" },
-        StConfirmModeSep             = { bg = "statusline_bg", fg = "teal" },
-        StCommandModeSep             = { bg = "statusline_bg", fg = "green" },
-        StSelectModeSep              = { bg = "statusline_bg", fg = "blue" },
+        StInviSep                    = { bg = vim.g.transparency and "NONE" or "statusline_bg", fg = "statusline_bg" },
+        StNormalModeSep              = { bg = vim.g.transparency and "NONE" or "statusline_bg", fg = "blue" },
+        StVisualModeSep              = { bg = vim.g.transparency and "NONE" or "statusline_bg", fg = "cyan" },
+        StInsertModeSep              = { bg = vim.g.transparency and "NONE" or "statusline_bg", fg = "dark_purple" },
+        StTerminalModeSep            = { bg = vim.g.transparency and "NONE" or "statusline_bg", fg = "green" },
+        StNTerminalModeSep           = { bg = vim.g.transparency and "NONE" or "statusline_bg", fg = "yellow" },
+        StReplaceModeSep             = { bg = vim.g.transparency and "NONE" or "statusline_bg", fg = "orange" },
+        StConfirmModeSep             = { bg = vim.g.transparency and "NONE" or "statusline_bg", fg = "teal" },
+        StCommandModeSep             = { bg = vim.g.transparency and "NONE" or "statusline_bg", fg = "green" },
+        StSelectModeSep              = { bg = vim.g.transparency and "NONE" or "statusline_bg", fg = "blue" },
         -- -- For my own statusline
         -- StNormalModeSep    = { bg = "statusline_bg", },
         -- StInsertModeSep    = { bg = "statusline_bg", },
@@ -136,19 +117,19 @@ M.load_config = function()
         --CurFile
         StCwd                        = { bg = "yellow", fg = "black" },
         StFile                       = { bg = "orange", fg = "black", bold = true },
-        StCwdSep                     = { fg = "yellow", bg = "statusline_bg" },
-        StFileSep                    = { fg = "orange", bg = "statusline_bg" },
+        StCwdSep                     = { fg = "yellow", bg = vim.g.transparency and "NONE" or "statusline_bg" },
+        StFileSep                    = { fg = "orange", bg = vim.g.transparency and "NONE" or "statusline_bg" },
         StDirFileSep                 = { fg = "yellow", bg = "orange" },
         -- Git stuffs
         StGitBranch                  = { bg = "grey_fg2", fg = "pink" },
         StGitAdded                   = { bg = "grey_fg2", fg = "green" },
         StGitChanged                 = { bg = "grey_fg2", fg = "yellow" },
         StGitRemoved                 = { bg = "grey_fg2", fg = "red" },
-        StGitSep                     = { bg = "statusline_bg", fg = "grey_fg2" },
+        StGitSep                     = { bg = vim.g.transparency and "NONE" or "statusline_bg", fg = "grey_fg2" },
         -- LSP Stuffs
-        -- StLSPProgress = { bg = "statusline_bg", fg = "" },
-        StLSPClient                  = { bg = "statusline_bg", fg = "blue", bold = true },
-        StLSPDiagSep                 = { bg = "statusline_bg", fg = "light_grey" },
+        -- StLSPProgress = { bg = vim.g.transparency and "NONE" or "statusline_bg", fg = "" },
+        StLSPClient                  = { bg = vim.g.transparency and "NONE" or "statusline_bg", fg = "blue", bold = true },
+        StLSPDiagSep                 = { bg = vim.g.transparency and "NONE" or "statusline_bg", fg = "light_grey" },
         StLSPErrors                  = { bg = "light_grey", fg = "red" },
         StLSPWarnings                = { bg = "light_grey", fg = "yellow" },
         StLSPHints                   = { bg = "light_grey", fg = "purple" },
@@ -159,21 +140,21 @@ M.load_config = function()
         DiagnosticWarn               = { fg = "yellow" },
         DiagnosticInformation        = { fg = "green" },
         -- File Info stuffs
-        StPosition                   = { bg = "teal", fg = "black" },
-        StPositionSep                = { bg = "statusline_bg", fg = "teal" },
+        StPosition                   = { bg = "teal", fg = "statusline_bg" },
+        StPositionSep                = { bg = vim.g.transparency and "NONE" or "statusline_bg", fg = "teal" },
         --------Custom Statusline coloring ends------------
 
         --------Custom Tabline coloring--------------------
-        TabLineFill                  = { fg = "white", bg = "darker_black", sp = "White" },
+        TabLineFill                  = { fg = "white", bg = vim.g.transparency and "NONE" or "darker_black", sp = "White" },
         TabLineBufHidden             = { fg = "white", bg = "light_grey", sp = "White" },
         TabLineBufActive             = { fg = "white", bg = "nord_blue", bold = true, sp = "White" },
         TabLineCurrentBuf            = { fg = "white", bg = "red", bold = true, sp = "White" },
         TabLineModified              = { fg = "green", sp = "White" },
         TabLineCurrentTab            = { fg = "white", bg = "red", bold = true, sp = "White" },
         TabLineOtherTab              = { fg = "white", bg = "light_grey", sp = "White" },
-        TabLineBufActiveSep          = { fg = "nord_blue", bg = "black2", sp = "White" },
-        TabLineCurrentBufSep         = { fg = "red", bg = "black2", sp = "White" },
-        TabLineBufHiddenSep          = { fg = "light_grey", bg = "black2", sp = "White" },
+        TabLineBufActiveSep          = { fg = "nord_blue", bg = vim.g.transparency and "NONE" or "darker_black", sp = "White" },
+        TabLineCurrentBufSep         = { fg = "red", bg = vim.g.transparency and "NONE" or "darker_black", sp = "White" },
+        TabLineBufHiddenSep          = { fg = "light_grey", bg = vim.g.transparency and "NONE" or "darker_black", sp = "White" },
         --- Good old colorful statusline
         -- TabLineBufHidden  = { fg = "black2", bg = "light_grey" },
         -- TabLineBufActive  = { fg = "black2", bg = "cyan", },
@@ -198,6 +179,10 @@ M.load_config = function()
         --------Noice-------------------------------------
 
         --------Noice ends--------------------------------
+
+        --- Gitsigns
+        GitSignsCurrentLineBlame = { link = "Comment" },
+        GitSignsAddPreview = { link = "", fg = "green" },
 
         -- Packer
         PackerPackageName            = { fg = "red" },
@@ -241,6 +226,7 @@ M.load_config = function()
         -- Semantic tokens
         ["@lsp.type.type.lua"]       = { fg = "green" },
         -- ["@lsp.type.parameter"]      = { fg = "teal" },
+        ["@lsp.type.selfParameter"] = { fg = "cyan" },
         ["@lsp.type.annotation"]   = { fg = "yellow" },
         ["@lsp.type.modifier.java"]  = { fg = "cyan" },
         ["@lsp.mod.builtin"]         = { fg = "sun" },
@@ -261,7 +247,7 @@ M.load_config = function()
           },
         },
       },
-      theme_toggle = { "vscode_dark", "one_light" },
+      theme_toggle = { "vscode_dark", "latte_light" },
       theme = "vscode_dark", -- default theme
       transparency = false,
       lsp_semantic_tokens = true,
@@ -281,6 +267,9 @@ M.load_config = function()
       },
       telescope = {
         style = "borderless",
+      },
+      extended_integrations = {
+        "dap",
       },
     },
   }

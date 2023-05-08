@@ -18,9 +18,11 @@ M.null_ls = function(bufnr)
 end
 
 M.general = function()
-  vim.keymap.set("n", "<leader>n", function()
+  vim.keymap.set("n", "<C-n>", function()
     vim.cmd.NvimTreeToggle()
-  end, { desc = "Toggle NvimTree" })
+  end, { desc = "Toggle NvimTree"})
+  -- vim.keymap.set("n", "<C-n>", vim.cmd.cnext, { desc = "Jump to next quickfix" })
+  -- vim.keymap.set("n", "<C-p>", vim.cmd.cprevious, { desc = "Jump to prev quickfix" })
   --- Normal mode
   vim.keymap.set("n", "<ESC>", "<cmd>noh<CR>", { desc = "no highlight" })
 
@@ -59,7 +61,7 @@ M.general = function()
     require("plenary.reload").reload_module("base46")
     local config = require("core.utils").load_config()
     vim.g.nvchad_theme = vim.g.nvchad_theme == config.ui.theme_toggle[1] and config.ui.theme_toggle[2] or
-    config.ui.theme_toggle[1]
+      config.ui.theme_toggle[1]
     require("base46").load_all_highlights()
     -- require("base46").load_all_highlights()
   end, { desc = "toggle theme" })
@@ -72,19 +74,19 @@ M.general = function()
 
   vim.keymap.set("n", "a", function()
     local line = #vim.trim(vim.fn.getline("."))
-    vim.api.nvim_feedkeys(line >= 1 and "a" or "S", "n", false)
+    vim.api.nvim_feedkeys(line >= 1 and "a" or [["_cc]], "n", false)
   end, { desc = "auto indent when enter insert on empty line" })
   vim.keymap.set("n", "i", function()
     local line = #vim.trim(vim.fn.getline("."))
-    vim.api.nvim_feedkeys(line >= 1 and "i" or "S", "n", false)
+    vim.api.nvim_feedkeys(line >= 1 and "i" or [["_cc]], "n", false)
   end, { desc = "auto indent when enter insert on empty line" })
   vim.keymap.set("n", "A", function()
     local line = #vim.trim(vim.fn.getline("."))
-    vim.api.nvim_feedkeys(line >= 1 and "A" or "S", "n", false)
+    vim.api.nvim_feedkeys(line >= 1 and "A" or [["_cc]], "n", false)
   end, { desc = "auto indent when enter insert on empty line" })
   vim.keymap.set("n", "I", function()
     local line = #vim.trim(vim.fn.getline("."))
-    vim.api.nvim_feedkeys(line >= 1 and "I" or "S", "n", false)
+    vim.api.nvim_feedkeys(line >= 1 and "I" or [["_cc]], "n", false)
   end, { desc = "auto indent when enter insert on empty line" })
 
   vim.keymap.set({ "n", "v" }, "<leader>y", '"+y', { noremap = false })
@@ -94,7 +96,10 @@ M.general = function()
 
   --- Insert mode
   -- Emacs keybind kek
-  vim.keymap.set("i", "<C-a>", "<C-o>^", { desc = "" })
+  vim.keymap.set("i", "<C-a>", function()
+    local cur_line = vim.fn.line(".")
+    vim.api.nvim_win_set_cursor(0, { cur_line, vim.fn.indent(cur_line) })
+  end, { desc = "to start of line" })
   vim.keymap.set("i", "<C-e>", "<End>", { desc = "to eol" })
   vim.keymap.set("i", "<C-f>", "<C-Right>", { desc = "next word" })
   vim.keymap.set("i", "<C-b>", "<C-Left>", { desc = "last word" })

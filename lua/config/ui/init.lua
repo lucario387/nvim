@@ -2,6 +2,8 @@
 --
 -- M.setup = function()
 -- require("config.ui.tabline").setup()
+local list_contains = vim.list_contains or vim.tbl_contains
+
 local disabled_filetypes = {
 	"NvimTree",
 	"mason",
@@ -30,8 +32,8 @@ vim.opt.statusline = "%{%v:lua.require('config.ui.statusline').draw()%}"
 vim.api.nvim_create_autocmd({ "FileType" }, {
 	callback = function(args)
 		if
-			vim.list_contains(disabled_filetypes, vim.bo[args.buf].filetype)
-			or vim.list_contains(disabled_buftypes, vim.bo[args.buf].buftype)
+			list_contains(disabled_filetypes, vim.bo[args.buf].filetype)
+			or list_contains(disabled_buftypes, vim.bo[args.buf].buftype)
 		then
 			return
 		end

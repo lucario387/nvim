@@ -1,5 +1,6 @@
 local telescope = require("telescope")
 local actions = require("telescope.actions")
+-- local lga = require("telescope-live-grep-args.actions")
 -- vim.cmd("packadd extensions")
 -- local function open_qflist(...)
 --   vim.cmd("TroubleToggle quickfix")
@@ -10,6 +11,7 @@ telescope.setup({
 	defaults = {
 		vimgrep_arguments = {
 			"rg",
+      "--follow",
 			"--color=never",
 			"--no-heading",
 			"--with-filename",
@@ -78,9 +80,23 @@ telescope.setup({
 			override_file_sorter = true,
 			case_mode = "smart_case",
 		},
+ --    live_grep_args = {
+ --      auto_quoting = true,
+ --      mappings = {
+ --        i = {
+ --          ["<C-k>"] = lga.quote_prompt(),
+ --          ["<C-i>"] = lga.quote_prompt({
+ --            postfix = "--iglob",
+ --          }),
+ --        }
+ --      }
+ --    }
 	},
 })
-local extensions = { "fzf" }
+local extensions = { 
+  "fzf", 
+  -- "live_grep_args",
+}
 for _, ext in pairs(extensions) do
 	telescope.load_extension(ext)
 end

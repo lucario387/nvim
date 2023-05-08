@@ -20,16 +20,5 @@ vim.g.base46_cache = data_path .. "/nvchad/base46/"
 require("options")
 require("user_commands")
 
-require("config.ui")
 require("mappings").general()
 require("mappings").telescope()
-
--- pcall(function()
-  dofile(vim.g.base46_cache .. "defaults")
-  dofile(vim.g.base46_cache .. "syntax")
-  dofile(vim.g.base46_cache .. "devicons")
--- end)
-
-require("config.misc").mason()
-require("config.treesitter")
-require("config.misc").noice()

@@ -1,4 +1,5 @@
 local cmp = require("cmp")
+local list_contains = vim.list_contains or vim.tbl_contains
 pcall(function() dofile(vim.g.base46_cache .. "cmp") end)
 
 local ELLIPSIS_CHAR = "…"
@@ -64,7 +65,7 @@ cmp.setup({
   enabled = function()
     local disabled = false
     disabled = disabled or is_dap_buffer(0)
-    disabled = disabled or (vim.list_contains(disabled_buftypes, vim.api.nvim_buf_get_option(0, "buftype")))
+    disabled = disabled or (list_contains(disabled_buftypes, vim.api.nvim_buf_get_option(0, "buftype")))
     disabled = disabled or (vim.fn.reg_recording() ~= "")
     disabled = disabled or (vim.fn.reg_executing() ~= "")
     if disabled then
@@ -98,9 +99,10 @@ cmp.setup({
   },
   mapping = cmp.mapping.preset.insert({
     ["<Tab>"] = cmp.mapping(function(fallback)
-      if cmp.visible() then
-        cmp.select_next_item()
-      elseif require("luasnip").expand_or_jumpable() then
+      -- if cmp.visible() then
+      --   cmp.select_next_item()
+      -- else
+      if require("luasnip").expand_or_jumpable() then
         require("luasnip").expand_or_jump()
         -- elseif has_words_before() then
         --   cmp.complete()
@@ -109,9 +111,10 @@ cmp.setup({
       end
     end, { "i", "s" }),
     ["<S-Tab>"] = cmp.mapping(function(fallback)
-      if cmp.visible() then
-        cmp.select_prev_item()
-      elseif require("luasnip").jumpable(-1) then
+      -- if cmp.visible() then
+      --   cmp.select_prev_item()
+      -- else
+      if require("luasnip").jumpable(-1) then
         require("luasnip").jump(-1)
       else
         fallback()
@@ -144,7 +147,7 @@ cmp.setup({
         trailing_slash = true,
       },
       entry_filter = function()
-        return not vim.list_contains({
+        return not list_contains({
           "javascript",
           "typescript",
           "javascriptreact",
@@ -158,7 +161,7 @@ cmp.setup({
       keyword_length = 5,
       entry_filter = function()
         return not require("cmp.config.context").in_treesitter_capture({ "spell", "comment" }) and
-          not vim.list_contains(disabled_filetypes, vim.api.nvim_buf_get_option(0, "filetype"))
+          not list_contains(disabled_filetypes, vim.api.nvim_buf_get_option(0, "filetype"))
       end,
     },
     -- { name = "spell",

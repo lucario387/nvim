@@ -30,7 +30,7 @@ local _commands = {
 local get_settings = function()
   return {
     python = {
-      pythonPath = vim.fn.system({ "which", "python3" }),
+      pythonPath = vim.fn.systemlist({ "which", "python3" })[1],
       telemetry = {
         telemetryLevel = "off",
       },
@@ -39,9 +39,9 @@ local get_settings = function()
         pylanceLspClientEnabled = true,
         typeCheckingMode = "basic",
         diagnosticMode = "openFilesOnly",
-        stubPath = vim.env.HOME .. "/typings",
+        stubPath = "./typings",
         diagnosticSeverityOverrides = {
-          reportMissingTypeStubs = "information",
+          reportMissingTypeStubs = "warning",
           reportUnnecessaryComparison = "information",
           reportImportCycles = "warning",
           reportShadowedImports = "warning",

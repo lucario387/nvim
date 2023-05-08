@@ -1,6 +1,7 @@
+local list_contains = vim.list_contains or vim.tbl_contains
 vim.o.foldmethod = "expr"
--- vim.o.foldexpr = "v:lua.vim.treesitter.foldexpr()"
-vim.o.foldexpr = "nvim_treesitter#foldexpr()"
+vim.o.foldexpr = "v:lua.vim.treesitter.foldexpr()"
+-- vim.o.foldexpr = "nvim_treesitter#foldexpr()"
 vim.o.foldenable = false
 require("nvim-treesitter.configs").setup({
   auto_install = true,
@@ -12,10 +13,10 @@ require("nvim-treesitter.configs").setup({
   highlight = {
     enable = true,
     disable = function(lang, bufnr)
-      -- if vim.list_contains({}, lang) then
+      -- if list_contains({}, lang) then
       --   return true
       -- end
-      local max_filesize = 100 * 1024 -- 100kb
+      local max_filesize = 200 * 1024 -- 200kb
       local ok, stats = pcall(vim.loop.fs_stat, vim.api.nvim_buf_get_name(bufnr))
       if ok and stats and stats.size > max_filesize then
         return true
