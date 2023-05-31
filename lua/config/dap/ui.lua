@@ -61,7 +61,7 @@ dap.listeners.before.event_initialized["dapui_config"] = function()
 	end
 	for _, winnr in ipairs(vim.api.nvim_tabpage_list_wins(0)) do
 		local bufnr = vim.api.nvim_win_get_buf(winnr)
-		if vim.api.nvim_buf_get_option(bufnr, "ft") == "dap-repl" then
+		if vim.api.nvim_get_option_value("ft", { buf = bufnr }) == "dap-repl" then
 			return
 		end
 	end
@@ -69,9 +69,9 @@ dap.listeners.before.event_initialized["dapui_config"] = function()
 end
 dap.listeners.before.event_terminated["dapui_config"] = function()
 	vim.cmd("stopinsert")
-	-- dapui:close()
+	dapui:close()
 end
 dap.listeners.after.event_exited["dapui_config"] = function()
 	vim.cmd("stopinsert")
-	-- dapui:close()
+	dapui:close()
 end

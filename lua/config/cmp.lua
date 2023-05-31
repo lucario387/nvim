@@ -47,7 +47,7 @@ local menu = {
 }
 
 local is_dap_buffer = function(bufnr)
-  local filetype = vim.api.nvim_buf_get_option(bufnr or 0, "filetype")
+  local filetype = vim.api.nvim_get_option_value("filetype", { buf = bufnr or 0 })
   if filetype == "dap-repl" or vim.startswith(filetype, "dapui_") then
     return true
   end
@@ -65,7 +65,7 @@ cmp.setup({
   enabled = function()
     local disabled = false
     disabled = disabled or is_dap_buffer(0)
-    disabled = disabled or (list_contains(disabled_buftypes, vim.api.nvim_buf_get_option(0, "buftype")))
+    disabled = disabled or (list_contains(disabled_buftypes, vim.api.nvim_get_option_value("buftype", { buf = 0 })))
     disabled = disabled or (vim.fn.reg_recording() ~= "")
     disabled = disabled or (vim.fn.reg_executing() ~= "")
     if disabled then
@@ -99,10 +99,9 @@ cmp.setup({
   },
   mapping = cmp.mapping.preset.insert({
     ["<Tab>"] = cmp.mapping(function(fallback)
-      -- if cmp.visible() then
-      --   cmp.select_next_item()
-      -- else
-      if require("luasnip").expand_or_jumpable() then
+      if cmp.visible() then
+        cmp.select_next_item()
+      elseif require("luasnip").expand_or_jumpable() then
         require("luasnip").expand_or_jump()
         -- elseif has_words_before() then
         --   cmp.complete()
@@ -111,10 +110,9 @@ cmp.setup({
       end
     end, { "i", "s" }),
     ["<S-Tab>"] = cmp.mapping(function(fallback)
-      -- if cmp.visible() then
-      --   cmp.select_prev_item()
-      -- else
-      if require("luasnip").jumpable(-1) then
+      if cmp.visible() then
+        cmp.select_prev_item()
+      elseif require("luasnip").jumpable(-1) then
         require("luasnip").jump(-1)
       else
         fallback()
@@ -153,7 +151,7 @@ cmp.setup({
           "javascriptreact",
           "typescriptreact",
           "vue",
-        }, vim.api.nvim_buf_get_option(0, "filetype"))
+        }, vim.api.nvim_get_option_value("filetype", { buf = 0 }))
       end,
     },
     {
@@ -161,7 +159,7 @@ cmp.setup({
       keyword_length = 5,
       entry_filter = function()
         return not require("cmp.config.context").in_treesitter_capture({ "spell", "comment" }) and
-          not list_contains(disabled_filetypes, vim.api.nvim_buf_get_option(0, "filetype"))
+          not list_contains(disabled_filetypes, vim.api.nvim_get_option_value("filetype", { buf = 0 }))
       end,
     },
     -- { name = "spell",

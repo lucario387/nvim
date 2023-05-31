@@ -41,9 +41,9 @@ autocmd({ "BufAdd", "BufEnter" }, {
 		end
 		if
 			not utils.buf_is_valid(args.buf)
-			or list_contains(disabled_buftypes, vim.api.nvim_buf_get_option(args.buf, "buftype"))
-			or list_contains(disabled_filetypes, vim.api.nvim_buf_get_option(args.buf, "filetype"))
-			or vim.api.nvim_buf_get_option(args.buf, "bufhidden") == "wipe"
+			or list_contains(disabled_buftypes, vim.api.nvim_get_option_value("buftype", { buf = args.buf }))
+			or list_contains(disabled_filetypes, vim.api.nvim_get_option_value("filetype", { buf = args.buf }))
+			or vim.api.nvim_get_option_value("bufhidden", { buf = args.buf }) == "wipe"
 		then
 			-- if not #vim.t[tabnr].bufs == 1 then
 			utils.delete_buffer(args.buf)

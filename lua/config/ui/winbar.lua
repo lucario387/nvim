@@ -21,7 +21,7 @@ end
 -- end
 
 local modified = function()
-	if api.nvim_buf_get_option(0, "modified") then
+	if api.nvim_get_option_value("modified", { buf = 0 }) then
 		return "%#TabLineModified# "
 	end
 	return ""

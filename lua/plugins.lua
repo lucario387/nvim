@@ -96,6 +96,7 @@ local plugins = {
       require("trouble").setup()
     end,
   },
+  { "p00f/clangd_extensions.nvim" },
 
   -------------------------------------DAP-------------------------------------
   {
@@ -137,7 +138,7 @@ local plugins = {
   { "rafamadriz/friendly-snippets" },
   {
     "hrsh7th/nvim-cmp",
-    event = { "InsertEnter" },
+    event = { "InsertEnter", "CmdlineEnter" },
     config = function()
       require("config.cmp")
       -- autopairs as well, as autopairs has no reason to not be loaded on startup
@@ -198,12 +199,13 @@ local plugins = {
     "nvim-telescope/telescope.nvim",
     module = "telescope",
     cmd = "Telescope",
+    event = { "CmdlineEnter" },
     config = function()
       require("config.telescope")
     end,
   },
   { "nvim-telescope/telescope-fzf-native.nvim", run = "make" },
-  -- { "nvim-telescope/telescope-live-grep-args.nvim" },
+  { "nvim-telescope/telescope-ui-select.nvim" },
 
   -------------------------------------Git-------------------------------------
   {
@@ -228,19 +230,17 @@ local plugins = {
       })
     end,
   },
-  -- {
-  --   "TimUntersberger/neogit",
-  --   cmd = "Neogit",
-  --   config = function()
-  --     require("config.misc").neogit()
-  --   end
-  -- },
+  {
+    "TimUntersberger/neogit",
+    cmd = "Neogit",
+    requires = { "lewis6991/gitsigns.nvim" },
+    config = function()
+      require("config.misc").neogit()
+    end
+  },
 
   -------------------------------------Misc------------------------------------
-  { 
-    "nvim-tree/nvim-web-devicons",
-    lock = true,
-  },
+  { "nvim-tree/nvim-web-devicons" },
   -- tree plugin
   {
     "nvim-tree/nvim-tree.lua",
@@ -264,6 +264,9 @@ local plugins = {
     config = function()
       require("colorizer").setup({
         filetypes = { "lua", "vim", "css", "scss", "html", "vue" },
+        user_default_options = {
+          names = false
+        }
       })
     end,
   },
@@ -277,6 +280,13 @@ local plugins = {
   },
 
 
+  {
+    "Pocco81/true-zen.nvim",
+    cmd = { "TZAtaraxis" },
+    config = function()
+      require("true-zen").setup({})
+    end,
+  },
   -- load luasnips + cmp related in insert mode only
 }
 

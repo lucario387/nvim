@@ -28,6 +28,9 @@ telescope.setup({
 		selection_strategy = "reset",
 		sorting_strategy = "ascending",
 		layout_strategy = "bottom_pane",
+    preview = {
+      treesitter = false,
+    },
 		layout_config = {
 			horizontal = {
 				prompt_position = "top",
@@ -39,8 +42,8 @@ telescope.setup({
 			},
 			bottom_pane = {
 				height = 15,
-				preview_width = 0.4,
-				results_width = 0.6,
+				preview_width = 0.5,
+				results_width = 0.5,
 				prompt_position = "bottom",
 				prompt_title = false,
 			},
@@ -70,6 +73,22 @@ telescope.setup({
           actions.send_to_qflist(...)
           vim.cmd("Trouble quickfix")
         end,
+        -- ["<CR>"] = function(...)
+        --   vim.api.nvim_feedkeys(vim.keycode("<Esc>"), 'i', false)
+        --   actions.select_default(...)
+        -- end,
+        -- ["<C-x>"] = function(...)
+        --   vim.api.nvim_feedkeys(vim.keycode("<Esc>"), 'i', false)
+        --   actions.select_horizontal(...)
+        -- end,
+        -- ["<C-v>"] = function(...)
+        --   vim.api.nvim_feedkeys(vim.keycode("<Esc>"), 'i', false)
+        --   actions.select_vertical(...)
+        -- end,
+        -- ["<C-t>"] = function(...)
+        --   vim.api.nvim_feedkeys(vim.keycode("<Esc>"), 'i', false)
+        --   actions.select_tab(...)
+        -- end,
       },
 		},
 	},
@@ -95,6 +114,7 @@ telescope.setup({
 })
 local extensions = { 
   "fzf", 
+  "ui-select",
   -- "live_grep_args",
 }
 for _, ext in pairs(extensions) do

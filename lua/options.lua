@@ -1,7 +1,7 @@
 -- Unsure if this is nice or not, but why not
 
 ---@type ThemeName
-vim.g.nvchad_theme = "vscode_dark"
+vim.g.nvchad_theme = "catppuccin"
 vim.g.transparency = false
 -- vim.g.nvimtree_side = "left"
 
@@ -57,9 +57,11 @@ vim.o.relativenumber = true
 -- vim.o.concealcursor = "nv"
 -- o.sessionoptions = "buffers,curdir,localoptions,folds,help,winpos,tabpages"
 
+vim.o.viewoptions = "folds,cursor"
+
 -- vim.o.smoothscroll = true
 -- Wrap, linebreak settings
--- o.scrolloff = 25
+vim.o.scrolloff = 20
 -- vim.o.wrap = true
 
 vim.o.linebreak = true

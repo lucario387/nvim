@@ -19,7 +19,7 @@ M.load_config = function()
           bg = vim.g.transparency and "NONE" or (vim.g.nvchad_theme:find("light") and "black" or "one_bg") },
         LineNr                     = { fg = "white" },
         Folded                     = { fg = "blue" },
-        MatchWord                  = { bg = "black", fg = "orange", bold = true },
+        MatchWord                  = { bold = true },
         Visual                     = { bg = "grey", sp = "white", underline = true },
         CursorLine                 = {
           -- bg = "grey",
@@ -36,7 +36,7 @@ M.load_config = function()
         NvimTreeCursorLine         = { bg = "one_bg3" },
         -- Gitsigns
         DiffChange                 = { fg = "yellow" },
-        DiffAdd                    = { fg = "green1" },
+        DiffAdd                    = { fg = "vibrant_green" },
         DiffText                   = { fg = "white", bg = "red", bold = true },
         -- StorageClass = { fg = " green1" },
         -- ["@emphasis"]    = { fg = "white", },
@@ -57,27 +57,31 @@ M.load_config = function()
         -- Identifier = { fg = "purple" },
 
         -- Treesitter
+        ["@variable"]              = { fg = "white" },
         ["@text.emphasis"]         = { italic = true, fg = "white" },
         ["@text.strike"]           = { strikethrough = true, fg = "white" },
         ["@string"]                = { fg = "orange" },
-        ["@exception"]             = { fg = "purple" },
+        ["@parameter"]             = { fg = "cyan" },
+        ["@operator"]              = { fg = "teal" },
+        -- ["@exception"]             = { fg = "purple" },
         ["@punctuation.bracket"]   = { fg = "nord_blue" },
-        ["@keyword.function"]      = { fg = "purple" },
+        -- ["@keyword.function"]      = { fg = "purple" },
         -- Semantics
         -- ["@constructor"] = { fg = "yellow" },
 
         -- Semantics token
-        ["@lsp.type.class"]        = { fg = (vim.g.nvchad_theme == "vscode_dark") and "green1" or "vibrant_green", link = "" },
-        ["@lsp.type.enum"] = { link = "", fg = "yellow" },
-        -- ["@lsp.type.interface"]    = { fg = "vibrant_green" },
+        ["@lsp.type.class"]        = { fg = (vim.g.nvchad_theme == "vscode_dark") and "green1" or "vibrant_green", link =
+        "" },
+        ["@lsp.type.enum"]         = { link = "", fg = "yellow" },
+        ["@lsp.type.interface"]    = { fg = "vibrant_green", link = "" },
         -- ["@lsp.type.module"]       = { fg = "cyan" },
         -- ["@lsp.type.parameter"]    = { fg = "teal" },
         -- ["@lsp.type.variable"]     = { fg = "cyan" },
-        ["@lsp.type.namespace"] = { fg = "cyan", link = "" },
+        ["@lsp.type.namespace"]    = { fg = "cyan", link = "" },
       },
       hl_add = {
         SpecialKey                   = { fg = "yellow" },
-        luaparenError                = { link = "Normal" },
+        luaparenError                = { link = "NONE" },
         ------------------------LspSaga------------------------------------
         SagaBorder                   = { fg = "blue" },
         HoverNormal                  = { fg = "white" },
@@ -121,19 +125,19 @@ M.load_config = function()
         StFileSep                    = { fg = "orange", bg = vim.g.transparency and "NONE" or "statusline_bg" },
         StDirFileSep                 = { fg = "yellow", bg = "orange" },
         -- Git stuffs
-        StGitBranch                  = { bg = "grey_fg2", fg = "pink" },
-        StGitAdded                   = { bg = "grey_fg2", fg = "green" },
-        StGitChanged                 = { bg = "grey_fg2", fg = "yellow" },
-        StGitRemoved                 = { bg = "grey_fg2", fg = "red" },
-        StGitSep                     = { bg = vim.g.transparency and "NONE" or "statusline_bg", fg = "grey_fg2" },
+        StGitBranch                  = { bg = "grey", fg = "pink" },
+        StGitAdded                   = { bg = "grey", fg = "green" },
+        StGitChanged                 = { bg = "grey", fg = "yellow" },
+        StGitRemoved                 = { bg = "grey", fg = "red" },
+        StGitSep                     = { bg = vim.g.transparency and "NONE" or "statusline_bg", fg = "grey" },
         -- LSP Stuffs
         -- StLSPProgress = { bg = vim.g.transparency and "NONE" or "statusline_bg", fg = "" },
         StLSPClient                  = { bg = vim.g.transparency and "NONE" or "statusline_bg", fg = "blue", bold = true },
-        StLSPDiagSep                 = { bg = vim.g.transparency and "NONE" or "statusline_bg", fg = "light_grey" },
-        StLSPErrors                  = { bg = "light_grey", fg = "red" },
-        StLSPWarnings                = { bg = "light_grey", fg = "yellow" },
-        StLSPHints                   = { bg = "light_grey", fg = "purple" },
-        StLspInfo                    = { bg = "light_grey", fg = "cyan" },
+        StLSPDiagSep                 = { bg = vim.g.transparency and "NONE" or "statusline_bg", fg = "grey" },
+        StLSPErrors                  = { bg = "grey", fg = "red" },
+        StLSPWarnings                = { bg = "grey", fg = "yellow" },
+        StLSPHints                   = { bg = "grey", fg = "purple" },
+        StLspInfo                    = { bg = "grey", fg = "cyan" },
         -- Lsp Diagnostics
         DiagnosticHint               = { fg = "purple" },
         DiagnosticError              = { fg = "red" },
@@ -152,9 +156,17 @@ M.load_config = function()
         TabLineModified              = { fg = "green", sp = "White" },
         TabLineCurrentTab            = { fg = "white", bg = "red", bold = true, sp = "White" },
         TabLineOtherTab              = { fg = "white", bg = "light_grey", sp = "White" },
-        TabLineBufActiveSep          = { fg = "nord_blue", bg = vim.g.transparency and "NONE" or "darker_black", sp = "White" },
+        TabLineBufActiveSep          = {
+          fg = "nord_blue",
+          bg = vim.g.transparency and "NONE" or "darker_black",
+          sp = "White",
+        },
         TabLineCurrentBufSep         = { fg = "red", bg = vim.g.transparency and "NONE" or "darker_black", sp = "White" },
-        TabLineBufHiddenSep          = { fg = "light_grey", bg = vim.g.transparency and "NONE" or "darker_black", sp = "White" },
+        TabLineBufHiddenSep          = {
+          fg = "light_grey",
+          bg = vim.g.transparency and "NONE" or "darker_black",
+          sp = "White",
+        },
         --- Good old colorful statusline
         -- TabLineBufHidden  = { fg = "black2", bg = "light_grey" },
         -- TabLineBufActive  = { fg = "black2", bg = "cyan", },
@@ -176,13 +188,16 @@ M.load_config = function()
         CurrentLineNr                = { fg = "yellow", bold = true },
         --------Statuscolumn coloring ends-----------------
 
-        --------Noice-------------------------------------
+        --------Wilder.nvim-------------------------------------
+        -- WilderWildMenuAccent = { bold = true, underline = true },
+        -- WilderWildMenuSelectedAccent = { fg = "white", bg = "blue", bold = true, underline = true, default = false, link = "" },
 
-        --------Noice ends--------------------------------
+        --------Noice.nvim--------------------------------
 
+        NvimTreeExecFile             = { fg = "vibrant_green", bold = true },
         --- Gitsigns
-        GitSignsCurrentLineBlame = { link = "Comment" },
-        GitSignsAddPreview = { link = "", fg = "green" },
+        GitSignsCurrentLineBlame     = { link = "Comment" },
+        GitSignsAddPreview           = { link = "", fg = "green" },
 
         -- Packer
         PackerPackageName            = { fg = "red" },
@@ -226,15 +241,19 @@ M.load_config = function()
         -- Semantic tokens
         ["@lsp.type.type.lua"]       = { fg = "green" },
         -- ["@lsp.type.parameter"]      = { fg = "teal" },
-        ["@lsp.type.selfParameter"] = { fg = "cyan" },
-        ["@lsp.type.annotation"]   = { fg = "yellow" },
+        ["@lsp.type.selfParameter"]  = { fg = "cyan" },
+        ["@lsp.type.annotation"]     = { fg = "yellow" },
         ["@lsp.type.modifier.java"]  = { fg = "cyan" },
+        ["@lsp.type.property.lua"]   = { link = "" },
         ["@lsp.mod.builtin"]         = { fg = "sun" },
         ["@lsp.mod.readonly.python"] = { link = "Constant" },
         -- ["@lsp.mod.constructor.java"] = { link = "@function" },
         ["@lsp.mod.documentation"]   = { bold = true, fg = "purple" },
         ["@lsp.type.keyword"]        = { fg = vim.g.nvchad_theme == "vscode_dark" and "pink" or "purple" },
-        DiagnosticUnnecessary        = { fg = "light_grey" },
+
+        -- Vim-related hlgroup that's not in NvChad
+        DiagnosticUnnecessary        = { link = "", fg = "light_grey" },
+        LspInlayHint                 = { link = "", fg = "light_grey" },
         -- ["@lsp.mod.defaultLibrary"] = { fg = "green" },
         -- ["@lsp.type.variable"] = { fg = "light_blue" },
         -- ["@lsp.type.variable.python"] = { fg = "light_blue" },
@@ -247,8 +266,8 @@ M.load_config = function()
           },
         },
       },
-      theme_toggle = { "vscode_dark", "latte_light" },
-      theme = "vscode_dark", -- default theme
+      theme_toggle = { "catppuccin", "latte_light" },
+      theme = "catppuccin", -- default theme
       transparency = false,
       lsp_semantic_tokens = true,
       -- cmp themeing

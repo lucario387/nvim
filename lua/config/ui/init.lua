@@ -24,6 +24,7 @@ local disabled_buftypes = {
 	"prompt",
   "terminal"
 }
+
 vim.t.bufs = vim.api.nvim_list_bufs()
 require("config.ui.tabline.autocmds")
 vim.opt.showtabline = 2

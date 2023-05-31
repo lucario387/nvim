@@ -1,6 +1,10 @@
 -- if not vim.g.lsp or not vim.g.lsp.jdtls then
 --   return
 -- end
+
+if #vim.api.nvim_list_uis() == 0 then
+  return
+end
 if not vim.g.loaded_jdtls then
   vim.g.loaded_jdtls = true
   require("packer").loader("nvim-lspconfig")
@@ -9,139 +13,173 @@ if not vim.g.loaded_jdtls then
 end
 
 local jdtls = require("jdtls")
-
-local home = vim.env.HOME
-local root_dir = vim.fs.dirname(vim.fs.find({ ".gradlew", ".git", "mvnw", "pom.xml" }, { upward = true })[1])
-local jdtls_path = vim.fn.stdpath("data") .. "/mason/packages/jdtls"
-local workspace_name = home .. "/.local/share/eclipse/" .. vim.fn.fnamemodify(root_dir, ":p:h:t")
+local data_path = vim.fn.stdpath("data")
 local extendedClientCapabilities = jdtls.extendedClientCapabilities
 extendedClientCapabilities.resolveAdditionalTextEditsSupport = true
-extendedClientCapabilities.progressReportProvider = true
+extendedClientCapabilities.progressReportProvider = true;
+extendedClientCapabilities.onCompletionItemSelectedCommand = "editor.action.triggerParameterHints";
 
-local bundles = {
-  vim.fn.glob(
-    vim.fn.stdpath("data")
-    .. "/mason/packages/java-debug-adapter/extension/server/com.microsoft.java.debug.plugin-*.jar"
-  ),
-}
-vim.list_extend(
-  bundles,
-  vim.split(vim.fn.glob(vim.fn.stdpath("data") .. "/mason/packages/java-test/extension/server/*.jar"), "\n")
-)
 
-local config = {}
+---@type string
+local root_dir = require("jdtls.setup").find_root({ ".git", "gradlew", "mvnw", "pom.xml" })
+---@type string
+local workspace_folder = vim.env.HOME .. "/.local/share/eclipse/" .. vim.fn.fnamemodify(root_dir, ":p:h:t")
 
-config.root_dir = root_dir
+local config = {
+  cmd = {
+    "/usr/lib/jvm/java-17-openjdk/bin/java",
 
-config.cmd = {
-  "/usr/lib/jvm/java-17-openjdk/bin/java",
-  "-Declipse.applicaton=org.eclipse.jdt.ls.core.id1",
-  "-Dosgi.bundles.defaultStartLevel=4",
-  "-Declipse.product=org.eclipse.jdt.ls.core.product",
-  "-Dlog.protocol=true",
-  "-Dlog.level=ALL",
-  "-Xmx4G",
-  "--add-modules=ALL-SYSTEM",
-  "--add-opens",
-  "java.base/java.util=ALL-UNNAMED",
-  "--add-opens",
-  "java.base/java.lang=ALL-UNNAMED",
-  "-jar",
-  vim.fn.glob(jdtls_path .. "/plugins/org.eclipse.equinox.launcher_*.jar"),
-  "-configuration",
-  jdtls_path .. "/config_linux",
-  "-data",
-  workspace_name,
-}
+    "-Declipse.application=org.eclipse.jdt.ls.core.id1",
+    "-Dosgi.bundles.defaultStartLevel=4",
+    "-Declipse.product=org.eclipse.jdt.ls.core.product",
+    "-Dlog.protocol=true",
+    "-Dlog.level=ALL",
+    "-Xms1g", "-Xmx4G",
+    "--add-modules=ALL-DEFAULT",
+    "--add-opens", "java.base/java.util=ALL-UNNAMED",
+    "--add-opens", "java.base/java.lang=ALL-UNNAMED",
 
-config.flags = {
-  allow_incremental_sync = true,
-}
-
-config.init_options = {
-  bundles = bundles,
-  extendedClientCapabilities = extendedClientCapabilities,
-}
-
-config.capabilities = require("config.lsp").set_capabilities()
-
-config.settings = {
-  java = {
-    -- format = {
-    --   settings = vim.env.HOME .. "/.config/jdtls/google_java_format.xml"
-    -- },
-    configuration = {
-      runtimes = {
+    "-javaagent:" .. data_path .. "/mason/packages/jdtls/lombok.jar",
+    "-jar",
+    vim.fn.glob(data_path .. "/mason/packages/jdtls/plugins/org.eclipse.equinox.launcher_*.jar",
+      true, true, true)[1],
+    "-configuration",
+    vim.fn.glob(data_path .. "/mason/packages/jdtls/config_linux", true, true, true)[1],
+    "-data", workspace_folder,
+  },
+  root_dir = root_dir,
+  ---@type fun(client: lsp.Client, bufnr: integer)
+  on_attach = function(client, bufnr)
+    require("mappings").lsp(bufnr)
+    require("mappings").jdtls(bufnr)
+    vim.keymap.set("n", "gi", function()
+      require("jdtls").super_implementation()
+    end, { buffer = bufnr })
+    require("jdtls.dap").setup_dap({
+      config_overrides = {
+        noDebug = false,
+      },
+      hotcodereplace = "auto",
+    })
+    require("jdtls.setup").add_commands()
+    if client.supports_method("textDocument/inlayHint") then
+      vim.lsp.buf.inlay_hint(bufnr, true)
+    end
+  end,
+  capabilities = require("config.lsp").set_capabilities(),
+  init_options = {
+    bundles = vim.tbl_filter(function(name)
+        return not vim.endswith(name, 'com.microsoft.java.test.runner-jar-with-dependencies.jar')
+          and not vim.endswith(name, 'com.microsoft.java.test.runner.jar')
+      end,
+      vim.tbl_flatten(vim.tbl_map(
+        function(v)
+          return vim.fn.glob(v, true, true, true)
+        end,
         {
-          name = "JavaSE-11",
-          path = "/usr/lib/jvm/java-11-openjdk/",
+          data_path .. "/mason/packages/java-test/extension/server/*.jar",
+          "/home/lucario387/.vscode/extensions/dgileadi.java-decompiler-0.0.3/server/*fernflower*.jar",
+          "/home/lucario387/.vscode/extensions/vscjava.vscode-java-dependency*/server/*.jar",
+          "/home/lucario387/.vscode/extensions/vscjava.vscode-java-debug-*/server/com.microsoft.java.debug.plugin-*.jar",
+        }
+      ))
+    ),
+    extendedClientCapabilities = extendedClientCapabilities,
+  },
+  settings = {
+    java = {
+      signatureHelp = {
+        enabled = true,
+        description = {
+          enabled = true,
         },
-        {
-          name = "JavaSE-17",
-          path = "/usr/lib/jvm/java-17-openjdk/",
+      },
+      references = {
+        includeDecompiledSources = true,
+      },
+      contentProvider = { preferred = "fernflower" },
+      -- saveActions = {
+      --   organizeImports = true,
+      -- },
+      completion = {
+        favoriteStaticMembers = {
+          "io.crate.testing.Asserts.assertThat",
+          "org.assertj.core.api.Assertions.assertThat",
+          -- "org.assertj.core.api.Assertions.assertThatThrownBy",
+          -- "org.assertj.core.api.Assertions.assertThatExceptionOfType",
+          "org.assertj.core.api.Assertions.catchThrowable",
+          "org.hamcrest.MatcherAssert.assertThat",
+          "org.mockito.ArgumentMatchers.*",
+          "org.hamcrest.Matchers.*",
+          "org.hamcrest.CoreMatchers.*",
+          "org.junit.jupiter.api.Assertions.*",
+          "java.util.Objects.requireNonNull",
+          "java.util.Objects.requireNonNullElse",
+          "org.mockito.Mockito.*",
+          -- "MockMvc*",
+          "org.springframework.test.web.servlet.setup.MockMvcBuilders.*",
+          "org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*",
+          "org.springframework.test.web.servlet.result.MockMvcResultHandlers.*",
+          "org.springframework.test.web.servlet.result.MockMvcResultMatchers.*",
         },
-        -- {
-        --   name = "JavaSE-20",
-        --   path = "/usr/lib/jvm/java-20-openjdk/",
-        -- },
+        filteredTypes = {
+          "com.sun.*",
+          "io.micrometer.shaded.*",
+          "java.awt.*",
+          "jdk.*",
+          "sun.*",
+        },
+        importOrder = {
+          "javax",
+          "java",
+          "com",
+          "org",
+        }
       },
-    },
-    project = {
-      referencedLibraries = {
-        "/home/lucario387/Desktop/INIAD/Java/jar/gson-2.8.6.jar",
+      sources = {
+        organizeImports = {
+          starThreshold = 9999,
+          staticStarThreshold = 9999,
+        },
       },
-    },
-    signatureHelp = { enabled = true },
-    contentProvider = { preferred = "fernflower" },
-    completion = {
-      favoriteStaticMembers = {
-        "org.junit.Assert.*",
-        "org.junit.jupiter.api.Assertions.*",
-        "java.util.Objects.requireNonNull",
-        "java.util.Objects.requireNonNullElse",
-        "org.mockito.Mockito.*",
+      codeGeneration = {
+        toString = {
+          skipNullValues = true,
+          listArrayContents = true,
+          template = "${object.className}{${member.name()}=${member.value}, ${otherMembers}}",
+        },
+        useBlocks = true,
+        hashCodeEquals = {
+          useInstanceOf = true,
+          useJava7Objects = true,
+        },
+        insertLocation = true,
       },
-      filteredTypes = {
-        "com.sun.*",
-        "io.micrometer.shaded.*",
-        "java.awt.*",
-        "jdk.*",
-        "sun.*",
+      configuration = {
+        runtimes = {
+          {
+            name = "JavaSE-11",
+            path = "/usr/lib/jvm/java-11-openjdk",
+          },
+          {
+            name = "JavaSE-17",
+            path = "/usr/lib/jvm/java-17-openjdk",
+          },
+          {
+            name = "JavaSE-20",
+            path = "/usr/lib/jvm/java-20-openjdk",
+          },
+        },
       },
-    },
-    codeGeneration = {
-      toString = {
-        template = "${object.className}{${member.name()}=${member.value}, ${otherMembers}}",
-      },
-      useBlocks = true,
+      -- eclipse = {
+      --   downloadSources = true,
+      -- },
+      -- maven = {
+      --   downloadSources = true,
+      --   updateSnapshots = true,
+      -- },
     },
   },
 }
-
-config.on_init = function(client, _)
-  client.notify("workspace/didChangeConfiguration", { settings = config.settings })
-end
-
-config.on_attach = function(client, bufnr)
-  -- client.server_capabilities.semanticTokensProvider = nil
-  require("mappings").lsp(bufnr)
-  require("mappings").jdtls(bufnr)
-  vim.keymap.set("n", "gi", function()
-    require("jdtls").super_implementation()
-  end, { buffer = bufnr })
-  require("jdtls.dap").setup_dap({
-    config_overrides = {
-      noDebug = false,
-    },
-    hotcodereplace = "auto",
-  })
-  require("jdtls.setup").add_commands()
-end
--- mute; having progress reports is enough
--- config.handlers = {
---   ["language/status"] = function() end,
---   ["$/progress"] = function() end,
---   ["window/showMessageRequest"] = function() end,
--- }
 
 jdtls.start_or_attach(config)

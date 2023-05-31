@@ -35,6 +35,9 @@
     "enumsLimit": 5,
     "previewFields": 5
   },
+  "hint": {
+    "enable": true
+  },
   "codeLens": {
     "enable": true
   }

@@ -144,7 +144,7 @@ local lsp_clients = function()
 end
 
 local position = function()
-	if not vim.api.nvim_buf_get_option(0, "modifiable") then
+	if not vim.api.nvim_get_option_value("modifiable", { buf = 0 }) then
 		return ""
 	end
 	local left_sep = "%#StPositionSep#"

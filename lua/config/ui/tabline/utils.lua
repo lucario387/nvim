@@ -9,6 +9,7 @@ local add_clean_buf = function(tabnr)
 	end
 	return buflist
 end
+
 local disabled_buftypes = {
 	"terminal",
 	"prompt",
@@ -17,15 +18,17 @@ local disabled_buftypes = {
 
 local M = {}
 
+---@param bufnr integer
 function M.buf_is_valid(bufnr)
 	if not bufnr or bufnr < 1 then
 		return false
 	end
 
-	return (not list_contains(disabled_buftypes, vim.api.nvim_buf_get_option(bufnr, "buftype")))
+	return (not list_contains(disabled_buftypes, vim.api.nvim_get_option_value("buftype", { buf = bufnr })))
 		and vim.api.nvim_buf_is_valid(bufnr)
-		and vim.api.nvim_buf_get_option(bufnr, "buflisted")
-		and (not list_contains({ "delete", "wipe" }, vim.api.nvim_buf_get_option(bufnr, "buflisted")))
+		and vim.api.nvim_get_option_value("buflisted", { buf = bufnr })
+		and (not list_contains({ "delete", "wipe" }, vim.api.nvim_get_option_value("buflisted", { buf = bufnr })))
+    and not vim.api.nvim_buf_get_name(bufnr):find("option-window", 1, true)
 end
 
 ---Wrapper around `vim.api.nvim_list_bufs()`

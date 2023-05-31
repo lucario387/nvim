@@ -10,11 +10,17 @@ M.lspsaga = function()
         exec_action = "<CR>",
       },
     },
+    finder = {
+      
+    },
     -- scroll_preview = {
     --   scroll_down = "",
     --   scroll_up = "",
     -- },
-    code_action = { extend_gitsigns = false },
+    code_action = { 
+      extend_gitsigns = false,
+      show_server_name = false,
+    },
     lightbulb = { enable = false },
     symbol_in_winbar = { enable = false },
   })
@@ -39,7 +45,8 @@ M.LuaSnip = function()
   require("luasnip.loaders.from_vscode").lazy_load()
   require("luasnip.loaders.from_vscode").lazy_load({ paths = { vim.g.luasnippets_path } })
 
-  vim.api.nvim_create_autocmd({ "InsertLeave" }, {
+  vim.api.nvim_create_autocmd({ "ModeChanged" }, {
+    pattern = { "i:*", "s:n" },
     callback = function()
       if
         require("luasnip").session.current_nodes[vim.api.nvim_get_current_buf()]
@@ -57,12 +64,12 @@ M.gitsigns = function()
 
   require("gitsigns").setup({
     signs = {
-      add = { text = "┃" },
-      change = { text = "┃" },
-      delete = { text = "󰍵" },
-      topdelete = { text = "‾" },
+      add          = { text = "┃" },
+      change       = { text = "┃" },
+      delete       = { text = "󰍵" },
+      topdelete    = { text = "‾" },
       changedelete = { text = "~" },
-      untracked = { text = "┆" },
+      untracked    = { text = "┆" },
     },
     sign_priority = 0,
     max_file_length = 3000,
@@ -156,13 +163,13 @@ M["nvim-tree"] = function()
     experimental = {
       git = {
         async = false,
-      }
+      },
     },
     on_attach = function(bufnr)
       local api = require("nvim-tree.api")
       api.config.mappings.default_on_attach(bufnr)
       vim.keymap.set("n", "d", api.fs.trash, { buffer = bufnr, nowait = true })
-    end
+    end,
   })
 end
 
@@ -170,6 +177,7 @@ M["indent-blankline"] = function()
   pcall(function()
     dofile(vim.g.base46_cache .. "blankline")
   end)
+  -- vim.g.indent_blankline_use_treesitter = true
   require("indent_blankline").setup({
     filetype_exclude = {
       "help",
@@ -182,6 +190,7 @@ M["indent-blankline"] = function()
       "TelescopeResults",
       "norg",
       "noice",
+      "NvimTree",
     },
     buftype_exclude = {
       "terminal",
@@ -232,7 +241,7 @@ M.noice = function()
           },
           win_options = {
             wrap = false,
-          }
+          },
         },
       },
       documentation = {
@@ -252,8 +261,106 @@ M.neogit = function()
   require("neogit").setup({
     integrations = {
       diffview = true,
-    }
+    },
   })
+end
+
+M.wilder = function()
+  local wilder = require("wilder")
+
+  wilder.setup({ modes = { ":", "/", "?" } })
+  wilder.set_option("use_python_remote_plugin", 0)
+  wilder.set_option("pipeline", {
+    wilder.branch(
+      wilder.cmdline_pipeline({ use_python = 0, fuzzy = 1, fuzzy_filter = wilder.lua_fzy_filter() }),
+      wilder.vim_search_pipeline(),
+      {
+        wilder.check(function(_, x)
+          return x == ""
+        end),
+        wilder.history(),
+        wilder.result({
+          draw = {
+            function(_, x)
+              return x
+            end,
+          },
+        }),
+      }
+    ),
+  })
+
+
+  local popupmenu_renderer = wilder.popupmenu_renderer(wilder.popupmenu_border_theme({
+    border = "rounded",
+    highlights = {
+      border = "CmpBorder", -- highlight to use for the border
+      -- accent = "CmpPmenu"
+    },
+    empty_message = wilder.popupmenu_empty_message_with_spinner(),
+    highlighter = wilder.lua_fzy_highlighter(),
+    left = {
+      " ",
+      wilder.popupmenu_devicons(),
+      wilder.popupmenu_buffer_flags({
+        flags = " a + ",
+      }),
+    },
+    right = {
+      " ",
+      wilder.popupmenu_scrollbar(),
+    },
+  }))
+  local wildmenu_renderer = wilder.wildmenu_renderer({
+    highlighter = wilder.lua_fzy_highlighter(),
+    highlights = {
+      selected = "CmpSel",
+      -- selected_accent = "CmpSel"
+    },
+    apply_incsearch_fix = true,
+    separator = " | ",
+    left = { " ", wilder.wildmenu_spinner(), " " },
+    right = { " ", wilder.wildmenu_index() },
+  })
+  wilder.set_option(
+    "renderer",
+    wilder.renderer_mux({
+      [":"] = popupmenu_renderer,
+      ["/"] = wildmenu_renderer,
+      substitute = wildmenu_renderer,
+    })
+  )
+  -- local wilder = require('wilder')
+  -- wilder.setup({modes = {':', '/', '?'}})
+  -- -- Disable Python remote plugin
+  -- wilder.set_option('use_python_remote_plugin', 0)
+  --
+  -- wilder.set_option('pipeline', {
+  --   wilder.branch(
+  --     wilder.cmdline_pipeline({
+  --       fuzzy = 1,
+  --       fuzzy_filter = wilder.lua_fzy_filter(),
+  --     }),
+  --     wilder.vim_search_pipeline()
+  --   )
+  -- })
+  --
+  -- wilder.set_option('renderer', wilder.renderer_mux({
+  --   [':'] = wilder.popupmenu_renderer({
+  --     highlighter = wilder.lua_fzy_highlighter(),
+  --     left = {
+  --       ' ',
+  --       wilder.popupmenu_devicons()
+  --     },
+  --     right = {
+  --       ' ',
+  --       wilder.popupmenu_scrollbar()
+  --     },
+  --   }),
+  --   ['/'] = wilder.wildmenu_renderer({
+  --     highlighter = wilder.lua_fzy_highlighter(),
+  --   }),
+  -- }))
 end
 
 return M

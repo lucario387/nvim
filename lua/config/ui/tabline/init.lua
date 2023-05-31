@@ -34,10 +34,12 @@ local padding = {
 ---@param group2 string
 ---@return string hl_group name of the new hlgroup
 local new_hl = function(group1, group2)
-  local hl1 = vim.api.nvim_get_hl_by_name(group1, true)
-  local hl2 = vim.api.nvim_get_hl_by_name(group2, true)
   local new_hlgroup = "TabLine" .. group1 .. group2
-  api.nvim_set_hl(0, new_hlgroup, { fg = hl1.foreground, bg = hl2.background, underline = hl1.underline, sp = "White" })
+  if vim.fn.hlexists(new_hlgroup) == 0 then
+    local hl1 = vim.api.nvim_get_hl(0, { name = group1 })
+    local hl2 = vim.api.nvim_get_hl(0, { name = group2 })
+    api.nvim_set_hl(0, new_hlgroup, { fg = hl1.fg, bg = hl2.bg, underline = hl1.underline, sp = hl1.sp })
+  end
   return new_hlgroup
 end
 
@@ -84,10 +86,10 @@ local generate_buf_str = function(v, bufnr)
   local padding_len = math.min(PADDING_SIZE, FILENAME_LENGTH - #filename)
   local padding_str = hl_str(hlgroup, string.rep(" ", padding_len / 2))
 
-  local modified_str = vim.api.nvim_buf_get_option(v, "modified")
+  local modified_str = vim.api.nvim_get_option_value("modified", { buf = v })
     and hl_str(new_hl("TabLineModified", hlgroup), " ")
     or ""
-  local modified_len = vim.api.nvim_buf_get_option(v, "modified") and 2 or 0
+  local modified_len = vim.api.nvim_get_option_value("modified", { buf = v }) and 2 or 0
 
   return {
     str = border_str_left .. padding_str .. filename_str .. modified_str .. padding_str .. border_str_right,
@@ -129,7 +131,7 @@ local bufferlist = function()
   -- if true then return "" end
   local rendered_buflist = {}
   local remaining_columns = vim.o.columns - get_ft_win_width("NvimTree") - #vim.api.nvim_list_tabpages() * TAB_SIZE
-  local has_current_bufnr = list_contains(auto_true_filetypes, vim.api.nvim_buf_get_option(bufnr, "ft"))
+  local has_current_bufnr = list_contains(auto_true_filetypes, vim.api.nvim_get_option_value("ft", { buf = bufnr }))
   local current_buflen = 0
 
   for _, v in ipairs(buflist) do

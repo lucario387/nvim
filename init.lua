@@ -19,6 +19,7 @@ vim.g.base46_cache = data_path .. "/nvchad/base46/"
 -- require("bootstrap")
 require("options")
 require("user_commands")
+require("auto_commands")
 
 require("mappings").general()
 require("mappings").telescope()

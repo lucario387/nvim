@@ -40,16 +40,22 @@ local get_settings = function()
         typeCheckingMode = "basic",
         diagnosticMode = "openFilesOnly",
         stubPath = "./typings",
+        inlayHints = {
+          variableTypes = true,
+        },
         diagnosticSeverityOverrides = {
           reportMissingTypeStubs = "warning",
           reportUnnecessaryComparison = "information",
           reportImportCycles = "warning",
           reportShadowedImports = "warning",
+          reportUnusedImport = "error",
+          reportUnusedVariable = "error",
           reportMatchNotExhaustive = "error",
           reportAssertAlwaysTrue = "error",
           reportConstantRedefinition = "error",
           reportDuplicateImport = "error",
           reportPrivateUsage = "error",
+          reportWildcardImportFromLibrary = "error",
           strictListInference = true,
           strictDictionaryInference = true,
           strictSetInference = true,
@@ -181,6 +187,7 @@ local function change_python_interpreter(path)
   client.stop()
   -- local config = require("lspconfig.server_configurations.pylance")
   -- config.settings.python.pythonPath = path
+
   local settings = get_settings()
   settings.python.pythonPath = path
   lspconfig.pylance.setup({
@@ -256,6 +263,7 @@ if not config.pylance then
           desc = "Organize Imports",
           buffer = bufnr,
         })
+        vim.lsp.buf.inlay_hint(bufnr, true)
       end,
       capabilities = capabilities,
       settings = get_settings(),

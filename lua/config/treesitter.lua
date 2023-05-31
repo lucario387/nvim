@@ -6,7 +6,7 @@ vim.o.foldenable = false
 require("nvim-treesitter.configs").setup({
   auto_install = true,
   parser_install_dir = vim.fn.stdpath("data") .. "/site",
-  ensure_installed = { "vim", "lua", "c" },
+  ensure_installed = { "vim", "lua", "c", "vimdoc" },
   ignore_install = {
     "latex",
   },
@@ -64,3 +64,5 @@ require("nvim-treesitter.configs").setup({
     move = { enable = false, },
   },
 })
+
+vim.treesitter.language.register("bash", "zsh")

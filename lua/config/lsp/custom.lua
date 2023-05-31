@@ -1,8 +1,11 @@
----@type table<string, fun(on_attach: fun(client: Client, bufnr: integer), capabilities: ClientCapabilities)>
+---@type table<string, fun(on_attach: fun(client: lsp.Client, bufnr: integer), capabilities: lsp.ClientCapabilities)>
 local M = {}
+
+local data_path = vim.fn.stdpath("data")
 
 M.jsonls = function(on_attach, capabilities)
 	require("lspconfig").jsonls.setup({
+    ---@type fun(client: lsp.Client, bufnr: integer)
 		on_attach = function(client, bufnr)
 			client.server_capabilities.formattingProvider = false
 			client.server_capabilities.rangeFormattingProvider = false
@@ -31,6 +34,7 @@ M.neodev = function(on_attach, capabilities)
 		},
 	})
 	require("lspconfig").lua_ls.setup({
+    ---@type fun(client: lsp.Client, bufnr: integer)
 		on_attach = function(client, bufnr)
       on_attach(client, bufnr)
       vim.keymap.set("n", "gd", function()
@@ -39,6 +43,9 @@ M.neodev = function(on_attach, capabilities)
       vim.keymap.set("n", "<leader>gt", function()
         vim.cmd.Lspsaga("goto_type_definition")
       end, { buffer = bufnr })
+      if client.supports_method("textDocument/inlayHint") then
+        vim.lsp.buf.inlay_hint(bufnr, true)
+      end
     end,
 		capabilities = capabilities,
 		settings = {
@@ -56,13 +63,19 @@ M.neodev = function(on_attach, capabilities)
             "it"
           },
         },
+        -- hint = {
+        --   enable = true,
+        -- },
         workspace = {
           checkThirdParty = false,
           library = {
-            "/home/lucario387/.local/share/nvim/site/pack/packer/start/neodev.nvim/types/nightly",
-            "/home/lucario387/.local/share/nvim/site/pack/packer/start/neodev.nvim/types/override",
+            data_path .. "/site/pack/packer/start/neodev.nvim/types/nightly",
+            data_path .. "/site/pack/packer/start/neodev.nvim/types/override",
             "/usr/local/share/nvim/runtime/lua",
               "/home/lucario387/dev/extensions/nvchad_types",
+            -- data_path .. "/mason/packages/lua-language-server/libexec/meta/",
+            -- data_path .. "/mason/packages/lua-language-server/libexec/meta/198256b1",
+            -- data_path .. "/mason/packages/lua-language-server/libexec/meta/5393ac01",
           }
         },
 				runtime = {
@@ -88,24 +101,58 @@ M.lua_ls = function(on_attach, capabilities)
 end
 
 M.clangd = function(on_attach, capabilities)
-  require("lspconfig").clangd.setup({
-    cmd = {
-      "clangd",
-      "--background-index",
-      "--offset-encoding=utf-16", -- temporary fix to stop null-ls
-      "--enable-config",
-      "--completion-style=detailed",
-      "--clang-tidy",
-      "--all-scopes-completion",
-      "--pch-storage=memory",
-      -- "--suggest-missing-includes",
+  require("clangd_extensions").setup({
+    server = {
+      cmd = {
+        "clangd",
+        "--background-index",
+        "--offset-encoding=utf-16", -- temporary fix to stop null-ls
+        "--enable-config",
+        "--completion-style=detailed",
+        "--clang-tidy",
+        "--all-scopes-completion",
+        "--pch-storage=memory",
+        "--suggest-missing-includes",
+      },
+      on_attach = function(client, bufnr)
+        -- client.server_capabilities.semanticTokensProvider = false
+        on_attach(client, bufnr)
+        vim.lsp.buf.inlay_hint(bufnr, true)
+      end,
+      capabilities = capabilities,
     },
-    on_attach = function(client, bufnr)
-      -- client.server_capabilities.semanticTokensProvider = false
-      on_attach(client, bufnr)
-    end,
-    capabilities = capabilities,
+    extensions = {
+      autoSetHints = false,
+      ast = {
+        role_icons = {
+          type = " ",
+          declaration = " ",
+          expression = " ",
+          specifier = "  ",
+          statement = " ",
+          ["template argument"] = " ",
+        },
+
+        kind_icons = {
+          Compound = " ",
+          Recovery = " ",
+          TranslationUnit = " ",
+          PackExpansion = " ",
+          TemplateTypeParm = " ",
+          TemplateTemplateParm = " ",
+          TemplateParamObject = " ",
+        },
+      },
+      memory_usage = {
+        border = "rounded",
+      },
+      symbol_info = {
+        border = "rounded"
+      }
+    }
   })
+  -- require("lspconfig").clangd.setup({
+  -- })
 end
 
 M.eslint = function(on_attach, capabilities)
@@ -198,6 +245,24 @@ M.volar = function(on_attach, capabilities)
         }
       }
     },
+    init_options = {
+      ["vue-semantic-server"] = {
+        trace = {
+          server = "on"
+        }
+      },
+      vue = {
+        server = {
+          reverseConfigFilePriority = true,
+          vitePress = {
+            supportMdFile = true,
+          }
+        },
+        updateImportsOnFileMove = {
+          enabled = true,
+        }
+      }
+    }
 	})
 end
 
