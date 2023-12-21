@@ -1,12 +1,16 @@
 local list_contains = vim.list_contains or vim.tbl_contains
 vim.o.foldmethod = "expr"
-vim.o.foldexpr = "v:lua.vim.treesitter.foldexpr()"
+-- or
 -- vim.o.foldexpr = "nvim_treesitter#foldexpr()"
+vim.o.foldexpr = "v:lua.vim.treesitter.foldexpr()"
+-- vim.o.foldcolumn = "1"
+vim.o.foldlevelstart = 99
+-- vim.o.foldtext = "v:lua.vim.treesitter.foldtext()"
 vim.o.foldenable = false
 require("nvim-treesitter.configs").setup({
   auto_install = true,
   parser_install_dir = vim.fn.stdpath("data") .. "/site",
-  ensure_installed = { "vim", "lua", "c", "vimdoc" },
+  ensure_installed = { "vim", "lua", "c", "vimdoc", "python", "markdown", "markdown_inline" },
   ignore_install = {
     "latex",
   },
@@ -24,24 +28,33 @@ require("nvim-treesitter.configs").setup({
     end,
     additional_vim_regex_highlighting = false,
   },
-  indent = { enable = true, },
+  indent = { enable = true },
   incremental_selection = {
     enable = true,
     keymaps = {
-      init_selection = "g<cr>",
-      node_incremental = "<cr>",
+      init_selection = "<C-Space>",
+      node_incremental = "<C-Space>",
       scope_incremental = "<S-CR>",
       node_decremental = "<bs>",
     },
   },
-  autotag = { enable = true, },
-  matchup = { enable = true, include_match_words = true, },
-  context_commentstring = { enable = true, enable_autocmd = false, },
-  playground = {
+  -- autotag = {
+  --   enable = true,
+  --   enable_rename = true,
+  --   enable_close = true,
+  --   enable_close_on_slash = true,
+  -- },
+  matchup = {
     enable = true,
-    disable = {},
-    updatetime = 50,
+    -- disable = { "perl" },
+    include_match_words = true,
   },
+  -- context_commentstring = { enable = true, enable_autocmd = false, },
+  -- playground = {
+  --   enable = true,
+  --   disable = {},
+  --   updatetime = 50,
+  -- },
   query_linter = {
     enable = false,
     use_diagnostics = true,
@@ -60,9 +73,19 @@ require("nvim-treesitter.configs").setup({
         ["ic"] = "@class.inner",
       },
     },
-    swap = { enable = false, },
-    move = { enable = false, },
+    swap = { enable = false },
+    move = { enable = false },
   },
 })
 
-vim.treesitter.language.register("bash", "zsh")
+local parser = require("nvim-treesitter.parsers").get_parser_configs()
+parser.dart = {
+  install_info = {
+    url = "https://github.com/UserNobody14/tree-sitter-dart",
+    files = { "src/parser.c", "src/scanner.c" },
+    revision = "8aa8ab977647da2d4dcfb8c4726341bee26fbce4",
+  },
+  maintainers = { "@akinsho" },
+}
+-- vim.treesitter.language.register("bash", "zsh")
+-- vim.api.nvim_create_user_command("TSPlaygroundToggle", "<cmd>InspectTree<CR>")

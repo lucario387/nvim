@@ -1,3 +1,4 @@
 plugin/*_compiled.lua
 log.txt
 test.*
+lazy-lock.json

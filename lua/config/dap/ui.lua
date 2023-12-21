@@ -56,9 +56,7 @@ dapui.setup({
 })
 
 dap.listeners.before.event_initialized["dapui_config"] = function()
-	if packer_plugins["nvim-tree.lua"] and packer_plugins["nvim-tree.lua"].loaded then
-		vim.api.nvim_command("silent! NvimTreeClose")
-	end
+	vim.api.nvim_command("silent! NvimTreeClose")
 	for _, winnr in ipairs(vim.api.nvim_tabpage_list_wins(0)) do
 		local bufnr = vim.api.nvim_win_get_buf(winnr)
 		if vim.api.nvim_get_option_value("ft", { buf = bufnr }) == "dap-repl" then

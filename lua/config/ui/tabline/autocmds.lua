@@ -12,7 +12,7 @@ local disabled_buftypes = {
 local disabled_filetypes = {
 	"NvimTree",
 	"mason",
-	"packer",
+  "lazy",
 	"qf",
 	"trouble",
 	"alpha",
@@ -27,7 +27,7 @@ local disabled_filetypes = {
 autocmd("TermOpen", {
 	group = augroup("UnlistTerminal", { clear = true }),
 	callback = function(args)
-		vim.api.nvim_buf_set_option(args.buf, "buflisted", false)
+		vim.api.nvim_set_option_value("buflisted", false, { buf = args.buf})
 	end,
 })
 
@@ -87,26 +87,24 @@ autocmd({ "BufDelete" }, {
 
 autocmd({ "TabNewEntered" }, {
 	group = augroup("TabLineBufferList", { clear = true }),
-	callback = function()
-		local bufnr = vim.api.nvim_get_current_buf()
-		vim.api.nvim_buf_set_option(bufnr, "buflisted", true)
-		utils.add_buffer(bufnr)
+	callback = function(args)
+		-- local bufnr = vim.api.nvim_get_current_buf()
+		vim.api.nvim_set_option_value("buflisted", true, {
+      buf = args.buf
+    })
+		utils.add_buffer(args.buf)
 	end,
 })
 autocmd("TabEnter", {
 	group = augroup("TabLineBufferList", { clear = true }),
 	callback = function()
-		if packer_plugins["nvim-tree.lua"] and packer_plugins["nvim-tree.lua"].loaded then
-			vim.api.nvim_command("silent! NvimTreeClose")
-		end
+		vim.api.nvim_command("silent! NvimTreeClose")
 	end,
 })
 --
 autocmd("TabLeave", {
 	group = augroup("TabLineBufferUnList", { clear = true }),
 	callback = function()
-		if packer_plugins["nvim-tree.lua"] and packer_plugins["nvim-tree.lua"].loaded then
-			vim.api.nvim_command("silent! NvimTreeClose")
-		end
+		vim.api.nvim_command("silent! NvimTreeClose")
 	end,
 })

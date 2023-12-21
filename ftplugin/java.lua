@@ -7,9 +7,7 @@ if #vim.api.nvim_list_uis() == 0 then
 end
 if not vim.g.loaded_jdtls then
   vim.g.loaded_jdtls = true
-  require("packer").loader("nvim-lspconfig")
-  require("packer").loader("nvim-jdtls")
-  require("packer").loader("nvim-dap")
+  require("lazy.core.loader").load({ "nvim-lspconfig", "nvim-jdtls", "nvim-dap" }, {})
 end
 
 local jdtls = require("jdtls")
@@ -61,9 +59,9 @@ local config = {
       },
       hotcodereplace = "auto",
     })
-    require("jdtls.setup").add_commands()
+    -- require("jdtls.setup").add_commands()
     if client.supports_method("textDocument/inlayHint") then
-      vim.lsp.buf.inlay_hint(bufnr, true)
+      vim.lsp.inlay_hint.enable(bufnr, true)
     end
   end,
   capabilities = require("config.lsp").set_capabilities(),
@@ -134,7 +132,7 @@ local config = {
           "java",
           "com",
           "org",
-        }
+        },
       },
       sources = {
         organizeImports = {
@@ -166,9 +164,18 @@ local config = {
             path = "/usr/lib/jvm/java-17-openjdk",
           },
           {
-            name = "JavaSE-20",
-            path = "/usr/lib/jvm/java-20-openjdk",
-          },
+            name = "JavaSE-21",
+            path = "/usr/lib/jvm/java-21-openjdk"
+          }
+          -- {
+          --   name = "JavaSE-20",
+          --   path = "/usr/lib/jvm/java-20-openjdk",
+          -- },
+        },
+      },
+      inlayHints = {
+        parameterNames = {
+          enabled = "literals",
         },
       },
       -- eclipse = {

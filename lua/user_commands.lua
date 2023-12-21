@@ -7,17 +7,9 @@ end, {})
 
 vim.api.nvim_create_user_command("PackerSync", function(opts)
   -- vim.cmd("Lazy sync")
-  require("plugins")
-  require("packer").sync()
+  require("lazy").sync()
 end, {
   bang = true,
   nargs = "*",
 })
---
-vim.api.nvim_create_user_command("PackerStatus", function(_)
-  require("plugins")
-  require("packer").status()
-end, {
-  bang = true,
-})
-
+vim.api.nvim_create_user_command("TSPlaygroundToggle", "InspectTree", {})

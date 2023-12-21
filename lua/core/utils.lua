@@ -17,12 +17,14 @@ M.load_config = function()
       hl_override = {
         Normal                     = {
           bg = vim.g.transparency and "NONE" or (vim.g.nvchad_theme:find("light") and "black" or "one_bg") },
+        -- NormalFloat = { fg = "nord_blue" },
+        FloatBorder                = { link = "SagaBorder" },
         LineNr                     = { fg = "white" },
         Folded                     = { fg = "blue" },
         MatchWord                  = { bold = true },
         Visual                     = { bg = "grey", sp = "white", underline = true },
         CursorLine                 = {
-          -- bg = "grey",
+          -- bg = { "white", -10 },
           sp = "white",
           underline = true,
         },
@@ -35,8 +37,10 @@ M.load_config = function()
         NvimTreeGitDeleted         = { fg = "red" },
         NvimTreeCursorLine         = { bg = "one_bg3" },
         -- Gitsigns
-        DiffChange                 = { fg = "yellow" },
-        DiffAdd                    = { fg = "vibrant_green" },
+        DiffChange                 = { bg = "yellow", fg = "black" },
+        DiffAdd                    = { bg = "vibrant_green", fg = "white" },
+        DiffAdded                  = { bg = "vibrant_green", fg = "white" },
+        DiffDelete                 = { bg = "red", fg = "black" },
         DiffText                   = { fg = "white", bg = "red", bold = true },
         -- StorageClass = { fg = " green1" },
         -- ["@emphasis"]    = { fg = "white", },
@@ -63,6 +67,7 @@ M.load_config = function()
         ["@string"]                = { fg = "orange" },
         ["@parameter"]             = { fg = "cyan" },
         ["@operator"]              = { fg = "teal" },
+        -- ["@error"]                   = { fg = "black", bg = "red" },
         -- ["@exception"]             = { fg = "purple" },
         ["@punctuation.bracket"]   = { fg = "nord_blue" },
         -- ["@keyword.function"]      = { fg = "purple" },
@@ -76,14 +81,17 @@ M.load_config = function()
         ["@lsp.type.interface"]    = { fg = "vibrant_green", link = "" },
         -- ["@lsp.type.module"]       = { fg = "cyan" },
         -- ["@lsp.type.parameter"]    = { fg = "teal" },
-        -- ["@lsp.type.variable"]     = { fg = "cyan" },
         ["@lsp.type.namespace"]    = { fg = "cyan", link = "" },
       },
       hl_add = {
+        ColorColumn                  = { bg = "white" },
         SpecialKey                   = { fg = "yellow" },
         luaparenError                = { link = "NONE" },
         ------------------------LspSaga------------------------------------
-        SagaBorder                   = { fg = "blue" },
+        SagaBorder                   = {
+          fg = "blue",
+          bg = vim.g.transparency and "NONE" or "darker_black",
+        },
         HoverNormal                  = { fg = "white" },
         CodeActionText               = { fg = "white" },
         CodeActionNumber             = { link = "Number" },
@@ -197,17 +205,15 @@ M.load_config = function()
         NvimTreeExecFile             = { fg = "vibrant_green", bold = true },
         --- Gitsigns
         GitSignsCurrentLineBlame     = { link = "Comment" },
-        GitSignsAddPreview           = { link = "", fg = "green" },
+        GitSignsAdd                  = { fg = "green" },
+        GitSignsChange               = { fg = "yellow" },
+        NeogitDiffAdd                = { link = "GitSignsAdd" },
+        NeogitDiffAddHighlight       = { link = "DiffAdd" },
+        NeogitDiffDelete             = { link = "DiffRemoved" },
+        NeogitDiffDeleteHighlight    = { link = "DiffDelete" },
+        NeogitDiffAddRegion          = { link = "", fg = "", bg = "" },
+        -- GitSignsAddPreview           = { link = "", fg = "green" },
 
-        -- Packer
-        PackerPackageName            = { fg = "red" },
-        PackerSuccess                = { fg = "green" },
-        PackerStatusSuccess          = { fg = "green" },
-        PackerStatusCommit           = { fg = "blue" },
-        PackeProgress                = { fg = "blue" },
-        PackerOutput                 = { fg = "red" },
-        PackerStatus                 = { fg = "blue" },
-        PackerHash                   = { fg = "blue" },
         -- Add strikethrough to hlgroups that signifies deprecated stuffs
 
         cssDeprecated                = { strikethrough = true },
@@ -217,6 +223,7 @@ M.load_config = function()
         NullLsInfoBorder             = { link = "FloatBorder" },
         -- Treesitter
 
+        ["@conceal.checked"] = { fg = "cyan" },
         ["@boolean"]                 = { fg = "green" },
         ["@text.danger"]             = { fg = "red" },
         ["@text.note"]               = { fg = "blue" },
@@ -240,6 +247,7 @@ M.load_config = function()
 
         -- Semantic tokens
         ["@lsp.type.type.lua"]       = { fg = "green" },
+        ["@lsp.type.variable.lua"]     = { fg = "cyan", link = "" },
         -- ["@lsp.type.parameter"]      = { fg = "teal" },
         ["@lsp.type.selfParameter"]  = { fg = "cyan" },
         ["@lsp.type.annotation"]     = { fg = "yellow" },
@@ -266,8 +274,8 @@ M.load_config = function()
           },
         },
       },
-      theme_toggle = { "catppuccin", "latte_light" },
-      theme = "catppuccin", -- default theme
+      theme_toggle = { "vscode_dark", "latte_light" },
+      theme = "vscode_dark", -- default theme
       transparency = false,
       lsp_semantic_tokens = true,
       -- cmp themeing

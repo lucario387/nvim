@@ -76,6 +76,7 @@ end
 --- @param bufnr integer
 function M.delete_buffer(bufnr)
 	local tabnr = vim.api.nvim_get_current_tabpage()
+  local winnr = vim.api.nvim_tabpage_list_wins(tabnr)
 	-- for _, tabnr in ipairs(vim.api.nvim_list_tabpages()) do
 	local buflist = vim.t[tabnr].bufs
 	if buflist then

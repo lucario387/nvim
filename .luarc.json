@@ -22,12 +22,21 @@
     "version": "LuaJIT",
     "pathStrict": true,
     "path": [
-      "?.lua",
-      "?/init.lua"
+      "lua/?.lua",
+      "lua/?/init.lua"
     ]
   },
   "workspace": {
-    "checkThirdParty": false
+    "checkThirdParty": false,
+    "library": [
+      "$VIMRUNTIME/lua",
+      "${3rd}/luv/library",
+      "/home/lucario387/dev/ui/nvchad_types",
+      "/home/lucario387/.local/share/nvim/lazy/lazy.nvim/lua",
+      "/home/lucario387/.local/share/nvim/lazy/nvim-jdtls/lua",
+      "/home/lucario387/.local/share/nvim/lazy/base46/lua",
+      "/home/lucario387/.local/share/nvim/lazy/nvim-cmp/lua"
+    ]
   },
   "hover": {
     "enable": true,

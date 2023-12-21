@@ -101,7 +101,7 @@ cmp.setup({
     ["<Tab>"] = cmp.mapping(function(fallback)
       if cmp.visible() then
         cmp.select_next_item()
-      elseif require("luasnip").expand_or_jumpable() then
+      elseif require("luasnip").expand_or_locally_jumpable() then
         require("luasnip").expand_or_jump()
         -- elseif has_words_before() then
         --   cmp.complete()
@@ -162,6 +162,12 @@ cmp.setup({
           not list_contains(disabled_filetypes, vim.api.nvim_get_option_value("filetype", { buf = 0 }))
       end,
     },
+    {
+      name = "omni",
+      option = {
+        disable_omnifuncs = { "v:lua.vim.lsp.omnifunc", "v:lua.vim.lsp.omnifunc()" },
+      }
+    }
     -- { name = "spell",
     --   option = {
     --     keep_all_entries = true,

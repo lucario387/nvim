@@ -1,18 +1,15 @@
 -- List of all default plugins & their definitions
 
+---@type NvPluginSpec
 local plugins = {
 
   -------------------------------------General---------------------------------
-  {
-    "wbthomason/packer.nvim",
-    branch = "master",
-  },
   { "nvim-lua/plenary.nvim" },
 
   -- for managing lsp/formatter
   {
     "williamboman/mason.nvim",
-    run = ":MasonUpdate",
+    build = ":MasonUpdate",
     config = function()
       require("config.misc").mason()
     end,
@@ -22,7 +19,11 @@ local plugins = {
   {
     "NvChad/base46",
     branch = "v2.0",
-    run = function()
+    priority = 1000,
+    init = function()
+      vim.g.base46_cache = vim.fn.stdpath("data") .. "/nvchad/base46/"
+    end,
+    build = function()
       vim.fn.mkdir(vim.g.base46_cache, "p")
       vim.cmd("CompileTheme")
     end,
@@ -30,6 +31,7 @@ local plugins = {
       dofile(vim.g.base46_cache .. "defaults")
       dofile(vim.g.base46_cache .. "syntax")
       dofile(vim.g.base46_cache .. "devicons")
+      dofile(vim.g.base46_cache .. "git")
       require("config.ui")
     end,
   },
@@ -37,7 +39,8 @@ local plugins = {
   -------------------------------------LSP-------------------------------------
   {
     "neovim/nvim-lspconfig",
-    -- opt = true,
+    -- lazy = true,
+    event = { "UIEnter", "BufReadPre" },
     config = function()
       local utils = require("config.lsp")
       utils.lsp_handlers()
@@ -62,18 +65,15 @@ local plugins = {
         end
       end
     end,
+    dependencies = {
+      { "pmizio/typescript-tools.nvim" },
+    },
+
   },
   {
-    "nvimdev/lspsaga.nvim",
-    module = "lspsaga",
-    cmd = "Lspsaga",
-    config = function()
-      require("config.misc").lspsaga()
-    end,
-  },
-  {
-    "jose-elias-alvarez/null-ls.nvim",
-    module = "null-ls",
+    "nvimtools/none-ls.nvim",
+    lazy = true,
+    --module = "null-ls",
     config = function()
       require("null-ls").setup({
         sources = {
@@ -82,13 +82,21 @@ local plugins = {
       })
     end,
   },
+  {
+    "nvimdev/lspsaga.nvim",
+    --module = "lspsaga",
+    cmd = "Lspsaga",
+    config = function()
+      require("config.misc").lspsaga()
+    end,
+  },
   -- LSP for specific filetypes
   {
     "mfussenegger/nvim-jdtls",
-    opt = true,
+    lazy = true,
   },
-  { "jose-elias-alvarez/typescript.nvim" },
-  { "folke/neodev.nvim" },
+  -- { "jose-elias-alvarez/typescript.nvim" },
+  -- { "folke/neodev.nvim" },
   {
     "folke/trouble.nvim",
     cmd = { "TroubleToggle", "Trouble" },
@@ -96,12 +104,12 @@ local plugins = {
       require("trouble").setup()
     end,
   },
-  { "p00f/clangd_extensions.nvim" },
+  -- { "p00f/clangd_extensions.nvim" },
 
   -------------------------------------DAP-------------------------------------
   {
     "mfussenegger/nvim-dap",
-    module = "dap",
+    --module = "dap",
     ft = { "c", "cpp" },
     config = function()
       require("config.dap").setup()
@@ -111,34 +119,91 @@ local plugins = {
   { "rcarriga/nvim-dap-ui" },
   -------------------------------------Tree-sitter-----------------------------
   {
-    "~/dev/nvim-treesitter",
-    -- opt = true,
-    run = ":TSUpdate",
-    -- event = "BufReadPre",
+    "nvim-treesitter/nvim-treesitter",
+    dev = true,
+    -- lazy = true,
+    build = ":TSUpdate",
+    event = { "BufReadPre" },
+    cmd = {
+      "TSInstall",
+      "TSUninstall",
+    },
     config = function()
       require("config.treesitter")
     end,
+    dependencies = {
+
+      {
+        "lucario387/nvim-ts-format",
+        dev = true,
+        -- config = function()
+        --   vim.api.nvim_create_user_command("TSFormatFile", function()
+        --     require("nvim-ts-format.format").format_buf_no_inj()
+        --   end, {})
+        -- end,
+      },
+      -- Movement related
+      { "nvim-treesitter/nvim-treesitter-textobjects" },
+      { "andymass/vim-matchup" },
+      {
+        "numToStr/Comment.nvim",
+        config = function()
+          require("config.misc").Comment()
+        end,
+      },
+      {
+        "JoosepAlviste/nvim-ts-context-commentstring",
+        config = function()
+          require('ts_context_commentstring').setup{
+            enable_autocmd = false,
+          }
+        end,
+      },
+    },
   },
-  -- Movement related
-  { "nvim-treesitter/nvim-treesitter-textobjects", event = "BufRead" },
-  { "andymass/vim-matchup",                        event = "BufRead" },
   --ts misc
-  { "windwp/nvim-ts-autotag",                      event = "InsertEnter" },
-  { "JoosepAlviste/nvim-ts-context-commentstring", event = "BufRead" },
-  { "nvim-treesitter/playground",                  cmd = { "TSPlaygroundToggle", "TSCaptureUnderCursor" } },
-  {
-    "numToStr/Comment.nvim",
-    after = "nvim-ts-context-commentstring",
-    config = function()
-      require("config.misc").Comment()
-    end,
-  },
+  -- { "nvim-treesitter/playground",                  cmd = { "TSPlaygroundToggle", "TSCaptureUnderCursor" } },
 
   -------------------------------------Completion engine-----------------------
   { "rafamadriz/friendly-snippets" },
   {
     "hrsh7th/nvim-cmp",
     event = { "InsertEnter", "CmdlineEnter" },
+    dependencies = {
+      { "saadparwaiz1/cmp_luasnip" },
+      { "hrsh7th/cmp-nvim-lsp" },
+      { "hrsh7th/cmp-buffer" },
+      { "hrsh7th/cmp-path" },
+      { "hrsh7th/cmp-omni" },
+      { "windwp/nvim-autopairs" },
+      {
+        "L3MON4D3/LuaSnip",
+        -- disable = true,
+        -- dependencies = "nvim-cmp",
+        -- event = { "InsertEnter" },
+        config = function()
+          require("luasnip").config.set_config({
+            history = true,
+            updateevents = "TextChanged,TextChangedI",
+          })
+          require("luasnip.loaders.from_vscode").lazy_load()
+          -- require("luasnip.loaders.from_vscode").lazy_load({ paths = { vim.g.luasnippets_path } })
+
+          vim.api.nvim_create_autocmd({ "ModeChanged" }, {
+            pattern = { "s:n", "i:*" },
+            callback = function()
+              if
+                require("luasnip").session.current_nodes[vim.api.nvim_get_current_buf()]
+                and not require("luasnip").session.jump_active
+              then
+                require("luasnip").unlink_current()
+              end
+            end,
+          })
+        end,
+      },
+      -- { "windwp/nvim-ts-autotag" },
+    },
     config = function()
       require("config.cmp")
       -- autopairs as well, as autopairs has no reason to not be loaded on startup
@@ -158,88 +223,71 @@ local plugins = {
     end,
   },
 
-  { "saadparwaiz1/cmp_luasnip",    after = "nvim-cmp" },
-  { "hrsh7th/cmp-nvim-lsp",        after = "nvim-cmp" },
-  { "hrsh7th/cmp-buffer",          after = "nvim-cmp" },
-  { "hrsh7th/cmp-path",            after = "nvim-cmp" },
-
-  {
-    "L3MON4D3/LuaSnip",
-    -- disable = true,
-    -- after = "nvim-cmp",
-    event = { "InsertEnter" },
-    config = function()
-      require("luasnip").config.set_config({
-        history = true,
-        updateevents = "TextChanged,TextChangedI",
-      })
-      require("luasnip.loaders.from_vscode").lazy_load()
-      -- require("luasnip.loaders.from_vscode").lazy_load({ paths = { vim.g.luasnippets_path } })
-
-      vim.api.nvim_create_autocmd({ "ModeChanged" }, {
-        pattern = { "s:n", "i:*" },
-        callback = function()
-          if
-            require("luasnip").session.current_nodes[vim.api.nvim_get_current_buf()]
-            and not require("luasnip").session.jump_active
-          then
-            require("luasnip").unlink_current()
-          end
-        end,
-      })
-    end,
-  },
 
   -- { "hrsh7th/cmp-cmdline",         requires = "nvim-cmp" },
   -- { "f3fora/cmp-spell", requires = "nvim-cmp" },
-
-  { "windwp/nvim-autopairs" },
   -------------------------------------Telescope-------------------------------
   {
     "nvim-telescope/telescope.nvim",
-    module = "telescope",
+    --module = "telescope",
     cmd = "Telescope",
     event = { "CmdlineEnter" },
     config = function()
       require("config.telescope")
     end,
+    dependencies = {
+      { "nvim-telescope/telescope-fzf-native.nvim",    build = "make" },
+      { "nvim-telescope/telescope-ui-select.nvim" },
+      { "nvim-telescope/telescope-live-grep-args.nvim" },
+    },
   },
-  { "nvim-telescope/telescope-fzf-native.nvim", run = "make" },
-  { "nvim-telescope/telescope-ui-select.nvim" },
 
   -------------------------------------Git-------------------------------------
   {
     "lewis6991/gitsigns.nvim",
-    opt = true,
+    dependencies = {
+      {
+        "sindrets/diffview.nvim",
+        config = function()
+          require("diffview").setup({
+            enhanced_diff_hl = true,
+            view = {
+              merge_tool = {
+                layout = "diff3_mixed",
+                disable_diagnostics = true,
+              },
+            },
+          })
+        end,
+      },
+    },
+    lazy = true,
     config = function()
       require("config.misc").gitsigns()
     end,
   },
-  {
-    "sindrets/diffview.nvim",
-    after = "gitsigns.nvim",
-    config = function()
-      require("diffview").setup({
-        enhanced_diff_hl = true,
-        view = {
-          merge_tool = {
-            layout = "diff3_mixed",
-            disable_diagnostics = true,
-          },
-        },
-      })
-    end,
-  },
-  {
-    "TimUntersberger/neogit",
-    cmd = "Neogit",
-    requires = { "lewis6991/gitsigns.nvim" },
-    config = function()
-      require("config.misc").neogit()
-    end
-  },
+  -- {
+  --   "NeogitOrg/neogit",
+  --   -- lazy = true,
+  --   cmd = { "Neogit" },
+  --   dependencies = {
+  --     "sindrets/diffview.nvim",
+  --   },
+  --   -- requires = {
+  --   --   "lewis6991/gitsigns.nvim",
+  --   -- },
+  --   config = function()
+  --     require("config.misc").neogit()
+  --   end,
+  -- },
 
   -------------------------------------Misc------------------------------------
+  { "lervag/vimtex" },
+  {
+    "tweekmonster/helpful.vim",
+    cmd = { "HelpfulVersion" },
+    ft = { "help" },
+  },
   { "nvim-tree/nvim-web-devicons" },
   -- tree plugin
   {
@@ -260,20 +308,24 @@ local plugins = {
 
   {
     "NvChad/nvim-colorizer.lua",
-    event = "BufReadPre",
+    event = "BufRead",
     config = function()
       require("colorizer").setup({
         filetypes = { "lua", "vim", "css", "scss", "html", "vue" },
         user_default_options = {
-          names = false
-        }
+          names = false,
+        },
       })
     end,
   },
 
-  { "MunifTanjim/nui.nvim" },
   {
     "folke/noice.nvim",
+    cond = false,
+    event = "VeryLazy",
+    dependencies = {
+      { "MunifTanjim/nui.nvim" },
+    },
     config = function()
       require("config.misc").noice()
     end,
@@ -290,27 +342,66 @@ local plugins = {
   -- load luasnips + cmp related in insert mode only
 }
 
-local packer = require("packer")
+require("lazy").setup(plugins, {
+  install = {
+    missing = false,
+    colorscheme = { "nvchad" },
+  },
 
-packer.init({
-  auto_clean = true,
-  git = { clone_timeout = 60 },
-  max_jobs = 30,
-  display = {
-    working_sym = "󰞌",
-    error_sym = "✗ ",
-    done_sym = " ",
-    removed_sym = " ",
-    moved_sym = "󰁔",
-    -- prompt_border = "rounded",
-    open_fn = function()
-      return require("packer.util").float({ border = "rounded" })
-    end,
+  change_detection = {
+    enabled = false,
+  },
+  ui = {
+    icons = {
+      ft = "",
+      lazy = "󰂠 ",
+      loaded = "",
+      not_loaded = "",
+    },
+  },
+  dev = {
+    path = vim.env.HOME .. "/dev",
+  },
+  performance = {
+    cache = {
+      enabled = true,
+    },
+    rtp = {
+      path = {
+        vim.fn.stdpath("data") .. "/site",
+      },
+      disabled_plugins = {
+        "2html_plugin",
+        "getscript",
+        "getscriptPlugin",
+        "gzip",
+        "logipat",
+        "netrw",
+        "netrwPlugin",
+        "netrwSettings",
+        "netrwFileHandlers",
+        "matchit",
+        "matchparen",
+        "tar",
+        "tarPlugin",
+        "tohtml",
+        "rrhelper",
+        "spellfile_plugin",
+        -- "vimball",
+        -- "vimballPlugin",
+        "zip",
+        "zipPlugin",
+        "tutor",
+        "rplugin",
+        "syntax",
+        "synmenu",
+        "optwin",
+        "compiler",
+        "bugreport",
+        "ftplugin",
+        "matchparen",
+        "fzf",
+      },
+    },
   },
 })
--- packer.add(plugins)
-packer.startup(function(use)
-  for _, plugin in ipairs(plugins) do
-    use(plugin)
-  end
-end)

@@ -1,24 +1,24 @@
 local disabled_filetypes = {
-	"NvimTree",
-	"mason",
-	"packer",
-	"qf",
-	"trouble",
-	"alpha",
-	"help",
-	"terminal",
-	"lspinfo",
-	"TelescopePrompt",
-	"TelescopeResults",
-  "noice"
+  "NvimTree",
+  "mason",
+  "lazy",
+  "qf",
+  "trouble",
+  "alpha",
+  "help",
+  "terminal",
+  "lspinfo",
+  "TelescopePrompt",
+  "TelescopeResults",
+  "noice",
 }
 
 local disabled_buftypes = {
   "noice",
-	"nofile",
-	"help",
-	"prompt",
-  "terminal"
+  "nofile",
+  "help",
+  "prompt",
+  "terminal",
 }
 
 vim.api.nvim_create_autocmd("UIEnter", {
@@ -42,6 +42,7 @@ vim.api.nvim_create_autocmd("BufWritePost", {
 })
 
 vim.api.nvim_create_autocmd({ "TermOpen" --[["BufEnter"]] }, {
+  group = vim.api.nvim_create_augroup("TermConfig", {}),
   callback = function()
     vim.cmd("startinsert")
     vim.wo.number = false
@@ -55,6 +56,7 @@ vim.api.nvim_create_autocmd({ "TermOpen" --[["BufEnter"]] }, {
 })
 
 vim.api.nvim_create_autocmd({ "BufLeave" }, {
+  group = vim.api.nvim_create_augroup("TermConfig", {}),
   callback = function()
     vim.cmd("stopinsert")
   end,
@@ -62,40 +64,51 @@ vim.api.nvim_create_autocmd({ "BufLeave" }, {
 })
 
 vim.api.nvim_create_autocmd("CmdwinEnter", {
+  group = vim.api.nvim_create_augroup("CmdWin", {}),
   callback = function(opts)
     vim.treesitter.stop(opts.buf)
   end,
 })
 
 
--- vim.api.nvim_create_autocmd("UIEnter", {
---   callback = function(opts)
---     local no_name = opts.file == "" and vim.bo[opts.buf].buftype == ""
---
---     -- buffer is a directory
---     local directory = vim.fn.isdirectory(opts.file) == 1
---
---     if not no_name and not directory then
---       return
---     end
---     if directory then
---       vim.cmd.cd(opts.file)
---       require("packer").loader("nvim-tree.lua")
---       vim.cmd.NvimTreeToggle()
---     end
---   end,
--- })
+vim.api.nvim_create_autocmd("UIEnter", {
+  callback = function(opts)
+    local no_name = opts.file == "" and vim.bo[opts.buf].buftype == ""
+
+    -- buffer is a directory
+    local directory = vim.fn.isdirectory(opts.file) == 1
+
+    if not no_name and not directory then
+      return
+    end
+    if directory then
+      vim.cmd.cd(opts.file)
+      require("lazy.core.loader").load({"nvim-tree.lua"}, {})
+      vim.cmd.NvimTreeToggle()
+    end
+  end,
+})
+
+
+local GitSignsLazyLoad = vim.api.nvim_create_augroup("GitSignsLazyLoad", {clear = true})
 
 vim.api.nvim_create_autocmd("BufReadPre", {
-  group = vim.api.nvim_create_augroup("GitSignsLazyLoad", { clear = true }),
+  group = GitSignsLazyLoad,
   callback = function()
-    vim.fn.system({ "git", "-C", vim.fn.expand("%:p:h"), "rev-parse" })
-    if vim.v.shell_error == 0 then
-      vim.api.nvim_del_augroup_by_name("GitSignsLazyLoad")
-      -- vim.schedule(function()
-        require("packer").loader("gitsigns.nvim")
-        -- load_plugin()
-      -- end)
+    local obj = vim.system(
+      {
+        "git",
+        "rev-parse",
+      },
+      {
+        cwd = vim.fn.expand("%:p:h"),
+      }
+    ):wait()
+    if obj.signal == 0 then
+      vim.api.nvim_del_augroup_by_id(GitSignsLazyLoad)
+
+      require("lazy.core.loader").load({"gitsigns.nvim"}, {})
+      return true
     end
   end,
 })

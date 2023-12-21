@@ -263,7 +263,7 @@ if not config.pylance then
           desc = "Organize Imports",
           buffer = bufnr,
         })
-        vim.lsp.buf.inlay_hint(bufnr, true)
+        vim.lsp.inlay_hint.enable(bufnr, true)
       end,
       capabilities = capabilities,
       settings = get_settings(),

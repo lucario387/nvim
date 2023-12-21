@@ -1,3 +1,3 @@
 ; extends
-(class_name) @class
+; (class_name) @class
 (important) @text.danger

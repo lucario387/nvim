@@ -7,13 +7,15 @@ local list_contains = vim.list_contains or vim.tbl_contains
 local disabled_filetypes = {
 	"NvimTree",
 	"mason",
-	"packer",
+  "lazy",
 	"qf",
 	"trouble",
 	"alpha",
 	"help",
 	"terminal",
 	"lspinfo",
+  "sagadiagnostc",
+  "sagadiagnostic",
 	"TelescopePrompt",
 	"TelescopeResults",
 }
@@ -26,6 +28,10 @@ local disabled_buftypes = {
 }
 
 vim.t.bufs = vim.api.nvim_list_bufs()
+vim.keymap.set("n", "<C-w>T", function()
+  require("config.ui.tabline.utils").delete_buffer(vim.api.nvim_get_current_buf())
+  vim.cmd("wincmd T")
+end)
 require("config.ui.tabline.autocmds")
 vim.opt.showtabline = 2
 vim.opt.tabline = "%{%v:lua.require('config.ui.tabline').draw()%}"
@@ -40,6 +46,7 @@ vim.api.nvim_create_autocmd({ "FileType" }, {
 		end
 		vim.wo.winbar = "%{%v:lua.require('config.ui.winbar').draw()%}"
 		vim.wo.statuscolumn = "%{%v:lua.require('config.ui.statuscolumn').draw()%}"
+    -- vim.wo.statuscolumn = "%C"
 	end,
 })
 -- end

@@ -11,13 +11,13 @@ M.lspsaga = function()
       },
     },
     finder = {
-      
+
     },
     -- scroll_preview = {
     --   scroll_down = "",
     --   scroll_up = "",
     -- },
-    code_action = { 
+    code_action = {
       extend_gitsigns = false,
       show_server_name = false,
     },
@@ -59,7 +59,7 @@ M.LuaSnip = function()
 end
 
 M.gitsigns = function()
-  dofile(vim.g.base46_cache .. "git")
+  -- dofile(vim.g.base46_cache .. "git")
   local null = require("null-ls")
 
   require("gitsigns").setup({
@@ -114,7 +114,10 @@ M["nvim-tree"] = function()
     disable_netrw = true,
     -- hijack_netrw = true,
     -- ignore_ft_on_config_pre = { "alpha", "dashboard", "aerial", "mind" },
-    sort_by = "extension",
+    -- sort_by = "extension",
+    sort = {
+      sorter = "extension",
+    },
     sync_root_with_cwd = true,
     update_focused_file = {
       enable = true,
@@ -177,30 +180,45 @@ M["indent-blankline"] = function()
   pcall(function()
     dofile(vim.g.base46_cache .. "blankline")
   end)
-  -- vim.g.indent_blankline_use_treesitter = true
-  require("indent_blankline").setup({
-    filetype_exclude = {
-      "help",
-      "terminal",
-      "packer",
-      "qf",
-      "lspinfo",
-      "mason",
-      "TelescopePrompt",
-      "TelescopeResults",
-      "norg",
-      "noice",
-      "NvimTree",
+  require("ibl").setup({
+    exclude = {
+      filetypes = {
+        "help",
+        "terminal",
+        "lazy",
+        "qf",
+        "lspinfo",
+        "mason",
+        "TelescopePrompt",
+        "TelescopeResults",
+        "norg",
+        "noice",
+        "NvimTree",
+      },
+      buftypes = {
+
+        "terminal",
+        "help",
+        "nofile",
+      },
     },
-    buftype_exclude = {
-      "terminal",
-      "help",
-      "nofile",
-    },
-    show_trailing_blankline_indent = false,
-    show_current_context = true,
-    show_first_indent_level = false,
+    indent = {
+      highlight = {
+        "CursorColumn",
+        "Whitespace"
+      }
+    }
   })
+  -- vim.g.indent_blankline_use_treesitter = true
+  -- require("indent_blankline").setup({
+  --   filetype_exclude = {
+  --   },
+  --   buftype_exclude = {
+  --   },
+  --   show_trailing_blankline_indent = false,
+  --   show_current_context = true,
+  --   show_first_indent_level = false,
+  -- })
 end
 
 M.mason = function()
@@ -227,12 +245,15 @@ M.noice = function()
     lsp       = {
       progress = { enabled = false },
       override = {
-        ["vim.lsp.util.convert_input_to_markdown_lines"] = true,
-        ["vim.lsp.util.stylize_markdown"] = true,
+        ["vim.lsp.util.convert_input_to_markdown_lines"] = false,
+        ["vim.lsp.util.stylize_markdown"] = false,
         ["cmp.entry.get_documentation"] = false,
       },
+      hover = {
+        enabled = false,
+      },
       signature = {
-        enabled = true,
+        enabled = false,
         opts = {
           focusable = false,
           size = {
@@ -260,6 +281,7 @@ end
 M.neogit = function()
   require("neogit").setup({
     integrations = {
+      telescope = true,
       diffview = true,
     },
   })

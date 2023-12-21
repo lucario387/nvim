@@ -1,7 +1,19 @@
 -- Unsure if this is nice or not, but why not
+--
+-- vim.g.clipboard = {
+--   name = 'OSC 52',
+--   copy = {
+--     ['+'] = require('vim.clipboard.osc52').copy,
+--     ['*'] = require('vim.clipboard.osc52').copy,
+--   },
+--   paste = {
+--     ['+'] = require('vim.clipboard.osc52').paste,
+--     ['*'] = require('vim.clipboard.osc52').paste,
+--   },
+-- }
 
 ---@type ThemeName
-vim.g.nvchad_theme = "catppuccin"
+vim.g.nvchad_theme = "vscode_dark"
 vim.g.transparency = false
 -- vim.g.nvimtree_side = "left"
 
@@ -9,9 +21,11 @@ vim.g.query_lint_on = { "BufWrite" }
 vim.g.matchup_matchparen_offscreen = { method = nil, scrolloff = 1 }
 vim.g.mapleader = " "
 vim.g.maplocalleader = " "
+vim.g.skip_ts_context_commentstring_module = true
 -- opt.cmdheight = 0
 vim.o.laststatus = 3 -- global statusline
 vim.o.showmode = false
+-- vim.o.digraph = true
 
 vim.o.title = true
 -- vim.o.clipboard = "unnamedplus"
@@ -43,7 +57,7 @@ vim.o.undofile = true
 -- vim.o.history = 200
 
 -- interval for writing swap file to disk, also used by gitsigns
-vim.o.updatetime = 200
+vim.o.updatetime = 50
 
 -- vim.opt.smartindent = true
 vim.o.number = true
@@ -113,46 +127,15 @@ vim.opt.whichwrap:append("<>[]hl")
 local disabled_providers = {
 	"node_provider",
 	"perl_provider",
-	"python3_provider",
+	-- "python3_provider",
 	"ruby_provider",
 }
 for _, provider in pairs(disabled_providers) do
 	vim.g["loaded_" .. provider] = 0
 end
 
-local disabled_plugins = {
-	"2html_plugin",
-	"getscript",
-	"getscriptPlugin",
-	"gzip",
-	"logipat",
-	"netrw",
-	"netrwPlugin",
-	"netrwSettings",
-	"netrwFileHandlers",
-	"matchit",
-	"matchparen",
-	"tar",
-	"tarPlugin",
-	"tohtml",
-	"rrhelper",
-	"spellfile_plugin",
-	-- "vimball",
-	-- "vimballPlugin",
-	"zip",
-	"zipPlugin",
-	"tutor",
-	"rplugin",
-	"syntax",
-	"synmenu",
-	"optwin",
-	"compiler",
-	"bugreport",
-	"ftplugin",
-	"matchparen",
-	"fzf",
-}
-
-for _, plugin in pairs(disabled_plugins) do
-	vim.g["loaded_" .. plugin] = 1
-end
+vim.filetype.add({
+  pattern = {
+    [".*/example_queries/.*%.scm"] = "query"
+  }
+})

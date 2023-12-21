@@ -7,8 +7,8 @@ end
 if vim.g.loaded_kitty_navigator then
   return
 end
-
-vim.g.loaded_kitty_navigator = true
+--
+-- vim.g.loaded_kitty_navigator = true
 
 -- vim.g.last_kitty_pane = false
 --

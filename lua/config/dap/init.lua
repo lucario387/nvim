@@ -37,11 +37,16 @@ M.setup = function()
   vim.api.nvim_create_autocmd("TermOpen", {
     -- group = vim.api.nvim_create_augroup("DapUIConsoleInsert", { clear = true }),
     pattern = "",
-    command = "startinsert",
+    callback = function()
+      vim.cmd.startinsert()
+    end
+    -- command = "startinsert",
   })
   vim.api.nvim_create_autocmd("TermLeave", {
     pattern = "",
-    command = "stopinsert",
+    callback = function()
+      vim.cmd.stopinsert()
+    end
   })
   M.load_vscode_config()
   require("config.dap.ui")
