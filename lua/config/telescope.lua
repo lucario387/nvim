@@ -40,7 +40,7 @@ telescope.setup({
         mirror = false,
       },
       bottom_pane = {
-        height = 15,
+        height = 16,
         preview_width = 0.5,
         results_width = 0.5,
         prompt_position = "bottom",
@@ -53,10 +53,10 @@ telescope.setup({
     file_ignore_patterns = { "node_modules/", "LICENSE", "%.git",  "book/", "*-lock.json" },
     path_display = { "truncate" },
     winblend = 0,
-    border = {},
+    -- border = {},
     borderchars = { "─", "│", "─", "│", "╭", "╮", "╯", "╰" },
     color_devicons = true,
-    set_env = { ["COLORTERM"] = "truecolor" }, -- default = nil,
+    -- set_env = { ["COLORTERM"] = "truecolor" }, -- default = nil,
     mappings = {
       n = {
         ["q"] = actions.close,

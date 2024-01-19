@@ -113,9 +113,7 @@ local lsp_diagnostics = function()
   if not vim.g.lsp then
     return ""
   end
-	if #vim.lsp.get_active_clients({ bufnr = 0 }) == 0 then
-		return ""
-	end
+  if #vim.lsp.get_clients({ bufnr = 0 }) then return "" end
 	local num_errors = #vim.diagnostic.get(0, { severity = vim.diagnostic.severity.ERROR })
 	local num_warnings = #vim.diagnostic.get(0, { severity = vim.diagnostic.severity.WARN })
 	local num_hints = #vim.diagnostic.get(0, { severity = vim.diagnostic.severity.HINT })

@@ -35,7 +35,8 @@
       "/home/lucario387/.local/share/nvim/lazy/lazy.nvim/lua",
       "/home/lucario387/.local/share/nvim/lazy/nvim-jdtls/lua",
       "/home/lucario387/.local/share/nvim/lazy/base46/lua",
-      "/home/lucario387/.local/share/nvim/lazy/nvim-cmp/lua"
+      "/home/lucario387/.local/share/nvim/lazy/nvim-cmp/lua",
+      "/home/lucario387/.local/share/nvim/lazy/catppuccin/lua"
     ]
   },
   "hover": {

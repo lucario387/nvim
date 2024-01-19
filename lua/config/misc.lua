@@ -199,6 +199,13 @@ M["indent-blankline"] = function()
     },
     indent = {
       highlight = {
+        -- "RainbowRed",
+        -- "RainbowYellow",
+        -- "RainbowBlue",
+        -- "RainbowOrange",
+        -- "RainbowGreen",
+        -- "RainbowViolet",
+        -- "RainbowCyan",
         "CursorColumn",
         "Whitespace"
       }

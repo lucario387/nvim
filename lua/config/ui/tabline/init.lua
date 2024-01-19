@@ -87,7 +87,7 @@ local generate_buf_str = function(v, bufnr)
   local padding_str = hl_str(hlgroup, string.rep(" ", padding_len / 2))
 
   local modified_str = vim.api.nvim_get_option_value("modified", { buf = v })
-    and hl_str(new_hl("TabLineModified", hlgroup), " ")
+    and hl_str(hlgroup .. "Modified", " ")
     or ""
   local modified_len = vim.api.nvim_get_option_value("modified", { buf = v }) and 2 or 0
 

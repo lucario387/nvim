@@ -17,23 +17,25 @@ local plugins = {
 
   -------------------------------------Theme-----------------------------------
   {
-    "NvChad/base46",
-    branch = "v2.0",
+    "catppuccin/nvim",
+    name = "catppuccin",
     priority = 1000,
-    init = function()
-      vim.g.base46_cache = vim.fn.stdpath("data") .. "/nvchad/base46/"
-    end,
-    build = function()
-      vim.fn.mkdir(vim.g.base46_cache, "p")
-      vim.cmd("CompileTheme")
-    end,
+    -- init = function()
+    --   vim.api.nvim_create_autocmd("BufWritePost", {
+    --     group = vim.api.nvim_create_augroup("ReloadTheme", {}),
+    --     pattern = vim.fs.normalize(vim.fn.stdpath("config") .. "/lua/config/catppuccin.lua"),
+    --     callback = function()
+    --       -- require("plenary.reload").reload_module("catppuccin")
+    --       require("plenary.reload").reload_module("config.catppuccin")
+    --       require("config.catppuccin")
+    --     end,
+    --   })
+    --   vim.api.nvim_create_user_command("ThemeEdit", "vsp " .. vim.fn.stdpath("config") .. "/lua/config/catppuccin.lua", {})
+    -- end,
     config = function()
-      dofile(vim.g.base46_cache .. "defaults")
-      dofile(vim.g.base46_cache .. "syntax")
-      dofile(vim.g.base46_cache .. "devicons")
-      dofile(vim.g.base46_cache .. "git")
+      require("config.catppuccin")
       require("config.ui")
-    end,
+    end
   },
 
   -------------------------------------LSP-------------------------------------
@@ -123,44 +125,49 @@ local plugins = {
     dev = true,
     -- lazy = true,
     build = ":TSUpdate",
-    event = { "BufReadPre" },
-    cmd = {
-      "TSInstall",
-      "TSUninstall",
-    },
+    -- event = { "BufReadPre" },
+    -- cmd = {
+    --   "TSUpdate",
+    --   "TSInstall",
+    --   "TSUninstall",
+    -- },
     config = function()
       require("config.treesitter")
     end,
+    -- dependencies = {
+    -- },
+  },
+  {
+    "lucario387/nvim-ts-format",
+    event = { "BufReadPre" },
+    dev = true,
+  },
+  -- Movement related
+  {
+    "nvim-treesitter/nvim-treesitter-textobjects",
+    event = { "BufReadPre" },
+  },
+  { "andymass/vim-matchup", event = { "BufReadPre" },
+  },
+  {
+    "numToStr/Comment.nvim",
+    event = { "BufReadPre" },
+    config = function()
+      require("config.misc").Comment()
+    end,
     dependencies = {
-
-      {
-        "lucario387/nvim-ts-format",
-        dev = true,
-        -- config = function()
-        --   vim.api.nvim_create_user_command("TSFormatFile", function()
-        --     require("nvim-ts-format.format").format_buf_no_inj()
-        --   end, {})
-        -- end,
-      },
-      -- Movement related
-      { "nvim-treesitter/nvim-treesitter-textobjects" },
-      { "andymass/vim-matchup" },
-      {
-        "numToStr/Comment.nvim",
-        config = function()
-          require("config.misc").Comment()
-        end,
-      },
       {
         "JoosepAlviste/nvim-ts-context-commentstring",
+        event = { "BufReadPre" },
         config = function()
           require('ts_context_commentstring').setup{
             enable_autocmd = false,
           }
         end,
       },
-    },
+    }
   },
+
   --ts misc
   -- { "nvim-treesitter/playground",                  cmd = { "TSPlaygroundToggle", "TSCaptureUnderCursor" } },
 
@@ -186,6 +193,8 @@ local plugins = {
             history = true,
             updateevents = "TextChanged,TextChangedI",
           })
+          require("luasnip").filetype_extend("markdown", { "license" })
+          require("luasnip").filetype_extend("text", { "license" })
           require("luasnip.loaders.from_vscode").lazy_load()
           -- require("luasnip.loaders.from_vscode").lazy_load({ paths = { vim.g.luasnippets_path } })
 
@@ -239,6 +248,7 @@ local plugins = {
       { "nvim-telescope/telescope-fzf-native.nvim",    build = "make" },
       { "nvim-telescope/telescope-ui-select.nvim" },
       { "nvim-telescope/telescope-live-grep-args.nvim" },
+      -- { "nvim-telescope/telescope-frecency.nvim" },
     },
   },
 
@@ -266,20 +276,20 @@ local plugins = {
       require("config.misc").gitsigns()
     end,
   },
-  -- {
-  --   "NeogitOrg/neogit",
-  --   -- lazy = true,
-  --   cmd = { "Neogit" },
-  --   dependencies = {
-  --     "sindrets/diffview.nvim",
-  --   },
-  --   -- requires = {
-  --   --   "lewis6991/gitsigns.nvim",
-  --   -- },
-  --   config = function()
-  --     require("config.misc").neogit()
-  --   end,
-  -- },
+  {
+    "NeogitOrg/neogit",
+    -- lazy = true,
+    cmd = { "Neogit" },
+    -- dependencies = {
+    --   "sindrets/diffview.nvim",
+    -- },
+    -- requires = {
+    --   "lewis6991/gitsigns.nvim",
+    -- },
+    config = function()
+      require("config.misc").neogit()
+    end,
+  },
 
   -------------------------------------Misc------------------------------------
   { "lervag/vimtex" },
@@ -329,6 +339,51 @@ local plugins = {
     config = function()
       require("config.misc").noice()
     end,
+  },
+{
+    "folke/flash.nvim",
+    cond = false,
+    event = "VeryLazy",
+    config = function (_, opts)
+      require("flash").setup({
+        search = {
+          incremental = true,
+        }
+      })
+      vim.keymap.set({ "n", "x", "o"}, "s", function ()
+        require("flash").jump()
+      end, { desc = "Flash Search"})
+      vim.keymap.set({ "n", "x", "o"}, "S", function ()
+        require("flash").treesitter()
+      end, { desc = "Flash Treesitter Search"})
+      vim.keymap.set("o", "r", function ()
+        require("flash").remote()
+      end, { desc = "Flash Remote"})
+      vim.keymap.set({ "x", "o"}, "R", function ()
+        require("flash").treesitter_search()
+      end, { desc = "Treesitter Search"})
+      vim.keymap.set("c", "<C-s>", function ()
+        require("flash").toggle()
+      end, { desc = "Toggle Flash Search"})
+    end
+  },
+{
+    "ggandor/leap.nvim",
+    event = "VeryLazy",
+    -- config = function (_, opts)
+    --   -- require("leap").create_default_mappings()
+    -- end,
+    dependencies = {
+      {
+        "ggandor/flit.nvim",
+        config = function (_, opts)
+          require("flit").setup()
+        end
+      },
+      {
+        "tpope/vim-repeat"
+      }
+    }
   },
 
 

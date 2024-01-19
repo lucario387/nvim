@@ -10,13 +10,18 @@ local file_name = function()
 end
 
 -- local lsp_diagnostics = function()
---   if #vim.lsp.get_active_clients({ bufnr = 0 }) == 0 then return "" end
+--   if not vim.g.lsp then
+--     return ""
+--   end
+-- 	if #vim.lsp.get_clients({ bufnr = 0 }) == 0 then
+-- 		return ""
+-- 	end
 --   local num_errors = #vim.diagnostic.get(0, { severity = vim.diagnostic.severity.ERROR })
 --   local num_warnings = #vim.diagnostic.get(0, { severity = vim.diagnostic.severity.WARN })
 --   local num_hints = #vim.diagnostic.get(0, { severity = vim.diagnostic.severity.HINT })
 --   local num_infos = #vim.diagnostic.get(0, { severity = vim.diagnostic.severity.INFO })
 --   return string.format(
---     "%%#StLSPErrors# %d %%#StLSPWarnings# %d %%#StLSPHints# %d %%#StLSPInfo# %d ",
+--     "%%#StLSPErrors# %d %%#StLSPWarnings# %d %%#StLSPHints# %d %%#StLSPInfo# %d",
 --     num_errors, num_warnings, num_hints, num_infos)
 -- end
 
