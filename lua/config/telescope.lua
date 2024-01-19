@@ -6,7 +6,6 @@ local lga = require("telescope-live-grep-args.actions")
 --   vim.cmd("TroubleToggle quickfix")
 -- end
 -- vim.g.theme_switcher_loaded = true
-dofile(vim.g.base46_cache .. "telescope")
 telescope.setup({
   defaults = {
     vimgrep_arguments = {

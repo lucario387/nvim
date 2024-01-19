@@ -10,7 +10,6 @@ M.load_vscode_config = function()
 end
 
 M.setup = function()
-  dofile(vim.g.base46_cache .. "dap")
   local dap = require("dap")
   local repl = require("dap.repl")
   require("mappings").dap()

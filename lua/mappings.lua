@@ -61,20 +61,8 @@ M.general = function()
   vim.keymap.set("n", "<C-,>", "<C-w>2<", { desc = "" })
 
   vim.keymap.set("n", "<leader>tt", function()
-    require("plenary.reload").reload_module("core.utils")
-    require("plenary.reload").reload_module("base46")
-    local config = require("core.utils").load_config()
-    vim.g.nvchad_theme = vim.g.nvchad_theme == config.ui.theme_toggle[1] and config.ui.theme_toggle[2] or
-      config.ui.theme_toggle[1]
-    require("base46").load_all_highlights()
-    -- require("base46").load_all_highlights()
+    vim.cmd.colorscheme(vim.g.colors_name == "catppuccin-latte" and "catppuccin-mocha" or "catppuccin-latte")
   end, { desc = "toggle theme" })
-  vim.keymap.set("n", "<leader>tr", function()
-    vim.g.transparency = (vim.g.transparency == false) and true or false
-    require("plenary.reload").reload_module("core.utils")
-    require("plenary.reload").reload_module("base46")
-    require("base46").load_all_highlights()
-  end, { desc = "Toglge theme" })
 
   vim.keymap.set("n", "a", function()
     local line = #vim.trim(vim.fn.getline("."))

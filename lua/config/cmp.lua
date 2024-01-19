@@ -1,6 +1,5 @@
 local cmp = require("cmp")
 local list_contains = vim.list_contains or vim.tbl_contains
-pcall(function() dofile(vim.g.base46_cache .. "cmp") end)
 
 local ELLIPSIS_CHAR = "…"
 local MAX_LABEL_WIDTH = 40

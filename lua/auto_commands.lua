@@ -28,19 +28,6 @@ vim.api.nvim_create_autocmd("UIEnter", {
   end,
 })
 
-vim.api.nvim_create_autocmd("BufWritePost", {
-  group = vim.api.nvim_create_augroup("ReloadTheme", {}),
-  pattern = vim.fs.normalize(vim.fn.stdpath("config") .. "/lua/core/utils.lua"),
-  callback = function()
-    require("plenary.reload").reload_module("core.utils")
-    require("plenary.reload").reload_module("base46")
-    local config = require("core.utils").load_config()
-    vim.g.nvchad_theme = config.ui.theme
-    vim.g.transparency = config.ui.transparency
-    require("base46").load_all_highlights()
-  end,
-})
-
 vim.api.nvim_create_autocmd({ "TermOpen" --[["BufEnter"]] }, {
   group = vim.api.nvim_create_augroup("TermConfig", {}),
   callback = function()

@@ -59,7 +59,6 @@ M.LuaSnip = function()
 end
 
 M.gitsigns = function()
-  -- dofile(vim.g.base46_cache .. "git")
   local null = require("null-ls")
 
   require("gitsigns").setup({
@@ -91,7 +90,6 @@ M.gitsigns = function()
 end
 
 M["nvim-tree"] = function()
-  dofile(vim.g.base46_cache .. "nvimtree")
   require("nvim-tree").setup({
     hijack_cursor = true,
     filters = {
@@ -177,9 +175,6 @@ M["nvim-tree"] = function()
 end
 
 M["indent-blankline"] = function()
-  pcall(function()
-    dofile(vim.g.base46_cache .. "blankline")
-  end)
   require("ibl").setup({
     exclude = {
       filetypes = {
