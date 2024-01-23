@@ -10,9 +10,9 @@ require("catppuccin").setup({
         MatchWord                  = { bold = true },
         Visual                     = { sp = colors.text, underline = true },
         IndentBlankLineContextChar = { fg = colors.sapphire },
+        WinSeparator = { fg = colors.text },
         -- TelescopeSelection = { bg = colors.subtext1 },
         -- TelescopeBorder            = { fg = colors.base, bg = colors.base },
-
         -- CursorLine = { bg = colors.text },
         NvimTreeWinSeparator       = { fg = colors.text },
         NvimTreeGitNew             = { fg = colors.green },
@@ -97,11 +97,40 @@ require("catppuccin").setup({
         TabLineBufHiddenSep                     = { fg = colors.subtext1, bg = colors.crust, sp = colors.text },
 
 
+        Function = {
+          fg = colors.yellow,
+        },
+        Parameter = {
+          fg = colors.sky,
+        },
+
+
         ["@conceal.checked"] = {
           fg = colors.teal,
         },
         ["@none"] = {
           link = "Normal",
+        },
+        ["@field"] = {
+          fg = colors.blue,
+        },
+        ["@comment.todo"] = {
+          fg = colors.lavender,
+        },
+        ["@property"] = {
+          fg = colors.blue,
+        },
+        ["@variable.member"] = {
+          fg = colors.blue
+        },
+        ["@variable.parameter"] = {
+          fg = colors.sky,
+        },
+        ["@parameter"] = {
+          fg = colors.sky,
+        },
+        ["@comment.note"] = {
+          link = "@comment.hint",
         },
         ["@lsp.type.annotation"] = {
           fg = colors.yellow,
@@ -123,6 +152,51 @@ require("catppuccin").setup({
         ["@lsp.type.keyword"] = { fg = colors.lavender },
       }
     end,
+    frappe = function(colors)
+      return {
+        Parameter = {
+          fg = colors.nvchad_cyan,
+        },
+        ["@parameter"] = {
+          fg = colors.nvchad_cyan,
+        },
+        ["@variable.parameter"] = {
+          fg = colors.nvchad_cyan,
+        },
+        Type =  {
+          fg = "NvimLightGreen"
+        },
+        Structure = {
+          fg = "NvimLightGreen"
+        },
+        Keyword = {
+          fg = "NvimLightMagenta"
+        },
+        ["@type.builtin"] = {
+          fg = colors.green1,
+        }
+      }
+    end
+  },
+  color_overrides = {
+    frappe = {
+      -- lavender = "#f5c2e7",
+      teal = "#b5e8e0",
+      mauve = "#c7a0dc",
+      -- yellow = "#e1c487"
+      -- yellow = "#ffe9b6",
+      yellow = "#ffd807",
+      green1 = "#4CEF94",
+      nvchad_cyan = "#9CDCFE",
+    },
+    macchiato = {
+      text = "#dee1e6",
+      base = "#1E1E1E",
+      blue = "#569CD6",
+      green = "#B5CEA8",
+      teal = "#4294D6",
+      pink = "#bb7cb6",
+    },
   },
   background = {
     light = "latte",

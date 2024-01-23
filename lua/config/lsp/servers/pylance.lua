@@ -95,7 +95,7 @@ local function create_typestub(opts)
   vim.lsp.buf.execute_command(params)
 end
 
-function get_package_list(arg_lead, cmdline, cursor_pos)
+local function get_package_list(arg_lead, cmdline, cursor_pos)
   ---@type string[]
   local packages = {}
   ---@type string[]

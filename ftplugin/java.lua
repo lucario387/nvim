@@ -2,12 +2,24 @@
 --   return
 -- end
 
-if #vim.api.nvim_list_uis() == 0 then
+vim.bo.tabstop = 4
+vim.bo.softtabstop = 4
+vim.bo.shiftwidth = 4
+vim.bo.expandtab = true
+
+if #vim.api.nvim_list_uis() == 0 or vim.g.no_mvn then
   return
 end
 if not vim.g.loaded_jdtls then
   vim.g.loaded_jdtls = true
   require("lazy.core.loader").load({ "nvim-lspconfig", "nvim-jdtls", "nvim-dap" }, {})
+end
+
+---@type string
+local root_dir = require("jdtls.setup").find_root({ "gradlew", "mvnw", "pom.xml" })
+
+if not root_dir or root_dir:len() > vim.env.PWD:length() then
+  vim.g.no_mvn = true
 end
 
 local jdtls = require("jdtls")
@@ -16,10 +28,6 @@ local extendedClientCapabilities = jdtls.extendedClientCapabilities
 extendedClientCapabilities.resolveAdditionalTextEditsSupport = true
 extendedClientCapabilities.progressReportProvider = true;
 extendedClientCapabilities.onCompletionItemSelectedCommand = "editor.action.triggerParameterHints";
-
-
----@type string
-local root_dir = require("jdtls.setup").find_root({ ".git", "gradlew", "mvnw", "pom.xml" })
 ---@type string
 local workspace_folder = vim.env.HOME .. "/.local/share/eclipse/" .. vim.fn.fnamemodify(root_dir, ":p:h:t")
 

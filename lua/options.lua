@@ -137,5 +137,8 @@ end
 vim.filetype.add({
   pattern = {
     [".*/example_queries/.*%.scm"] = "query"
-  }
+  },
+  filename = {
+    ["zathurarc"] = "zathurarc",
+  },
 })

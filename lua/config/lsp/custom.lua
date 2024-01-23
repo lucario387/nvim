@@ -5,8 +5,8 @@ M.jsonls = function(on_attach, capabilities)
   require("lspconfig").jsonls.setup({
     ---@type fun(client: lsp.Client, bufnr: integer)
     on_attach = function(client, bufnr)
-      client.server_capabilities.formattingProvider = false
-      client.server_capabilities.rangeFormattingProvider = false
+      client.server_capabilities.documentFormattingProvider = false
+      client.server_capabilities.documentRangeFormattingProvider = false
       on_attach(client, bufnr)
     end,
     capabilities = capabilities,
@@ -173,10 +173,6 @@ M.eslint = function(on_attach, capabilities)
       client.server_capabilities.typeDefinitionProvider = false
       client.server_capabilities.referencesProvider = false
       client.server_capabilities.inlayHintProvider = false
-      if vim.g.lsp.formatters and vim.g.lsp.formatters["tsserver"] then
-        client.server_capabilities.documentFormattingProvider = false
-        client.server_capabilities.documentRangeFormattingProvider = false
-      end
       on_attach(client, bufnr)
       -- vim.keymap.set("n", "<leader>fm", function()
       --   vim.cmd("EslintFixAll")
@@ -198,14 +194,8 @@ M.eslint = function(on_attach, capabilities)
       format = true,
       nodePath = "",
       onIgnoredFiles = "off",
-      packageManager = "npm",
       quiet = false,
-      rulesCustomizations = {},
-      problems = {
-        shortenToSingleFile = true,
-      },
       run = "onSave",
-      useESLintClass = true,
       validate = "on",
       workingDirectory = {
         mode = "location",

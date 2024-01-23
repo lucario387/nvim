@@ -39,7 +39,6 @@ vim.api.nvim_create_autocmd({ "TermOpen" --[["BufEnter"]] }, {
     vim.wo.signcolumn = "no"
     -- vim.wo.statuscolumn=""
   end,
-  pattern = "term://*",
 })
 
 vim.api.nvim_create_autocmd({ "BufLeave" }, {

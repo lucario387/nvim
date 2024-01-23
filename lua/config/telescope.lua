@@ -104,7 +104,7 @@ telescope.setup({
         i = {
           -- ["<C-k>"] = lga.quote_prompt(),
           ["<Tab>"] = lga.quote_prompt({
-            postfix = "-t",
+            postfix = " --iglob ",
           }),
         },
       },
