@@ -68,21 +68,21 @@ vim.o.relativenumber = true
 -- o.shadafile = "NONE"
 
 -- vim.o.conceallevel = 2
--- vim.o.concealcursor = "nv"
+vim.o.concealcursor = "n"
 -- o.sessionoptions = "buffers,curdir,localoptions,folds,help,winpos,tabpages"
 
 vim.o.viewoptions = "folds,cursor"
 
 -- vim.o.smoothscroll = true
 -- Wrap, linebreak settings
-vim.o.scrolloff = 20
+vim.o.scrolloff = 10
 -- vim.o.wrap = true
 
 vim.o.linebreak = true
 vim.o.breakindent = true
 -- vim.o.cmdheight = 0
 
-vim.o.pumheight = 5
+vim.o.pumheight = 10
 -- vim.o.spell = false
 
 -- Change default grep
@@ -137,5 +137,8 @@ end
 vim.filetype.add({
   pattern = {
     [".*/example_queries/.*%.scm"] = "query"
-  }
+  },
+  filename = {
+    ["zathurarc"] = "zathurarc",
+  },
 })

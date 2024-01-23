@@ -6,6 +6,35 @@ local lga = require("telescope-live-grep-args.actions")
 --   vim.cmd("TroubleToggle quickfix")
 -- end
 -- vim.g.theme_switcher_loaded = true
+
+local function quoted(prompt)
+  local str = prompt:gsub('"', '\\"')
+  return '"' .. str .. '"'
+end
+
+-- mimic https://github.com/nvim-telescope/telescope-live-grep-args.nvim/blob/master/lua/telescope-live-grep-args/actions/quote_prompt.lua
+---@param opts {quote_char: string, prefix: string, postfix: string, trim: boolean}
+local function quote_prompt(opts)
+  local action_state = require("telescope.actions.state")
+  local default_opts = {
+    prefix = "",
+    postfix = " ",
+    trim = true,
+  }
+  opts = vim.tbl_extend("force", default_opts, opts)
+  -- quoted = value:gsub(opts.quote_char, "\\" .. opts.quote_char)
+  --   return opts.quote_char .. quoted .. opts.quote_char
+  ---@param prompt_bufnr integer
+  return function(prompt_bufnr)
+    local picker = action_state.get_current_picker(prompt_bufnr)
+    local prompt = picker:_get_prompt()
+    if opts.trim then
+      prompt = vim.trim(prompt)
+    end
+    prompt = opts.prefix .. quoted(prompt) .. opts.postfix
+    picker:set_prompt(prompt)
+  end
+end
 telescope.setup({
   defaults = {
     vimgrep_arguments = {
@@ -50,7 +79,7 @@ telescope.setup({
       height = 0.80,
       -- preview_cutoff = 120,
     },
-    file_ignore_patterns = { "node_modules/", "LICENSE", "%.git",  "book/", "*-lock.json" },
+    file_ignore_patterns = { "node_modules/", "LICENSE", "%.git", "book/", "*-lock.json" },
     path_display = { "truncate" },
     winblend = 0,
     -- border = {},
@@ -103,8 +132,10 @@ telescope.setup({
       mappings = {
         i = {
           -- ["<C-k>"] = lga.quote_prompt(),
-          ["<Tab>"] = lga.quote_prompt({
-            postfix = "-t",
+          ["<Tab>"] = quote_prompt({
+            -- prefix = "-t ",
+            trim = true,
+            postfix = " \"",
           }),
         },
       },

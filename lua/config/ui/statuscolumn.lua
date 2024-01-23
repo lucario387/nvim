@@ -4,7 +4,7 @@ M.draw = function()
 	if vim.v.wrap then
 		return "%="
 	end
-  return (vim.v.relnum == 0) and "%=%#CurrentLineNr#%l%s" or "%=%r%s"
+  return "%=%l%s"
 	-- local line = vim.fn.line(".")
 	-- return (vim.v.lnum == line or not vim.v.relnum) and "%=%#CurrentLineNr#%l%s" or "%=%r%s"
 	-- return vim.v.lnum < x and

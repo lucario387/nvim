@@ -6,3 +6,4 @@ end, {
   nargs = "*",
 })
 vim.api.nvim_create_user_command("TSPlaygroundToggle", "InspectTree", {})
+vim.api.nvim_create_user_command("GitHub", "Octo", {})

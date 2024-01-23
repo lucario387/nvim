@@ -12,7 +12,7 @@ M.null_ls = function(bufnr)
   end, { desc = "LSP format", buffer = bufnr })
   vim.keymap.set({ "n", "x" }, "<leader>ca", function()
     if not package.loaded["telescope"] then
-      require("lazy.core.loader").load({"telescope.nvim"}, {})
+      require("lazy.core.loader").load({ "telescope.nvim" }, {})
     end
     vim.lsp.buf.code_action()
     -- vim.cmd.Lspsaga("code_action")
@@ -21,7 +21,7 @@ M.null_ls = function(bufnr)
 end
 
 M.general = function()
-  vim.keymap.set("n", "<C-n>", function()
+  vim.keymap.set("n", "<C-b>", function()
     vim.cmd.NvimTreeToggle()
   end, { desc = "Toggle NvimTree" })
   -- vim.keymap.set("n", "<C-n>", vim.cmd.cnext, { desc = "Jump to next quickfix" })
@@ -35,6 +35,12 @@ M.general = function()
   vim.keymap.set("n", "<C-j>", "<C-w>j", { desc = "window down" })
   vim.keymap.set("n", "<C-k>", "<C-w>k", { desc = "window up" })
   -- vim.keymap.set("n", "o", "A<Enter>", {})
+  
+  -- View cursor line: Open just enough folds to make the line in
+  -- which the cursor is located not folded.
+  vim.keymap.set({"n", "x" }, "n", "nzzzv", { desc = "see :h zv"})
+
+
 
   -- save
   vim.keymap.set({ "n", "i" }, "<C-s>", function() vim.cmd.write() end, { desc = "save file" })
@@ -123,6 +129,16 @@ M.general = function()
   vim.keymap.set("t", "<C-`>", function()
     require("nvterm.terminal").toggle("horizontal")
   end)
+
+  -- Built in comment
+  vim.keymap.set("n", "<C-/>", "gcc", { desc = "toggle comment" })
+  vim.keymap.set(
+    "x",
+    "<C-/>",
+    "gc",
+    { desc = "Toggle comment" }
+  )
+  vim.keymap.set("i", "<C-/>", "<C-o>gcc", {})
 end
 
 ---@param bufnr integer buffer number to vim.keymap.set keymap
@@ -220,7 +236,16 @@ M.telescope = function()
     "<cmd> Telescope find_files follow=true no_ignore=true hidden=true prompt_title=false<CR>",
     { desc = "find all" }
   )
-  vim.keymap.set("n", "<leader>ff", "<cmd>Telescope find_files prompt_title=false<CR>", { desc = "find files" })
+  vim.keymap.set(
+    "n",
+    "<leader>ff",
+    function ()
+      require("telescope.builtin").find_files({
+        find_command = { "fd", "--type", "f", "--color", "never" },
+      })
+    end,
+    -- "<cmd>Telescope find_files prompt_title=false find_command=['fd', '--type', 'f', '--color', 'never']<CR>",
+    { desc = "find files" })
   vim.keymap.set(
     "n",
     "<leader>tm",
@@ -232,7 +257,8 @@ end
 
 ---@param bufnr integer buffer to vim.keymap.set key map
 M.git = function(bufnr)
-  bufnr = bufnr or 0
+  -- bufnr = bufnr or 0
+  local gitsigns = package.loaded.gitsigns
   vim.keymap.set("n", "<leader>gdo", "<cmd>DiffviewOpen<CR>", { desc = "Open Diff view", buffer = bufnr })
   vim.keymap.set("n", "<leader>gdc", "<cmd>DiffviewClose<CR>", { desc = "Close Diff view", buffer = bufnr })
   vim.keymap.set("n", "<leader>gdr", "<cmd>DiffviewRefresh<CR>", { desc = "Refresh Diff view", buffer = bufnr })
@@ -242,7 +268,7 @@ M.git = function(bufnr)
       return "[c"
     end
     vim.schedule(function()
-      require("gitsigns").prev_hunk({ preview = true })
+      gitsigns.prev_hunk({ preview = true })
     end)
     return "<Ignore>"
   end, { expr = true, desc = "Jump to prev hunk", buffer = bufnr })
@@ -251,26 +277,53 @@ M.git = function(bufnr)
       return "]c"
     end
     vim.schedule(function()
-      require("gitsigns").next_hunk({ preview = true })
+      gitsigns.next_hunk({ preview = true })
     end)
     return "<Ignore>"
   end, { expr = true, desc = "Jump to next hunk", buffer = bufnr })
 
-  vim.keymap.set("n", "<leader>rh", function()
-    require("gitsigns").reset_hunk()
+  vim.keymap.set("n", "<leader>hs", gitsigns.stage_hunk, { buffer = bufnr, desc = "Stage Hunk" })
+  vim.keymap.set("n", "<leader>hs", gitsigns.stage_hunk, { buffer = bufnr, desc = "Stage Hunk" })
+  vim.keymap.set("n", "<leader>hr", function()
+    gitsigns.reset_hunk()
   end, { desc = "Reset hunk", buffer = bufnr })
+  vim.keymap.set("v", "<leader>hs", function()
+    gitsigns.stage_hunk({ vim.fn.line("."), vim.fn.line("v") })
+  end, { desc = "Stage Hunk", buffer = bufnr })
+  vim.keymap.set("v", "<leader>hr", function()
+    gitsigns.reset_hunk({ vim.fn.line("."), vim.fn.line("v") })
+  end, { buffer = bufnr, desc = "Reset Hunk" })
+  vim.keymap.set("n", "<leader>hu", gitsigns.undo_stage_hunk, { buffer = bufnr, desc = "Undo Stage Hunk" })
+  vim.keymap.set("n", "<leader>s", gitsigns.stage_hunk, { buffer = bufnr, desc = "Stage Hunk" })
+  vim.keymap.set("n", "<leader>r", function()
+    gitsigns.reset_hunk()
+  end, { desc = "Reset hunk", buffer = bufnr })
+  vim.keymap.set("v", "<leader>s", function()
+    gitsigns.stage_hunk({ vim.fn.line("."), vim.fn.line("v") })
+  end, { desc = "Stage Hunk", buffer = bufnr })
+  vim.keymap.set("v", "<leader>r", function()
+    gitsigns.reset_hunk({ vim.fn.line("."), vim.fn.line("v") })
+  end, { buffer = bufnr, desc = "Reset Hunk" })
+  vim.keymap.set("n", "<leader>u", gitsigns.undo_stage_hunk, { buffer = bufnr, desc = "Undo Stage Hunk" })
+  vim.keymap.set("n", "<leader>hd", gitsigns.diffthis, { buffer = bufnr, desc = "View Diff" })
+  vim.keymap.set("n", "<leader>hD", function()
+    gitsigns.diffthis("~")
+  end, { buffer = bufnr, desc = "View Diff" })
 
-  vim.keymap.set("n", "<leader>ph", function()
-    require("gitsigns").preview_hunk_inline()
+  vim.keymap.set("n", "<leader>hp", function()
+    gitsigns.preview_hunk_inline()
   end, { desc = "Preview hunk", buffer = bufnr })
 
-  vim.keymap.set("n", "<leader>gb", function()
-    require("gitsigns").blame_line()
+  vim.keymap.set("n", "<leader>hb", function()
+    gitsigns.blame_line()
   end, { desc = "Blame line", buffer = bufnr })
 
   vim.keymap.set("n", "<leader>td", function()
-    require("gitsigns").toggle_deleted()
+    gitsigns.toggle_deleted()
   end, { desc = "Toggle deleted", buffer = bufnr })
+  -- vim.keymap.set({ "n" }, "<leader>cm", function()
+  --   require("Neogit")
+  -- end)
 end
 
 M.dap = function()

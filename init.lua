@@ -23,3 +23,6 @@ require("mappings").telescope()
 
 require("bootstrap")
 require("plugins")
+
+-- no nvim-jdtls for now
+vim.g.loaded_jdtls = true

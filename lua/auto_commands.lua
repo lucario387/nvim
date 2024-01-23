@@ -25,12 +25,13 @@ vim.api.nvim_create_autocmd("UIEnter", {
   -- once = true,
   callback = function()
     vim.cmd.clearjumps()
+    return true
   end,
 })
 
 vim.api.nvim_create_autocmd({ "TermOpen" --[["BufEnter"]] }, {
   group = vim.api.nvim_create_augroup("TermConfig", {}),
-  callback = function()
+  callback = function(args)
     vim.cmd("startinsert")
     vim.wo.number = false
     vim.wo.relativenumber = false
@@ -38,16 +39,22 @@ vim.api.nvim_create_autocmd({ "TermOpen" --[["BufEnter"]] }, {
     vim.wo.winfixwidth = true
     vim.wo.signcolumn = "no"
     -- vim.wo.statuscolumn=""
-  end,
-  pattern = "term://*",
-})
 
-vim.api.nvim_create_autocmd({ "BufLeave" }, {
-  group = vim.api.nvim_create_augroup("TermConfig", {}),
-  callback = function()
-    vim.cmd("stopinsert")
+    vim.api.nvim_create_autocmd("BufEnter", {
+      group = vim.api.nvim_create_augroup("TermConfig", {}),
+      buffer = args.buf,
+      callback = function()
+        vim.cmd.startinsert()
+      end,
+    })
+    vim.api.nvim_create_autocmd({ "BufLeave" }, {
+      group = vim.api.nvim_create_augroup("TermConfig", {}),
+      buffer = args.buf,
+      callback = function()
+        vim.cmd("stopinsert")
+      end,
+    })
   end,
-  pattern = "term://*",
 })
 
 vim.api.nvim_create_autocmd("CmdwinEnter", {
@@ -70,14 +77,15 @@ vim.api.nvim_create_autocmd("UIEnter", {
     end
     if directory then
       vim.cmd.cd(opts.file)
-      require("lazy.core.loader").load({"nvim-tree.lua"}, {})
+      require("lazy.core.loader").load({ "nvim-tree.lua" }, {})
       vim.cmd.NvimTreeToggle()
     end
+    return true
   end,
 })
 
 
-local GitSignsLazyLoad = vim.api.nvim_create_augroup("GitSignsLazyLoad", {clear = true})
+local GitSignsLazyLoad = vim.api.nvim_create_augroup("GitSignsLazyLoad", { clear = true })
 
 vim.api.nvim_create_autocmd("BufReadPre", {
   group = GitSignsLazyLoad,
@@ -94,7 +102,7 @@ vim.api.nvim_create_autocmd("BufReadPre", {
     if obj.signal == 0 then
       vim.api.nvim_del_augroup_by_id(GitSignsLazyLoad)
 
-      require("lazy.core.loader").load({"gitsigns.nvim"}, {})
+      require("lazy.core.loader").load({ "gitsigns.nvim" }, {})
       return true
     end
   end,

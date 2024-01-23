@@ -7,6 +7,7 @@ vim.o.foldexpr = "v:lua.vim.treesitter.foldexpr()"
 vim.o.foldlevelstart = 99
 -- vim.o.foldtext = "v:lua.vim.treesitter.foldtext()"
 vim.o.foldenable = false
+vim.o.foldtext = ""
 require("nvim-treesitter.configs").setup({
   auto_install = true,
   parser_install_dir = vim.fn.stdpath("data") .. "/site",
@@ -87,5 +88,17 @@ parser.dart = {
   },
   maintainers = { "@akinsho" },
 }
+parser.vue = {
+  install_info = {
+    url = "https://github.com/tree-sitter-grammars/tree-sitter-vue",
+    branch = "v2",
+    files = { "src/parser.c", "src/scanner.c" },
+    revision = "085e99bcc46b2e63ff06a830a31a55132ce95aa5",
+  }
+}
 -- vim.treesitter.language.register("bash", "zsh")
 -- vim.api.nvim_create_user_command("TSPlaygroundToggle", "<cmd>InspectTree<CR>")
+
+vim.treesitter.language.register("json", { "chart" })
+vim.treesitter.language.register("bash", { "zsh" })
+vim.treesitter.language.register("diff", { "suggestion" })

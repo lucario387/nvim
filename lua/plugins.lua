@@ -1,10 +1,17 @@
 -- List of all default plugins & their definitions
-
 ---@type NvPluginSpec
 local plugins = {
 
   -------------------------------------General---------------------------------
   { "nvim-lua/plenary.nvim" },
+
+  -- Neovim dev
+  {
+    "neovim/nvimdev.nvim",
+    build = {},
+    cond = false,
+    -- event = { "VeryLazy" },
+  },
 
   -- for managing lsp/formatter
   {
@@ -19,42 +26,65 @@ local plugins = {
   {
     "catppuccin/nvim",
     name = "catppuccin",
+    -- lazy = true,
+    cond = #vim.api.nvim_list_uis() ~= 0,
     priority = 1000,
-    -- init = function()
-    --   vim.api.nvim_create_autocmd("BufWritePost", {
-    --     group = vim.api.nvim_create_augroup("ReloadTheme", {}),
-    --     pattern = vim.fs.normalize(vim.fn.stdpath("config") .. "/lua/config/catppuccin.lua"),
-    --     callback = function()
-    --       -- require("plenary.reload").reload_module("catppuccin")
-    --       require("plenary.reload").reload_module("config.catppuccin")
-    --       require("config.catppuccin")
-    --     end,
-    --   })
-    --   vim.api.nvim_create_user_command("ThemeEdit", "vsp " .. vim.fn.stdpath("config") .. "/lua/config/catppuccin.lua", {})
-    -- end,
-    config = function()
-      require("config.catppuccin")
+    init = function()
+      vim.api.nvim_create_autocmd("BufWritePost", {
+        group = vim.api.nvim_create_augroup("ReloadTheme", {}),
+        pattern = vim.fs.normalize(vim.fn.stdpath("config") .. "/lua/config/catppuccin.lua"),
+        callback = function()
+          -- require("plenary.reload").reload_module("catppuccin")
+          require("plenary.reload").reload_module("config.catppuccin")
+          require("config.catppuccin")
+          require("config.ui")
+        end,
+      })
+      vim.api.nvim_create_user_command("ThemeEdit", "vsp " .. vim.fn.stdpath("config") .. "/lua/config/catppuccin.lua",
+        {})
+      vim.g.colors_name = "catppuccin-frappe"
+      dofile(vim.fn.stdpath("cache") .. "/" .. string.gsub(vim.g.colors_name, "%-", "/"))
       require("config.ui")
-    end
+    end,
+    -- config = function()
+    --   require("config.catppuccin")
+    --   require("config.ui")
+    -- end,
   },
 
   -------------------------------------LSP-------------------------------------
   {
     "neovim/nvim-lspconfig",
     -- lazy = true,
-    event = { "UIEnter", "BufReadPre" },
+    event = { "VeryLazy", "BufReadPre" },
     config = function()
       local utils = require("config.lsp")
       utils.lsp_handlers()
       if not vim.g.lsp or not vim.g.lsp.servers then
         return
       end
+      require("lsp-file-operations").setup()
       local on_attach = utils.on_attach
       local capabilities = utils.set_capabilities()
 
+      local lspconfig = require("lspconfig")
+      lspconfig.util.default_config = vim.tbl_extend(
+        'force',
+        lspconfig.util.default_config,
+        {
+          capabilities = vim.tbl_deep_extend(
+            "force",
+            vim.lsp.protocol.make_client_capabilities(),
+            -- returns configured operations if setup() was already called
+            -- or default operations if not
+            require'lsp-file-operations'.default_capabilities()
+          ),
+        }
+      )
+
       if vim.g.lsp.servers.default then
         for _, name in ipairs(vim.g.lsp.servers.default) do
-          require("lspconfig")[name].setup({
+          lspconfig[name].setup({
             on_attach = on_attach,
             capabilities = capabilities,
           })
@@ -68,10 +98,12 @@ local plugins = {
       end
     end,
     dependencies = {
-      { "pmizio/typescript-tools.nvim" },
+      { "antosha417/nvim-lsp-file-operations" },
     },
 
   },
+  { "pmizio/typescript-tools.nvim", lazy = true },
+  { "yioneko/nvim-vtsls", lazy = true },
   {
     "nvimtools/none-ls.nvim",
     lazy = true,
@@ -79,7 +111,7 @@ local plugins = {
     config = function()
       require("null-ls").setup({
         sources = {
-          require("null-ls").builtins.formatting.prettierd,
+          require("null-ls").builtins.code_actions.gitrebase,
         },
       })
     end,
@@ -93,79 +125,130 @@ local plugins = {
     end,
   },
   -- LSP for specific filetypes
+  -- {
+  --   "mfussenegger/nvim-jdtls",
+  --   lazy = true,
+  -- },
   {
-    "mfussenegger/nvim-jdtls",
+    "nvim-java/nvim-java",
     lazy = true,
   },
   -- { "jose-elias-alvarez/typescript.nvim" },
   -- { "folke/neodev.nvim" },
   {
+    "folke/todo-comments.nvim",
+    event = "VeryLazy",
+    config = function()
+      require("todo-comments").setup()
+      vim.keymap.set("n", "]t", function()
+        require("todo-comments").jump_next()
+      end, { desc = "Next error/warning todo comment" })
+      vim.keymap.set("n", "[t", function()
+        require("todo-comments").jump_prev()
+      end, { desc = "Next error/warning todo comment" })
+    end,
+  },
+  {
     "folke/trouble.nvim",
     cmd = { "TroubleToggle", "Trouble" },
+    keys = {
+      { "<leader>tn", function() require("trouble").next({ jump = true, skip_groups = true }) end, mode = { "n", "x", "o" } },
+      { "<leader>tp", function() require("trouble").prev({ jump = true, skip_groups = true }) end, mode = { "n", "x", "o" } },
+    },
     config = function()
       require("trouble").setup()
     end,
   },
   -- { "p00f/clangd_extensions.nvim" },
+  -- {
+  --   "folke/lazydev.nvim",
+  --   opts = {
+  --     library = {
+  --       {
+  --         path = "luvit-meta/library",
+  --         words = {
+  --           "vim%.uv",
+  --         },
+  --       }
+  --     }
+  --   },
+  --   ft = "lua",
+  --   dependencies = {
+  --     {
+  --       "Bilal2453/luvit-meta",
+  --     }
+  --   }
+  -- },
 
   -------------------------------------DAP-------------------------------------
   {
     "mfussenegger/nvim-dap",
     --module = "dap",
     ft = { "c", "cpp" },
+    dependencies = {
+      { "theHamsta/nvim-dap-virtual-text" },
+      { "rcarriga/nvim-dap-ui" },
+      { "nvim-neotest/nvim-nio" },
+    },
     config = function()
       require("config.dap").setup()
     end,
   },
-  { "theHamsta/nvim-dap-virtual-text" },
-  { "rcarriga/nvim-dap-ui" },
   -------------------------------------Tree-sitter-----------------------------
   {
     "nvim-treesitter/nvim-treesitter",
+    -- event = { "FileReadPre", "BufReadPre", "BufNewFile" },
     dev = true,
     -- lazy = true,
     build = ":TSUpdate",
     -- event = { "BufReadPre" },
-    -- cmd = {
-    --   "TSUpdate",
-    --   "TSInstall",
-    --   "TSUninstall",
-    -- },
-    config = function()
-      require("config.treesitter")
-    end,
-    -- dependencies = {
-    -- },
-  },
-  {
-    "lucario387/nvim-ts-format",
-    event = { "BufReadPre" },
-    dev = true,
-  },
-  -- Movement related
-  {
-    "nvim-treesitter/nvim-treesitter-textobjects",
-    event = { "BufReadPre" },
-  },
-  { "andymass/vim-matchup", event = { "BufReadPre" },
-  },
-  {
-    "numToStr/Comment.nvim",
-    event = { "BufReadPre" },
-    config = function()
-      require("config.misc").Comment()
-    end,
+    cmd = {
+      "TSUpdate",
+      "TSInstall",
+      "TSUninstall",
+    },
     dependencies = {
       {
-        "JoosepAlviste/nvim-ts-context-commentstring",
+        "lucario387/nvim-ts-format",
+        -- event = { "BufReadPre" },
+        dev = true,
+      },
+      -- Movement related
+      -- {
+      --   "nvim-treesitter/nvim-treesitter-textobjects",
+      --   -- event = { "BufReadPre" },
+      -- },
+      {
+        "andymass/vim-matchup",
+        -- cond=false,
+        
         event = { "BufReadPre" },
+      },
+      {
+        "numToStr/Comment.nvim",
+        -- event = { "BufReadPre" },
+        config = function()
+          require("config.misc").Comment()
+        end,
+        -- dependencies = {
+        -- },
+      },
+      {
+        "JoosepAlviste/nvim-ts-context-commentstring",
+        -- event = { "BufReadPre" },
         config = function()
           require('ts_context_commentstring').setup{
             enable_autocmd = false,
           }
         end,
       },
-    }
+
+    },
+    config = function()
+      require("config.treesitter")
+    end,
+    -- dependencies = {
+    -- },
   },
 
   --ts misc
@@ -174,13 +257,16 @@ local plugins = {
   -------------------------------------Completion engine-----------------------
   { "rafamadriz/friendly-snippets" },
   {
-    "hrsh7th/nvim-cmp",
+    -- "hrsh7th/nvim-cmp",
+    "iguanacucumber/magazine.nvim",
+    name = "nvim-cmp",
     event = { "InsertEnter", "CmdlineEnter" },
     dependencies = {
       { "saadparwaiz1/cmp_luasnip" },
       { "hrsh7th/cmp-nvim-lsp" },
       { "hrsh7th/cmp-buffer" },
       { "hrsh7th/cmp-path" },
+      { url = "https://codeberg.org/FelipeLema/cmp-async-path" },
       { "hrsh7th/cmp-omni" },
       { "windwp/nvim-autopairs" },
       {
@@ -188,6 +274,7 @@ local plugins = {
         -- disable = true,
         -- dependencies = "nvim-cmp",
         -- event = { "InsertEnter" },
+        build = "make install_jsregexp",
         config = function()
           require("luasnip").config.set_config({
             history = true,
@@ -211,7 +298,12 @@ local plugins = {
           })
         end,
       },
-      -- { "windwp/nvim-ts-autotag" },
+      -- {
+      --   "windwp/nvim-ts-autotag",
+      --   config = function (_, _)
+      --     require("nvim-ts-autotag").setup()
+      --   end
+      -- },
     },
     config = function()
       require("config.cmp")
@@ -270,28 +362,98 @@ local plugins = {
           })
         end,
       },
+      {
+        "NeogitOrg/neogit",
+        -- branch = "nightly",
+        -- lazy = true,
+        cmd = { "Neogit" },
+        -- dependencies = {
+        --   "sindrets/diffview.nvim",
+        -- },
+        -- requires = {
+        --   "lewis6991/gitsigns.nvim",
+        -- },
+        config = function()
+          require("config.misc").neogit()
+        end,
+      },
     },
     lazy = true,
     config = function()
       require("config.misc").gitsigns()
     end,
   },
-  {
-    "NeogitOrg/neogit",
-    -- lazy = true,
-    cmd = { "Neogit" },
-    -- dependencies = {
-    --   "sindrets/diffview.nvim",
-    -- },
-    -- requires = {
-    --   "lewis6991/gitsigns.nvim",
-    -- },
-    config = function()
-      require("config.misc").neogit()
-    end,
-  },
+  -- {
+  --   "pwntester/octo.nvim",
+  --   cmd = { "GitHub", "Octo" },
+  --   config = function()
+  --     local colors = require("catppuccin.palettes").get_palette("frappe")
+  --     require("octo").setup({
+  --       default_merge_method = "rebase",
+  --     })
+  --   end,
+  -- },
 
   -------------------------------------Misc------------------------------------
+  -- {
+  --   "mg979/vim-visual-multi",
+  --   event = "VeryLazy",
+  -- },
+
+  -- {
+  --   "andweeb/presence.nvim",
+  --   cond = false,
+  --   -- event = "VeryLazy",
+  --   config = function()
+  --     vim.g.presence_log_level = nil
+  --     require("presence").setup({
+  --       auto_update = true,
+  --       main_image = "file",
+  --       blacklist = {
+  --         "/work",
+  --       },
+  --       workspace_text = "Gliding on %s",
+  --       buttons = true,
+  --       enable_line_number = false,
+  --       show_time = false,
+  --     })
+  --   end,
+  -- },
+  {
+    "3rd/image.nvim",
+    event = "VeryLazy",
+    init = function ()
+      local basepath = vim.env.HOME .. "/.luarocks/share/lua/5.1"
+      package.path = package.path .. ";" .. basepath .. "/?.lua;" .. basepath .. "/?/init.lua"
+    end,
+    config = function ()
+      require("image").setup({
+        backend = "kitty",
+        integrations = {
+          markdown = {
+            enabled = true,
+            clear_in_insert_mode = false,
+            download_remote_images = true,
+            only_render_image_at_cursor = false,
+            filetypes = {
+              "markdown",
+              "vimwiki",
+              "quarto",
+            }
+          }
+        },
+        max_height_window_percentage = 40,
+        kitty_method = "normal",
+      })
+    end
+  },
+  {
+    "LunarVim/bigfile.nvim",
+    -- event = { "FileReadPre", "BufReadPre" },
+    config = function(_, _)
+      require("bigfile").setup()
+    end,
+  },
   { "lervag/vimtex" },
   {
     "tweekmonster/helpful.vim",
@@ -316,15 +478,25 @@ local plugins = {
     end,
   },
 
+  -- {
+  --   "NvChad/nvim-colorizer.lua",
+  --   event = "BufRead",
+  --   config = function()
+  --     require("colorizer").setup({
+  --       filetypes = { "lua", "vim", "css", "scss", "html", "vue" },
+  --       user_default_options = {
+  --         names = false,
+  --       },
+  --     })
+  --   end,
+  -- },
+
   {
-    "NvChad/nvim-colorizer.lua",
-    event = "BufRead",
+    "brenoprata10/nvim-highlight-colors",
+    event = { "BufRead" },
     config = function()
-      require("colorizer").setup({
-        filetypes = { "lua", "vim", "css", "scss", "html", "vue" },
-        user_default_options = {
-          names = false,
-        },
+      require("nvim-highlight-colors").setup({
+        enable_tailwind = true,
       })
     end,
   },
@@ -340,50 +512,74 @@ local plugins = {
       require("config.misc").noice()
     end,
   },
-{
+  {
     "folke/flash.nvim",
     cond = false,
     event = "VeryLazy",
-    config = function (_, opts)
+    config = function(_, opts)
       require("flash").setup({
         search = {
           incremental = true,
-        }
+        },
       })
-      vim.keymap.set({ "n", "x", "o"}, "s", function ()
+      vim.keymap.set({ "n", "x", "o" }, "s", function()
         require("flash").jump()
-      end, { desc = "Flash Search"})
-      vim.keymap.set({ "n", "x", "o"}, "S", function ()
+      end, { desc = "Flash Search" })
+      vim.keymap.set({ "n", "x", "o" }, "S", function()
         require("flash").treesitter()
-      end, { desc = "Flash Treesitter Search"})
-      vim.keymap.set("o", "r", function ()
+      end, { desc = "Flash Treesitter Search" })
+      vim.keymap.set("o", "r", function()
         require("flash").remote()
-      end, { desc = "Flash Remote"})
-      vim.keymap.set({ "x", "o"}, "R", function ()
+      end, { desc = "Flash Remote" })
+      vim.keymap.set({ "x", "o" }, "R", function()
         require("flash").treesitter_search()
-      end, { desc = "Treesitter Search"})
-      vim.keymap.set("c", "<C-s>", function ()
+      end, { desc = "Treesitter Search" })
+      vim.keymap.set("c", "<C-s>", function()
         require("flash").toggle()
-      end, { desc = "Toggle Flash Search"})
-    end
+      end, { desc = "Toggle Flash Search" })
+    end,
   },
-{
+  -- {
+  --   "mg979/vim-visual-multi",
+  --   init = function()
+  --     vim.g.VM_leader = " "
+  --   end
+  -- },
+  {
     "ggandor/leap.nvim",
     event = "VeryLazy",
-    -- config = function (_, opts)
-    --   -- require("leap").create_default_mappings()
-    -- end,
+    init = function() -- Hide the (real) cursor when leaping, and restore it afterwards.
+      vim.api.nvim_create_autocmd('User', {
+        pattern = 'LeapEnter',
+        callback = function()
+          vim.cmd.hi('Cursor', 'blend=100')
+          vim.opt.guicursor:append{ 'a:Cursor/lCursor' }
+        end,
+      }
+      )
+      vim.api.nvim_create_autocmd('User', {
+        pattern = 'LeapLeave',
+        callback = function()
+          vim.cmd.hi('Cursor', 'blend=0')
+          vim.opt.guicursor:remove{ 'a:Cursor/lCursor' }
+        end,
+      }
+      )
+    end,
+    config = function(_, _)
+      require("leap").create_default_mappings()
+    end,
     dependencies = {
       {
         "ggandor/flit.nvim",
-        config = function (_, opts)
+        config = function(_, _)
           require("flit").setup()
-        end
+        end,
       },
       {
-        "tpope/vim-repeat"
-      }
-    }
+        "tpope/vim-repeat",
+      },
+    },
   },
 
 
@@ -400,13 +596,17 @@ local plugins = {
 require("lazy").setup(plugins, {
   install = {
     missing = false,
-    colorscheme = { "nvchad" },
+    -- colorscheme = { "nvchad" },
   },
 
+  rocks = {
+    hererocks = true,
+  },
   change_detection = {
     enabled = false,
   },
   ui = {
+    backdrop = 100,
     icons = {
       ft = "",
       lazy = "󰂠 ",
@@ -447,7 +647,7 @@ require("lazy").setup(plugins, {
         "zip",
         "zipPlugin",
         "tutor",
-        "rplugin",
+        -- "rplugin",
         "syntax",
         "synmenu",
         "optwin",

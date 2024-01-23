@@ -41,15 +41,11 @@ end
 
 ---@param direction string
 local navigate = function(direction)
-  vim.cmd("wincmd " .. direction)
+  vim.cmd.wincmd(direction)
 end
 
 ---@param direction string
 local kitty_navigate = function(direction)
-  if not allowed_directions[direction] then
-    return
-  end
-
   local winnr = vim.api.nvim_get_current_win()
   -- if not vim.g.last_kitty_pane then
   navigate(direction)

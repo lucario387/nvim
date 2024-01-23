@@ -23,8 +23,8 @@ end
 -- end
 
 local disabled_buftypes = {
-  "terminal",
   -- "nofile",
+  "terminal",
   "prompt",
 }
 
@@ -32,6 +32,7 @@ local disabled_filetypes = {
   "markdown",
   "rst",
   "gitcommit",
+  "TelescopePrompt"
 }
 
 local menu = {
@@ -100,10 +101,12 @@ cmp.setup({
     ["<Tab>"] = cmp.mapping(function(fallback)
       if cmp.visible() then
         cmp.select_next_item()
+      -- elseif vim.snippet.jumpable(1) then
+      --   vim.snippet.jump(1)
       elseif require("luasnip").expand_or_locally_jumpable() then
         require("luasnip").expand_or_jump()
-        -- elseif has_words_before() then
-        --   cmp.complete()
+      -- elseif has_words_before() then
+      --   cmp.complete()
       else
         fallback()
       end
@@ -121,6 +124,32 @@ cmp.setup({
     ["<C-d>"] = cmp.mapping.scroll_docs(-4),
     ["<C-f>"] = cmp.mapping.scroll_docs(4),
     ["<CR>"] = cmp.mapping.confirm({ select = false }),
+    ["<C-n>"] = {
+      i = function(fallback)
+        if (list_contains(disabled_buftypes, vim.bo.buftype) or list_contains(disabled_filetypes, vim.bo.filetype)) then
+          fallback()
+        else
+          if cmp.visible() then
+            cmp.select_next_item({ behavior = require("cmp.types").cmp.SelectBehavior.Insert })
+          else
+            cmp.complete()
+          end
+        end
+      end
+    },
+    ["<C-p>"] = {
+      i = function(fallback)
+        if (list_contains(disabled_buftypes, vim.bo.buftype) or list_contains(disabled_filetypes, vim.bo.filetype)) then
+          fallback()
+        else
+          if cmp.visible() then
+            cmp.select_prev_item({ behavior = require("cmp.types").cmp.SelectBehavior.Insert })
+          else
+            cmp.complete()
+          end
+        end
+      end
+    }
   }),
   formatting = {
     -- fields = { "abbr", "menu", "kind" },
@@ -139,7 +168,8 @@ cmp.setup({
     { name = "nvim_lsp" },
     { name = "luasnip", keyword_length = 4, max_item_count = 20 },
     {
-      name = "path",
+      -- name = "path",
+      name = "async_path",
       option = {
         trailing_slash = true,
       },
@@ -165,8 +195,8 @@ cmp.setup({
       name = "omni",
       option = {
         disable_omnifuncs = { "v:lua.vim.lsp.omnifunc", "v:lua.vim.lsp.omnifunc()" },
-      }
-    }
+      },
+    },
     -- { name = "spell",
     --   option = {
     --     keep_all_entries = true,

@@ -81,10 +81,6 @@ M.set_capabilities = function()
       },
     },
   }
-  capabilities.workspace.didChangeWatchedFiles = {
-    dynamicRegistration = false,
-    relativePatternSupport = true,
-  }
   return capabilities
 end
 

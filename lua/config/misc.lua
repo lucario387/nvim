@@ -145,7 +145,7 @@ M["nvim-tree"] = function()
     },
     renderer = {
       group_empty = true,
-      root_folder_label = true,
+      -- root_folder_label = true,
       highlight_git = true,
       highlight_opened_files = "name",
       -- root_folder_modifier = table.concat { ":t:gs?$?/..", string.rep(" ", 1000), "?:gs?^??" },
@@ -161,11 +161,11 @@ M["nvim-tree"] = function()
         },
       },
     },
-    experimental = {
-      git = {
-        async = false,
-      },
-    },
+    -- experimental = {
+    --   git = {
+    --     async = false,
+    --   },
+    -- },
     on_attach = function(bufnr)
       local api = require("nvim-tree.api")
       api.config.mappings.default_on_attach(bufnr)
@@ -191,25 +191,35 @@ M["indent-blankline"] = function()
         "NvimTree",
       },
       buftypes = {
-
         "terminal",
         "help",
         "nofile",
       },
     },
-    indent = {
-      highlight = {
-        -- "RainbowRed",
-        -- "RainbowYellow",
-        -- "RainbowBlue",
-        -- "RainbowOrange",
-        -- "RainbowGreen",
-        -- "RainbowViolet",
-        -- "RainbowCyan",
-        "CursorColumn",
-        "Whitespace"
-      }
-    }
+    -- scope = {
+    --   highlight = {
+    --     "RainbowDelimiterRed",
+    --     "RainbowDelimiterYellow",
+    --     "RainbowDelimiterBlue",
+    --     "RainbowDelimiterOrange",
+    --     "RainbowDelimiterGreen",
+    --     "RainbowDelimiterViolet",
+    --     "RainbowDelimiterCyan",
+    --   },
+    -- },
+    -- indent = {
+    --   highlight = {
+    --     -- "RainbowDelimiterRed",
+    --     -- "RainbowDelimiterYellow",
+    --     -- "RainbowDelimiterBlue",
+    --     -- "RainbowDelimiterOrange",
+    --     -- "RainbowDelimiterGreen",
+    --     -- "RainbowDelimiterViolet",
+    --     -- "RainbowDelimiterCyan",
+    --     -- "CursorColumn",
+    --     -- "Whitespace"
+    --   }
+    -- }
   })
   -- vim.g.indent_blankline_use_treesitter = true
   -- require("indent_blankline").setup({
@@ -286,6 +296,7 @@ M.neogit = function()
       telescope = true,
       diffview = true,
     },
+    graph_style = "kitty",
   })
 end
 
